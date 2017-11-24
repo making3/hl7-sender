@@ -1,0 +1,27 @@
+{
+  "name": "hl7-sender",
+  "version": "0.1.0",
+  "description": "HL7 Sending utility for testing a downstream HL7 processing system.",
+  "main": "index.js",
+  "scripts": {
+    "elm": "elm make Main.elm --output elm.js || true",
+    "elm:watch": "chokidar '**/*.elm' -c 'npm run elm'",
+    "start": "electron main.js",
+    "watch": "npm run start & npm run elm:watch"
+  },
+  "keywords": [
+    "hl7",
+    "hl7-sender",
+    "downstream",
+    "tcp",
+    "port",
+    "test",
+    "testing",
+    "tester"
+  ],
+  "author": "mking",
+  "license": "ISC",
+  "devDependencies": {
+    "chokidar": "^1.7.0"
+  }
+}
