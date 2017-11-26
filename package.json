@@ -22,6 +22,10 @@
   "author": "mking",
   "license": "ISC",
   "devDependencies": {
-    "chokidar": "^1.7.0"
+    "chokidar": "^1.7.0",
+    "webpack": "^3.8.1"
+  },
+  "dependencies": {
+    "bootstrap": "^4.0.0-alpha.6"
   }
 }
