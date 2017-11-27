@@ -8292,6 +8292,10 @@ var _user$project$Models$Model = F5(
 	function (a, b, c, d, e) {
 		return {isConnected: a, connectionMessage: b, destinationIp: c, destinationPort: d, hl7: e};
 	});
+var _user$project$Models$ControlCharacters = F3(
+	function (a, b, c) {
+		return {startOfText: a, endOfText: b, endOfLine: c};
+	});
 
 var _user$project$View$getConnectButtonText = function (isConnected) {
 	var _p0 = isConnected;

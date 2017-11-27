@@ -10,6 +10,13 @@ type alias Model =
     }
 
 
+type alias ControlCharacters =
+    { startOfText : Int
+    , endOfText : Int
+    , endOfLine : Int
+    }
+
+
 initialModel : Model
 initialModel =
     { isConnected = False
