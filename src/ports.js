@@ -1,7 +1,7 @@
 'use strict';
 /* global document */
 const Elm        = require('./elm.js');
-const connection = require('./lib/connection');
+const connection = require('./src/connection');
 
 const container = document.getElementById('container');
 

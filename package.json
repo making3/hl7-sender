@@ -4,8 +4,8 @@
   "description": "HL7 Sending utility for testing a downstream HL7 processing system.",
   "main": "index.js",
   "scripts": {
-    "elm": "elm make Main.elm --output elm.js || true",
-    "elm:watch": "chokidar '**/*.elm' -c 'npm run elm'",
+    "elm": "elm make src/Main.elm --output elm.js || true",
+    "elm:watch": "chokidar 'src/**/*.elm' -c 'npm run elm'",
     "start": "electron main.js",
     "watch": "npm run start & npm run elm:watch"
   },
