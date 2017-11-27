@@ -8287,6 +8287,7 @@ var _user$project$Msgs$ValidPort = function (a) {
 };
 var _user$project$Msgs$ValidIp = {ctor: 'ValidIp'};
 
+var _user$project$Models$initialModel = {isConnected: false, connectionMessage: 'Disconnected', destinationIp: '127.0.0.1', destinationPort: 1337, hl7: ''};
 var _user$project$Models$Model = F5(
 	function (a, b, c, d, e) {
 		return {isConnected: a, connectionMessage: b, destinationIp: c, destinationPort: d, hl7: e};
@@ -8702,11 +8703,7 @@ var _user$project$Update$update = F2(
 		}
 	});
 
-var _user$project$Main$init = {
-	ctor: '_Tuple2',
-	_0: A5(_user$project$Models$Model, false, 'Disconnected', '127.0.0.1', 1337, ''),
-	_1: _elm_lang$core$Platform_Cmd$none
-};
+var _user$project$Main$init = {ctor: '_Tuple2', _0: _user$project$Models$initialModel, _1: _elm_lang$core$Platform_Cmd$none};
 var _user$project$Main$connected = _elm_lang$core$Native_Platform.incomingPort('connected', _elm_lang$core$Json_Decode$string);
 var _user$project$Main$connectionError = _elm_lang$core$Native_Platform.incomingPort('connectionError', _elm_lang$core$Json_Decode$string);
 var _user$project$Main$disconnected = _elm_lang$core$Native_Platform.incomingPort('disconnected', _elm_lang$core$Json_Decode$string);

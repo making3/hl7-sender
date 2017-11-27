@@ -2,7 +2,7 @@ port module Main exposing (..)
 
 import Html exposing (program)
 import Msgs exposing (Msg(..))
-import Models exposing (Model)
+import Models exposing (Model, initialModel)
 import View exposing (view)
 import Update exposing (update)
 
@@ -23,7 +23,7 @@ main =
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model False "Disconnected" "127.0.0.1" 1337 "", Cmd.none )
+    ( initialModel, Cmd.none )
 
 
 
