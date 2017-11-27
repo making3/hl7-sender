@@ -140,15 +140,17 @@ view model =
                     [ div [ class "col-8" ]
                         [ div [ class "form-inline" ]
                             [ input
-                                [ class "form-control"
+                                [ class "form-control mr-sm-2"
                                 , placeholder "IP Address"
                                 , onInput ChangeDestinationIp
+                                , readonly model.isConnected
                                 , value model.destinationIp
                                 ]
                                 []
                             , input
-                                [ class "form-control"
+                                [ class "form-control mr-sm-2"
                                 , placeholder "Port"
+                                , readonly model.isConnected
                                 , onInput ChangeDestinationPort
                                 , value (getPortDisplay model.destinationPort)
                                 ]

@@ -8613,7 +8613,7 @@ var _user$project$Main$view = function (model) {
 															_elm_lang$html$Html$input,
 															{
 																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$class('form-control'),
+																_0: _elm_lang$html$Html_Attributes$class('form-control mr-sm-2'),
 																_1: {
 																	ctor: '::',
 																	_0: _elm_lang$html$Html_Attributes$placeholder('IP Address'),
@@ -8622,8 +8622,12 @@ var _user$project$Main$view = function (model) {
 																		_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$ChangeDestinationIp),
 																		_1: {
 																			ctor: '::',
-																			_0: _elm_lang$html$Html_Attributes$value(model.destinationIp),
-																			_1: {ctor: '[]'}
+																			_0: _elm_lang$html$Html_Attributes$readonly(model.isConnected),
+																			_1: {
+																				ctor: '::',
+																				_0: _elm_lang$html$Html_Attributes$value(model.destinationIp),
+																				_1: {ctor: '[]'}
+																			}
 																		}
 																	}
 																}
@@ -8635,18 +8639,22 @@ var _user$project$Main$view = function (model) {
 																_elm_lang$html$Html$input,
 																{
 																	ctor: '::',
-																	_0: _elm_lang$html$Html_Attributes$class('form-control'),
+																	_0: _elm_lang$html$Html_Attributes$class('form-control mr-sm-2'),
 																	_1: {
 																		ctor: '::',
 																		_0: _elm_lang$html$Html_Attributes$placeholder('Port'),
 																		_1: {
 																			ctor: '::',
-																			_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$ChangeDestinationPort),
+																			_0: _elm_lang$html$Html_Attributes$readonly(model.isConnected),
 																			_1: {
 																				ctor: '::',
-																				_0: _elm_lang$html$Html_Attributes$value(
-																					_user$project$Main$getPortDisplay(model.destinationPort)),
-																				_1: {ctor: '[]'}
+																				_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$ChangeDestinationPort),
+																				_1: {
+																					ctor: '::',
+																					_0: _elm_lang$html$Html_Attributes$value(
+																						_user$project$Main$getPortDisplay(model.destinationPort)),
+																					_1: {ctor: '[]'}
+																				}
 																			}
 																		}
 																	}
