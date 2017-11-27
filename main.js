@@ -3,6 +3,7 @@ const electron = require('electron');
 const chokidar = require('chokidar');
 
 const app = electron.app;
+const Menu = electron.Menu;
 const BrowserWindow = electron.BrowserWindow;
 
 let mainWindow;
@@ -25,6 +26,9 @@ function createWindow() {
 
     mainWindow.webContents.openDevTools();
 
+    const menu = getMenu(app);
+    Menu.setApplicationMenu(menu);
+
     mainWindow.on('closed', () => {
         mainWindow = null;
     });
@@ -41,3 +45,38 @@ app.on('activate', () => {
         createWindow();
     }
 });
+
+function getMenu() {
+    const menuTemplate = [
+        {
+            label: 'HL7 Sender',
+            submenu: [
+                {
+                    label: 'About',
+                    click: () => {
+                    }
+                },
+                {
+                    type: 'separator'
+                },
+                {
+                    label: 'Quit',
+                    click: () => {
+                        app.quit();
+                    }
+                }
+            ]
+        },
+        {
+            label: 'Settings',
+            submenu: [
+                {
+                    label: 'Special Characters'
+                }
+            ]
+        }
+    ];
+
+    const menu = Menu.buildFromTemplate(menuTemplate);
+    return menu;
+}
