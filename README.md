@@ -9,7 +9,8 @@ This app is currently in development with very basic features. This is also an E
 
 # Installing
 
-- Node.js. Use NVM.
+Node.js. Use NVM.
+
 
     // Elm & Electron
     npm i -g elm electron-prebuilt
