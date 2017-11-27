@@ -111,7 +111,7 @@ view model =
         [ div [ class "container" ]
             [ div [ class "row" ]
                 [ div [ class "col-12" ]
-                    [ Html.form []
+                    [ div []
                         [ div [ class "form-group" ]
                             [ label []
                                 [ text "HL7 Message"

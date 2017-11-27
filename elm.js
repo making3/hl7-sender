@@ -8488,7 +8488,7 @@ var _user$project$Main$view = function (model) {
 								{
 									ctor: '::',
 									_0: A2(
-										_elm_lang$html$Html$form,
+										_elm_lang$html$Html$div,
 										{ctor: '[]'},
 										{
 											ctor: '::',
