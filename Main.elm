@@ -1,6 +1,6 @@
 port module Main exposing (..)
 
-import Html exposing (Html, Attribute, program, div, span, input, button, text, label)
+import Html exposing (Html, Attribute, program, div, span, input, button, text, label, textarea)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onClick)
 
@@ -20,17 +20,17 @@ main =
 
 
 type alias Model =
-    { content : String
-    , isConnected : Bool
+    { isConnected : Bool
     , connectionMessage : String
     , destinationIp : String
     , destinationPort : Int
+    , hl7 : String
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model "" False "Disconnected" "127.0.0.1" 1337, Cmd.none )
+    ( Model False "Disconnected" "127.0.0.1" 1337 "", Cmd.none )
 
 
 type PortValidation
@@ -44,11 +44,12 @@ type IpValidation
 
 
 type Msg
-    = Change String
-    | ToggleConnection
+    = ToggleConnection
+    | Send
     | Connected String
     | ConnectionError String
     | Disconnected String
+    | ChangeHl7 String
     | ChangeDestinationIp String
     | ChangeDestinationPort String
 
@@ -59,12 +60,12 @@ port connect : ( String, Int ) -> Cmd msg
 port disconnect : String -> Cmd msg
 
 
+port send : String -> Cmd msg
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Change newContent ->
-            ( { model | content = newContent }, Cmd.none )
-
         ChangeDestinationIp newIp ->
             ( { model | destinationIp = newIp }, Cmd.none )
 
@@ -78,6 +79,12 @@ update msg model =
 
                 InvalidPort ->
                     ( model, Cmd.none )
+
+        ChangeHl7 newHl7 ->
+            ( { model | hl7 = newHl7 }, Cmd.none )
+
+        Send ->
+            ( model, send model.hl7 )
 
         ToggleConnection ->
             case model.isConnected of
@@ -103,20 +110,52 @@ view model =
     div []
         [ div [ class "container" ]
             [ div [ class "row" ]
-                [ div [] [ label [] [ text "HL7 Message" ] ]
-                , Html.textarea [] []
-                , input [ placeholder "Text to reverse", onInput Change ] []
-                , div [] [ text (String.reverse model.content) ]
-                ]
-            , div [ class "row" ]
-                [ input [ placeholder "IP Address", onInput ChangeDestinationIp, value model.destinationIp ] []
-                , input [ placeholder "Port", onInput ChangeDestinationPort, value (getPortDisplay model.destinationPort) ] []
-                , button [ class "btn btn-default", onClick ToggleConnection ] [ text (getConnectButtonText model.isConnected) ]
+                [ div [ class "col-12" ]
+                    [ div [ class "form-group" ]
+                        [ label [] [ text "HL7 Message" ]
+                        , textarea
+                            [ class "form-control"
+                            , onInput ChangeHl7
+                            ]
+                            []
+                        , button
+                            [ class "btn btn-default float-right"
+                            , onClick Send
+                            , disabled (model.isConnected == False)
+                            ]
+                            [ text "Send" ]
+                        ]
+                    ]
                 ]
             ]
         , Html.footer [ class "footer" ]
             [ div [ class "container" ]
-                [ span [] [ text model.connectionMessage ]
+                [ div [ class "row" ]
+                    [ div [ class "col-8 form-inline" ]
+                        [ input
+                            [ class "form-control"
+                            , placeholder "IP Address"
+                            , onInput ChangeDestinationIp
+                            , value model.destinationIp
+                            ]
+                            []
+                        , input
+                            [ class "form-control"
+                            , placeholder "Port"
+                            , onInput ChangeDestinationPort
+                            , value (getPortDisplay model.destinationPort)
+                            ]
+                            []
+                        , button
+                            [ class "btn btn-default"
+                            , onClick ToggleConnection
+                            ]
+                            [ text (getConnectButtonText model.isConnected) ]
+                        ]
+                    , div [ class "col float-right" ]
+                        [ span [] [ text model.connectionMessage ]
+                        ]
+                    ]
                 ]
             ]
         ]

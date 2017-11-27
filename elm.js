@@ -8281,16 +8281,21 @@ var _user$project$Main$disconnect = _elm_lang$core$Native_Platform.outgoingPort(
 	function (v) {
 		return v;
 	});
+var _user$project$Main$send = _elm_lang$core$Native_Platform.outgoingPort(
+	'send',
+	function (v) {
+		return v;
+	});
 var _user$project$Main$connected = _elm_lang$core$Native_Platform.incomingPort('connected', _elm_lang$core$Json_Decode$string);
 var _user$project$Main$connectionError = _elm_lang$core$Native_Platform.incomingPort('connectionError', _elm_lang$core$Json_Decode$string);
 var _user$project$Main$disconnected = _elm_lang$core$Native_Platform.incomingPort('disconnected', _elm_lang$core$Json_Decode$string);
 var _user$project$Main$Model = F5(
 	function (a, b, c, d, e) {
-		return {content: a, isConnected: b, connectionMessage: c, destinationIp: d, destinationPort: e};
+		return {isConnected: a, connectionMessage: b, destinationIp: c, destinationPort: d, hl7: e};
 	});
 var _user$project$Main$init = {
 	ctor: '_Tuple2',
-	_0: A5(_user$project$Main$Model, '', false, 'Disconnected', '127.0.0.1', 1337),
+	_0: A5(_user$project$Main$Model, false, 'Disconnected', '127.0.0.1', 1337, ''),
 	_1: _elm_lang$core$Platform_Cmd$none
 };
 var _user$project$Main$InvalidPort = {ctor: 'InvalidPort'};
@@ -8314,14 +8319,6 @@ var _user$project$Main$update = F2(
 	function (msg, model) {
 		var _p2 = msg;
 		switch (_p2.ctor) {
-			case 'Change':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{content: _p2._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
 			case 'ChangeDestinationIp':
 				return {
 					ctor: '_Tuple2',
@@ -8354,6 +8351,20 @@ var _user$project$Main$update = F2(
 					default:
 						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
+			case 'ChangeHl7':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{hl7: _p2._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'Send':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _user$project$Main$send(model.hl7)
+				};
 			case 'ToggleConnection':
 				var _p4 = model.isConnected;
 				if (_p4 === false) {
@@ -8413,6 +8424,9 @@ var _user$project$Main$ChangeDestinationPort = function (a) {
 var _user$project$Main$ChangeDestinationIp = function (a) {
 	return {ctor: 'ChangeDestinationIp', _0: a};
 };
+var _user$project$Main$ChangeHl7 = function (a) {
+	return {ctor: 'ChangeHl7', _0: a};
+};
 var _user$project$Main$Disconnected = function (a) {
 	return {ctor: 'Disconnected', _0: a};
 };
@@ -8438,10 +8452,8 @@ var _user$project$Main$subscriptions = function (model) {
 			}
 		});
 };
+var _user$project$Main$Send = {ctor: 'Send'};
 var _user$project$Main$ToggleConnection = {ctor: 'ToggleConnection'};
-var _user$project$Main$Change = function (a) {
-	return {ctor: 'Change', _0: a};
-};
 var _user$project$Main$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -8468,126 +8480,76 @@ var _user$project$Main$view = function (model) {
 							ctor: '::',
 							_0: A2(
 								_elm_lang$html$Html$div,
-								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('col-12'),
+									_1: {ctor: '[]'}
+								},
 								{
 									ctor: '::',
 									_0: A2(
-										_elm_lang$html$Html$label,
-										{ctor: '[]'},
+										_elm_lang$html$Html$div,
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html$text('HL7 Message'),
+											_0: _elm_lang$html$Html_Attributes$class('form-group'),
 											_1: {ctor: '[]'}
+										},
+										{
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$label,
+												{ctor: '[]'},
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html$text('HL7 Message'),
+													_1: {ctor: '[]'}
+												}),
+											_1: {
+												ctor: '::',
+												_0: A2(
+													_elm_lang$html$Html$textarea,
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$class('form-control'),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$ChangeHl7),
+															_1: {ctor: '[]'}
+														}
+													},
+													{ctor: '[]'}),
+												_1: {
+													ctor: '::',
+													_0: A2(
+														_elm_lang$html$Html$button,
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$class('btn btn-default float-right'),
+															_1: {
+																ctor: '::',
+																_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Send),
+																_1: {
+																	ctor: '::',
+																	_0: _elm_lang$html$Html_Attributes$disabled(
+																		_elm_lang$core$Native_Utils.eq(model.isConnected, false)),
+																	_1: {ctor: '[]'}
+																}
+															}
+														},
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html$text('Send'),
+															_1: {ctor: '[]'}
+														}),
+													_1: {ctor: '[]'}
+												}
+											}
 										}),
 									_1: {ctor: '[]'}
 								}),
-							_1: {
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$textarea,
-									{ctor: '[]'},
-									{ctor: '[]'}),
-								_1: {
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$input,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$placeholder('Text to reverse'),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$Change),
-												_1: {ctor: '[]'}
-											}
-										},
-										{ctor: '[]'}),
-									_1: {
-										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$div,
-											{ctor: '[]'},
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html$text(
-													_elm_lang$core$String$reverse(model.content)),
-												_1: {ctor: '[]'}
-											}),
-										_1: {ctor: '[]'}
-									}
-								}
-							}
+							_1: {ctor: '[]'}
 						}),
-					_1: {
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$div,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('row'),
-								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$input,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$placeholder('IP Address'),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$ChangeDestinationIp),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$value(model.destinationIp),
-												_1: {ctor: '[]'}
-											}
-										}
-									},
-									{ctor: '[]'}),
-								_1: {
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$input,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$placeholder('Port'),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$ChangeDestinationPort),
-												_1: {
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$value(
-														_user$project$Main$getPortDisplay(model.destinationPort)),
-													_1: {ctor: '[]'}
-												}
-											}
-										},
-										{ctor: '[]'}),
-									_1: {
-										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$button,
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$class('btn btn-default'),
-												_1: {
-													ctor: '::',
-													_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$ToggleConnection),
-													_1: {ctor: '[]'}
-												}
-											},
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html$text(
-													_user$project$Main$getConnectButtonText(model.isConnected)),
-												_1: {ctor: '[]'}
-											}),
-										_1: {ctor: '[]'}
-									}
-								}
-							}),
-						_1: {ctor: '[]'}
-					}
+					_1: {ctor: '[]'}
 				}),
 			_1: {
 				ctor: '::',
@@ -8610,12 +8572,112 @@ var _user$project$Main$view = function (model) {
 							{
 								ctor: '::',
 								_0: A2(
-									_elm_lang$html$Html$span,
-									{ctor: '[]'},
+									_elm_lang$html$Html$div,
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text(model.connectionMessage),
+										_0: _elm_lang$html$Html_Attributes$class('row'),
 										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$div,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('col-8 form-inline'),
+												_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: A2(
+													_elm_lang$html$Html$input,
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$class('form-control'),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$placeholder('IP Address'),
+															_1: {
+																ctor: '::',
+																_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$ChangeDestinationIp),
+																_1: {
+																	ctor: '::',
+																	_0: _elm_lang$html$Html_Attributes$value(model.destinationIp),
+																	_1: {ctor: '[]'}
+																}
+															}
+														}
+													},
+													{ctor: '[]'}),
+												_1: {
+													ctor: '::',
+													_0: A2(
+														_elm_lang$html$Html$input,
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$class('form-control'),
+															_1: {
+																ctor: '::',
+																_0: _elm_lang$html$Html_Attributes$placeholder('Port'),
+																_1: {
+																	ctor: '::',
+																	_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$ChangeDestinationPort),
+																	_1: {
+																		ctor: '::',
+																		_0: _elm_lang$html$Html_Attributes$value(
+																			_user$project$Main$getPortDisplay(model.destinationPort)),
+																		_1: {ctor: '[]'}
+																	}
+																}
+															}
+														},
+														{ctor: '[]'}),
+													_1: {
+														ctor: '::',
+														_0: A2(
+															_elm_lang$html$Html$button,
+															{
+																ctor: '::',
+																_0: _elm_lang$html$Html_Attributes$class('btn btn-default'),
+																_1: {
+																	ctor: '::',
+																	_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$ToggleConnection),
+																	_1: {ctor: '[]'}
+																}
+															},
+															{
+																ctor: '::',
+																_0: _elm_lang$html$Html$text(
+																	_user$project$Main$getConnectButtonText(model.isConnected)),
+																_1: {ctor: '[]'}
+															}),
+														_1: {ctor: '[]'}
+													}
+												}
+											}),
+										_1: {
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$div,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$class('col float-right'),
+													_1: {ctor: '[]'}
+												},
+												{
+													ctor: '::',
+													_0: A2(
+														_elm_lang$html$Html$span,
+														{ctor: '[]'},
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html$text(model.connectionMessage),
+															_1: {ctor: '[]'}
+														}),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}
 									}),
 								_1: {ctor: '[]'}
 							}),
