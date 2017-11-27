@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "elm": "elm make src/Main.elm --output elm.js || true",
-    "elm:watch": "chokidar 'src/**/*.elm' -c 'npm run elm'",
+    "elm:watch": "chokidar '**/*.elm' -c 'npm run elm'",
     "start": "electron main.js",
     "watch": "npm run start & npm run elm:watch"
   },

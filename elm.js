@@ -8260,7 +8260,39 @@ var _elm_lang$html$Html_Events$Options = F2(
 		return {stopPropagation: a, preventDefault: b};
 	});
 
-var _user$project$Main$getConnectButtonText = function (isConnected) {
+var _user$project$Msgs$ChangeDestinationPort = function (a) {
+	return {ctor: 'ChangeDestinationPort', _0: a};
+};
+var _user$project$Msgs$ChangeDestinationIp = function (a) {
+	return {ctor: 'ChangeDestinationIp', _0: a};
+};
+var _user$project$Msgs$ChangeHl7 = function (a) {
+	return {ctor: 'ChangeHl7', _0: a};
+};
+var _user$project$Msgs$Disconnected = function (a) {
+	return {ctor: 'Disconnected', _0: a};
+};
+var _user$project$Msgs$ConnectionError = function (a) {
+	return {ctor: 'ConnectionError', _0: a};
+};
+var _user$project$Msgs$Connected = function (a) {
+	return {ctor: 'Connected', _0: a};
+};
+var _user$project$Msgs$Send = {ctor: 'Send'};
+var _user$project$Msgs$ToggleConnection = {ctor: 'ToggleConnection'};
+var _user$project$Msgs$InvalidPort = {ctor: 'InvalidPort'};
+var _user$project$Msgs$EmptyPort = {ctor: 'EmptyPort'};
+var _user$project$Msgs$ValidPort = function (a) {
+	return {ctor: 'ValidPort', _0: a};
+};
+var _user$project$Msgs$ValidIp = {ctor: 'ValidIp'};
+
+var _user$project$Models$Model = F5(
+	function (a, b, c, d, e) {
+		return {isConnected: a, connectionMessage: b, destinationIp: c, destinationPort: d, hl7: e};
+	});
+
+var _user$project$View$getConnectButtonText = function (isConnected) {
 	var _p0 = isConnected;
 	if (_p0 === true) {
 		return 'Disconnect';
@@ -8268,193 +8300,10 @@ var _user$project$Main$getConnectButtonText = function (isConnected) {
 		return 'Connect';
 	}
 };
-var _user$project$Main$getPortDisplay = function (destinationPort) {
+var _user$project$View$getPortDisplay = function (destinationPort) {
 	return _elm_lang$core$Native_Utils.eq(destinationPort, 0) ? '' : _elm_lang$core$Basics$toString(destinationPort);
 };
-var _user$project$Main$connect = _elm_lang$core$Native_Platform.outgoingPort(
-	'connect',
-	function (v) {
-		return [v._0, v._1];
-	});
-var _user$project$Main$disconnect = _elm_lang$core$Native_Platform.outgoingPort(
-	'disconnect',
-	function (v) {
-		return v;
-	});
-var _user$project$Main$send = _elm_lang$core$Native_Platform.outgoingPort(
-	'send',
-	function (v) {
-		return v;
-	});
-var _user$project$Main$connected = _elm_lang$core$Native_Platform.incomingPort('connected', _elm_lang$core$Json_Decode$string);
-var _user$project$Main$connectionError = _elm_lang$core$Native_Platform.incomingPort('connectionError', _elm_lang$core$Json_Decode$string);
-var _user$project$Main$disconnected = _elm_lang$core$Native_Platform.incomingPort('disconnected', _elm_lang$core$Json_Decode$string);
-var _user$project$Main$Model = F5(
-	function (a, b, c, d, e) {
-		return {isConnected: a, connectionMessage: b, destinationIp: c, destinationPort: d, hl7: e};
-	});
-var _user$project$Main$init = {
-	ctor: '_Tuple2',
-	_0: A5(_user$project$Main$Model, false, 'Disconnected', '127.0.0.1', 1337, ''),
-	_1: _elm_lang$core$Platform_Cmd$none
-};
-var _user$project$Main$InvalidPort = {ctor: 'InvalidPort'};
-var _user$project$Main$EmptyPort = {ctor: 'EmptyPort'};
-var _user$project$Main$ValidPort = function (a) {
-	return {ctor: 'ValidPort', _0: a};
-};
-var _user$project$Main$validatePort = function (portStr) {
-	if (_elm_lang$core$Native_Utils.eq(portStr, '')) {
-		return _user$project$Main$EmptyPort;
-	} else {
-		var _p1 = _elm_lang$core$String$toInt(portStr);
-		if (_p1.ctor === 'Ok') {
-			return _user$project$Main$ValidPort(_p1._0);
-		} else {
-			return _user$project$Main$InvalidPort;
-		}
-	}
-};
-var _user$project$Main$update = F2(
-	function (msg, model) {
-		var _p2 = msg;
-		switch (_p2.ctor) {
-			case 'ChangeDestinationIp':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{destinationIp: _p2._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'ChangeDestinationPort':
-				var _p3 = _user$project$Main$validatePort(_p2._0);
-				switch (_p3.ctor) {
-					case 'ValidPort':
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{
-									destinationPort: A3(_elm_lang$core$Basics$clamp, 1, 65535, _p3._0)
-								}),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-					case 'EmptyPort':
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{destinationPort: 0}),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-					default:
-						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-			case 'ChangeHl7':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{hl7: _p2._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'Send':
-				return {
-					ctor: '_Tuple2',
-					_0: model,
-					_1: _user$project$Main$send(model.hl7)
-				};
-			case 'ToggleConnection':
-				var _p4 = model.isConnected;
-				if (_p4 === false) {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{connectionMessage: 'Connecting'}),
-						_1: _user$project$Main$connect(
-							{ctor: '_Tuple2', _0: model.destinationIp, _1: model.destinationPort})
-					};
-				} else {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{connectionMessage: 'Disconnecting...'}),
-						_1: _user$project$Main$disconnect('')
-					};
-				}
-			case 'Connected':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{isConnected: true, connectionMessage: 'Connected'}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'ConnectionError':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							isConnected: false,
-							connectionMessage: A2(_elm_lang$core$Basics_ops['++'], 'Disconnected: ', _p2._0)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			default:
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{isConnected: false, connectionMessage: 'Disconnected'}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-		}
-	});
-var _user$project$Main$ValidIp = {ctor: 'ValidIp'};
-var _user$project$Main$validateIp = function (ip) {
-	return _user$project$Main$ValidIp;
-};
-var _user$project$Main$ChangeDestinationPort = function (a) {
-	return {ctor: 'ChangeDestinationPort', _0: a};
-};
-var _user$project$Main$ChangeDestinationIp = function (a) {
-	return {ctor: 'ChangeDestinationIp', _0: a};
-};
-var _user$project$Main$ChangeHl7 = function (a) {
-	return {ctor: 'ChangeHl7', _0: a};
-};
-var _user$project$Main$Disconnected = function (a) {
-	return {ctor: 'Disconnected', _0: a};
-};
-var _user$project$Main$ConnectionError = function (a) {
-	return {ctor: 'ConnectionError', _0: a};
-};
-var _user$project$Main$Connected = function (a) {
-	return {ctor: 'Connected', _0: a};
-};
-var _user$project$Main$subscriptions = function (model) {
-	return _elm_lang$core$Platform_Sub$batch(
-		{
-			ctor: '::',
-			_0: _user$project$Main$connected(_user$project$Main$Connected),
-			_1: {
-				ctor: '::',
-				_0: _user$project$Main$connectionError(_user$project$Main$ConnectionError),
-				_1: {
-					ctor: '::',
-					_0: _user$project$Main$disconnected(_user$project$Main$Disconnected),
-					_1: {ctor: '[]'}
-				}
-			}
-		});
-};
-var _user$project$Main$Send = {ctor: 'Send'};
-var _user$project$Main$ToggleConnection = {ctor: 'ToggleConnection'};
-var _user$project$Main$view = function (model) {
+var _user$project$View$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{ctor: '[]'},
@@ -8518,7 +8367,7 @@ var _user$project$Main$view = function (model) {
 																_0: _elm_lang$html$Html_Attributes$class('form-control'),
 																_1: {
 																	ctor: '::',
-																	_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$ChangeHl7),
+																	_0: _elm_lang$html$Html_Events$onInput(_user$project$Msgs$ChangeHl7),
 																	_1: {
 																		ctor: '::',
 																		_0: _elm_lang$html$Html_Attributes$rows(8),
@@ -8539,7 +8388,7 @@ var _user$project$Main$view = function (model) {
 														_0: _elm_lang$html$Html_Attributes$class('btn btn-default float-right'),
 														_1: {
 															ctor: '::',
-															_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Send),
+															_0: _elm_lang$html$Html_Events$onClick(_user$project$Msgs$Send),
 															_1: {
 																ctor: '::',
 																_0: _elm_lang$html$Html_Attributes$disabled(
@@ -8619,7 +8468,7 @@ var _user$project$Main$view = function (model) {
 																	_0: _elm_lang$html$Html_Attributes$placeholder('IP Address'),
 																	_1: {
 																		ctor: '::',
-																		_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$ChangeDestinationIp),
+																		_0: _elm_lang$html$Html_Events$onInput(_user$project$Msgs$ChangeDestinationIp),
 																		_1: {
 																			ctor: '::',
 																			_0: _elm_lang$html$Html_Attributes$readonly(model.isConnected),
@@ -8648,11 +8497,11 @@ var _user$project$Main$view = function (model) {
 																			_0: _elm_lang$html$Html_Attributes$readonly(model.isConnected),
 																			_1: {
 																				ctor: '::',
-																				_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$ChangeDestinationPort),
+																				_0: _elm_lang$html$Html_Events$onInput(_user$project$Msgs$ChangeDestinationPort),
 																				_1: {
 																					ctor: '::',
 																					_0: _elm_lang$html$Html_Attributes$value(
-																						_user$project$Main$getPortDisplay(model.destinationPort)),
+																						_user$project$View$getPortDisplay(model.destinationPort)),
 																					_1: {ctor: '[]'}
 																				}
 																			}
@@ -8669,14 +8518,14 @@ var _user$project$Main$view = function (model) {
 																		_0: _elm_lang$html$Html_Attributes$class('btn btn-default'),
 																		_1: {
 																			ctor: '::',
-																			_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$ToggleConnection),
+																			_0: _elm_lang$html$Html_Events$onClick(_user$project$Msgs$ToggleConnection),
 																			_1: {ctor: '[]'}
 																		}
 																	},
 																	{
 																		ctor: '::',
 																		_0: _elm_lang$html$Html$text(
-																			_user$project$Main$getConnectButtonText(model.isConnected)),
+																			_user$project$View$getConnectButtonText(model.isConnected)),
 																		_1: {ctor: '[]'}
 																	}),
 																_1: {ctor: '[]'}
@@ -8721,8 +8570,164 @@ var _user$project$Main$view = function (model) {
 			}
 		});
 };
+
+var _user$project$Validations$validatePort = function (portStr) {
+	if (_elm_lang$core$Native_Utils.eq(portStr, '')) {
+		return _user$project$Msgs$EmptyPort;
+	} else {
+		var _p0 = _elm_lang$core$String$toInt(portStr);
+		if (_p0.ctor === 'Ok') {
+			return _user$project$Msgs$ValidPort(_p0._0);
+		} else {
+			return _user$project$Msgs$InvalidPort;
+		}
+	}
+};
+var _user$project$Validations$validateIp = function (ip) {
+	return _user$project$Msgs$ValidIp;
+};
+
+var _user$project$Update$connect = _elm_lang$core$Native_Platform.outgoingPort(
+	'connect',
+	function (v) {
+		return [v._0, v._1];
+	});
+var _user$project$Update$disconnect = _elm_lang$core$Native_Platform.outgoingPort(
+	'disconnect',
+	function (v) {
+		return v;
+	});
+var _user$project$Update$send = _elm_lang$core$Native_Platform.outgoingPort(
+	'send',
+	function (v) {
+		return v;
+	});
+var _user$project$Update$update = F2(
+	function (msg, model) {
+		var _p0 = msg;
+		switch (_p0.ctor) {
+			case 'ChangeDestinationIp':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{destinationIp: _p0._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'ChangeDestinationPort':
+				var _p1 = _user$project$Validations$validatePort(_p0._0);
+				switch (_p1.ctor) {
+					case 'ValidPort':
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{
+									destinationPort: A3(_elm_lang$core$Basics$clamp, 1, 65535, _p1._0)
+								}),
+							_1: _elm_lang$core$Platform_Cmd$none
+						};
+					case 'EmptyPort':
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{destinationPort: 0}),
+							_1: _elm_lang$core$Platform_Cmd$none
+						};
+					default:
+						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'ChangeHl7':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{hl7: _p0._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'Send':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _user$project$Update$send(model.hl7)
+				};
+			case 'ToggleConnection':
+				var _p2 = model.isConnected;
+				if (_p2 === false) {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{connectionMessage: 'Connecting'}),
+						_1: _user$project$Update$connect(
+							{ctor: '_Tuple2', _0: model.destinationIp, _1: model.destinationPort})
+					};
+				} else {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{connectionMessage: 'Disconnecting...'}),
+						_1: _user$project$Update$disconnect('')
+					};
+				}
+			case 'Connected':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{isConnected: true, connectionMessage: 'Connected'}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'ConnectionError':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							isConnected: false,
+							connectionMessage: A2(_elm_lang$core$Basics_ops['++'], 'Disconnected: ', _p0._0)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{isConnected: false, connectionMessage: 'Disconnected'}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+		}
+	});
+
+var _user$project$Main$init = {
+	ctor: '_Tuple2',
+	_0: A5(_user$project$Models$Model, false, 'Disconnected', '127.0.0.1', 1337, ''),
+	_1: _elm_lang$core$Platform_Cmd$none
+};
+var _user$project$Main$connected = _elm_lang$core$Native_Platform.incomingPort('connected', _elm_lang$core$Json_Decode$string);
+var _user$project$Main$connectionError = _elm_lang$core$Native_Platform.incomingPort('connectionError', _elm_lang$core$Json_Decode$string);
+var _user$project$Main$disconnected = _elm_lang$core$Native_Platform.incomingPort('disconnected', _elm_lang$core$Json_Decode$string);
+var _user$project$Main$subscriptions = function (model) {
+	return _elm_lang$core$Platform_Sub$batch(
+		{
+			ctor: '::',
+			_0: _user$project$Main$connected(_user$project$Msgs$Connected),
+			_1: {
+				ctor: '::',
+				_0: _user$project$Main$connectionError(_user$project$Msgs$ConnectionError),
+				_1: {
+					ctor: '::',
+					_0: _user$project$Main$disconnected(_user$project$Msgs$Disconnected),
+					_1: {ctor: '[]'}
+				}
+			}
+		});
+};
 var _user$project$Main$main = _elm_lang$html$Html$program(
-	{init: _user$project$Main$init, view: _user$project$Main$view, update: _user$project$Main$update, subscriptions: _user$project$Main$subscriptions})();
+	{init: _user$project$Main$init, view: _user$project$View$view, update: _user$project$Update$update, subscriptions: _user$project$Main$subscriptions})();
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
