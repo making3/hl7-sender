@@ -111,19 +111,25 @@ view model =
         [ div [ class "container" ]
             [ div [ class "row" ]
                 [ div [ class "col-12" ]
-                    [ div [ class "form-group" ]
-                        [ label [] [ text "HL7 Message" ]
-                        , textarea
-                            [ class "form-control"
-                            , onInput ChangeHl7
+                    [ Html.form []
+                        [ div [ class "form-group" ]
+                            [ label []
+                                [ text "HL7 Message"
+                                ]
+                            , textarea
+                                [ class "form-control"
+                                , onInput ChangeHl7
+                                , rows 8
+                                ]
+                                []
                             ]
-                            []
                         , button
                             [ class "btn btn-default float-right"
                             , onClick Send
                             , disabled (model.isConnected == False)
                             ]
-                            [ text "Send" ]
+                            [ text "Send"
+                            ]
                         ]
                     ]
                 ]
@@ -131,29 +137,32 @@ view model =
         , Html.footer [ class "footer" ]
             [ div [ class "container" ]
                 [ div [ class "row" ]
-                    [ div [ class "col-8 form-inline" ]
-                        [ input
-                            [ class "form-control"
-                            , placeholder "IP Address"
-                            , onInput ChangeDestinationIp
-                            , value model.destinationIp
+                    [ div [ class "col-8" ]
+                        [ div [ class "form-inline" ]
+                            [ input
+                                [ class "form-control"
+                                , placeholder "IP Address"
+                                , onInput ChangeDestinationIp
+                                , value model.destinationIp
+                                ]
+                                []
+                            , input
+                                [ class "form-control"
+                                , placeholder "Port"
+                                , onInput ChangeDestinationPort
+                                , value (getPortDisplay model.destinationPort)
+                                ]
+                                []
+                            , button
+                                [ class "btn btn-default"
+                                , onClick ToggleConnection
+                                ]
+                                [ text (getConnectButtonText model.isConnected)
+                                ]
                             ]
-                            []
-                        , input
-                            [ class "form-control"
-                            , placeholder "Port"
-                            , onInput ChangeDestinationPort
-                            , value (getPortDisplay model.destinationPort)
-                            ]
-                            []
-                        , button
-                            [ class "btn btn-default"
-                            , onClick ToggleConnection
-                            ]
-                            [ text (getConnectButtonText model.isConnected) ]
                         ]
-                    , div [ class "col float-right" ]
-                        [ span [] [ text model.connectionMessage ]
+                    , div [ class "col-4" ]
+                        [ label [ class "float-right" ] [ text model.connectionMessage ]
                         ]
                     ]
                 ]
