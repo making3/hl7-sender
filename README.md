@@ -1,6 +1,12 @@
 HL7 Sender
 ==========
 
+Desktop GUI tool for pasting and sending an HL7 message to a port. Mostly useful testing in-house systems or re-running individual messages.
+
+# Development
+
+This app is currently in development with very basic features. This is also an Electron & Elm learning project.
+
 # Installing
 
 - Node.js. Use NVM.
@@ -9,7 +15,7 @@ HL7 Sender
     npm i -g elm electron-prebuilt
 
     // Elm dependencies (not sure if required)
-    elm package install elm-lang/html 
+    elm package install elm-lang/html
 
     // Change detection / automatic reloading
     npm i -g chokidar-cli
@@ -31,7 +37,7 @@ HL7 Sender
     // Run electron
     electron main.js
 
-    // or 
+    // or
     npm run start
 
     // or build & watch for changes

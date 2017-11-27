@@ -8260,6 +8260,37 @@ var _elm_lang$html$Html_Events$Options = F2(
 		return {stopPropagation: a, preventDefault: b};
 	});
 
+var _user$project$Models$Model = F7(
+	function (a, b, c, d, e, f, g) {
+		return {route: a, isConnected: b, connectionMessage: c, destinationIp: d, destinationPort: e, hl7: f, controlCharacters: g};
+	});
+var _user$project$Models$ControlCharacters = F3(
+	function (a, b, c) {
+		return {startOfText: a, endOfText: b, endOfLine: c};
+	});
+var _user$project$Models$RouteControlCharacters = {ctor: 'RouteControlCharacters'};
+var _user$project$Models$RouteHome = {ctor: 'RouteHome'};
+var _user$project$Models$initialModel = {
+	route: _user$project$Models$RouteHome,
+	isConnected: false,
+	connectionMessage: 'Disconnected',
+	destinationIp: '127.0.0.1',
+	destinationPort: 1337,
+	hl7: '',
+	controlCharacters: {startOfText: 9, endOfText: 45, endOfLine: 35}
+};
+
+var _user$project$Msgs$UpdateEndOfLine = function (a) {
+	return {ctor: 'UpdateEndOfLine', _0: a};
+};
+var _user$project$Msgs$UpdateEndOfText = function (a) {
+	return {ctor: 'UpdateEndOfText', _0: a};
+};
+var _user$project$Msgs$UpdateStartOfText = function (a) {
+	return {ctor: 'UpdateStartOfText', _0: a};
+};
+var _user$project$Msgs$GoHome = {ctor: 'GoHome'};
+var _user$project$Msgs$EditControlCharacters = {ctor: 'EditControlCharacters'};
 var _user$project$Msgs$ChangeDestinationPort = function (a) {
 	return {ctor: 'ChangeDestinationPort', _0: a};
 };
@@ -8287,17 +8318,168 @@ var _user$project$Msgs$ValidPort = function (a) {
 };
 var _user$project$Msgs$ValidIp = {ctor: 'ValidIp'};
 
-var _user$project$Models$initialModel = {isConnected: false, connectionMessage: 'Disconnected', destinationIp: '127.0.0.1', destinationPort: 1337, hl7: ''};
-var _user$project$Models$Model = F5(
-	function (a, b, c, d, e) {
-		return {isConnected: a, connectionMessage: b, destinationIp: c, destinationPort: d, hl7: e};
-	});
-var _user$project$Models$ControlCharacters = F3(
-	function (a, b, c) {
-		return {startOfText: a, endOfText: b, endOfLine: c};
-	});
+var _user$project$ControlCharacters$view = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('form'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('form-input'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$label,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Start Of HL7'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$input,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('form-control'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onInput(_user$project$Msgs$UpdateStartOfText),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$value(
+											_elm_lang$core$Basics$toString(model.controlCharacters.startOfText)),
+										_1: {ctor: '[]'}
+									}
+								}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(
+									_elm_lang$core$Basics$toString(model.controlCharacters.startOfText)),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('form-input'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$label,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('End Of HL7'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$input,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('form-control'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onInput(_user$project$Msgs$UpdateEndOfText),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$value(
+												_elm_lang$core$Basics$toString(model.controlCharacters.endOfText)),
+											_1: {ctor: '[]'}
+										}
+									}
+								},
+								{ctor: '[]'}),
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('form-input'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$label,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('End Of Segment'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$input,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('form-control'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Events$onInput(_user$project$Msgs$UpdateEndOfLine),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$value(
+													_elm_lang$core$Basics$toString(model.controlCharacters.endOfLine)),
+												_1: {ctor: '[]'}
+											}
+										}
+									},
+									{ctor: '[]'}),
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$button,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('btn btn-default'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onClick(_user$project$Msgs$GoHome),
+									_1: {ctor: '[]'}
+								}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('Go Back'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
+				}
+			}
+		});
+};
 
-var _user$project$View$getConnectButtonText = function (isConnected) {
+var _user$project$Home_Main$getConnectButtonText = function (isConnected) {
 	var _p0 = isConnected;
 	if (_p0 === true) {
 		return 'Disconnect';
@@ -8305,10 +8487,10 @@ var _user$project$View$getConnectButtonText = function (isConnected) {
 		return 'Connect';
 	}
 };
-var _user$project$View$getPortDisplay = function (destinationPort) {
+var _user$project$Home_Main$getPortDisplay = function (destinationPort) {
 	return _elm_lang$core$Native_Utils.eq(destinationPort, 0) ? '' : _elm_lang$core$Basics$toString(destinationPort);
 };
-var _user$project$View$view = function (model) {
+var _user$project$Home_Main$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{ctor: '[]'},
@@ -8333,88 +8515,114 @@ var _user$project$View$view = function (model) {
 						{
 							ctor: '::',
 							_0: A2(
-								_elm_lang$html$Html$div,
+								_elm_lang$html$Html$button,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('col-12'),
+									_0: _elm_lang$html$Html_Events$onClick(_user$project$Msgs$EditControlCharacters),
 									_1: {ctor: '[]'}
 								},
 								{
 									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$div,
-										{ctor: '[]'},
-										{
-											ctor: '::',
-											_0: A2(
-												_elm_lang$html$Html$div,
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$class('form-group'),
-													_1: {ctor: '[]'}
-												},
-												{
-													ctor: '::',
-													_0: A2(
-														_elm_lang$html$Html$label,
-														{ctor: '[]'},
-														{
-															ctor: '::',
-															_0: _elm_lang$html$Html$text('HL7 Message'),
-															_1: {ctor: '[]'}
-														}),
-													_1: {
-														ctor: '::',
-														_0: A2(
-															_elm_lang$html$Html$textarea,
-															{
-																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$class('form-control'),
-																_1: {
-																	ctor: '::',
-																	_0: _elm_lang$html$Html_Events$onInput(_user$project$Msgs$ChangeHl7),
-																	_1: {
-																		ctor: '::',
-																		_0: _elm_lang$html$Html_Attributes$rows(8),
-																		_1: {ctor: '[]'}
-																	}
-																}
-															},
-															{ctor: '[]'}),
-														_1: {ctor: '[]'}
-													}
-												}),
-											_1: {
-												ctor: '::',
-												_0: A2(
-													_elm_lang$html$Html$button,
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$class('btn btn-default float-right'),
-														_1: {
-															ctor: '::',
-															_0: _elm_lang$html$Html_Events$onClick(_user$project$Msgs$Send),
-															_1: {
-																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$disabled(
-																	_elm_lang$core$Native_Utils.eq(model.isConnected, false)),
-																_1: {ctor: '[]'}
-															}
-														}
-													},
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html$text('Send'),
-														_1: {ctor: '[]'}
-													}),
-												_1: {ctor: '[]'}
-											}
-										}),
+									_0: _elm_lang$html$Html$text('EditCharacters'),
 									_1: {ctor: '[]'}
 								}),
 							_1: {ctor: '[]'}
 						}),
-					_1: {ctor: '[]'}
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('row'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$div,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('col-12'),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$div,
+											{ctor: '[]'},
+											{
+												ctor: '::',
+												_0: A2(
+													_elm_lang$html$Html$div,
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$class('form-group'),
+														_1: {ctor: '[]'}
+													},
+													{
+														ctor: '::',
+														_0: A2(
+															_elm_lang$html$Html$label,
+															{ctor: '[]'},
+															{
+																ctor: '::',
+																_0: _elm_lang$html$Html$text('HL7 Message'),
+																_1: {ctor: '[]'}
+															}),
+														_1: {
+															ctor: '::',
+															_0: A2(
+																_elm_lang$html$Html$textarea,
+																{
+																	ctor: '::',
+																	_0: _elm_lang$html$Html_Attributes$class('form-control'),
+																	_1: {
+																		ctor: '::',
+																		_0: _elm_lang$html$Html_Events$onInput(_user$project$Msgs$ChangeHl7),
+																		_1: {
+																			ctor: '::',
+																			_0: _elm_lang$html$Html_Attributes$rows(8),
+																			_1: {ctor: '[]'}
+																		}
+																	}
+																},
+																{ctor: '[]'}),
+															_1: {ctor: '[]'}
+														}
+													}),
+												_1: {
+													ctor: '::',
+													_0: A2(
+														_elm_lang$html$Html$button,
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$class('btn btn-default float-right'),
+															_1: {
+																ctor: '::',
+																_0: _elm_lang$html$Html_Events$onClick(_user$project$Msgs$Send),
+																_1: {
+																	ctor: '::',
+																	_0: _elm_lang$html$Html_Attributes$disabled(
+																		_elm_lang$core$Native_Utils.eq(model.isConnected, false)),
+																	_1: {ctor: '[]'}
+																}
+															}
+														},
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html$text('Send'),
+															_1: {ctor: '[]'}
+														}),
+													_1: {ctor: '[]'}
+												}
+											}),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
 				}),
 			_1: {
 				ctor: '::',
@@ -8506,7 +8714,7 @@ var _user$project$View$view = function (model) {
 																				_1: {
 																					ctor: '::',
 																					_0: _elm_lang$html$Html_Attributes$value(
-																						_user$project$View$getPortDisplay(model.destinationPort)),
+																						_user$project$Home_Main$getPortDisplay(model.destinationPort)),
 																					_1: {ctor: '[]'}
 																				}
 																			}
@@ -8530,7 +8738,7 @@ var _user$project$View$view = function (model) {
 																	{
 																		ctor: '::',
 																		_0: _elm_lang$html$Html$text(
-																			_user$project$View$getConnectButtonText(model.isConnected)),
+																			_user$project$Home_Main$getConnectButtonText(model.isConnected)),
 																		_1: {ctor: '[]'}
 																	}),
 																_1: {ctor: '[]'}
@@ -8576,6 +8784,25 @@ var _user$project$View$view = function (model) {
 		});
 };
 
+var _user$project$View$page = function (model) {
+	var _p0 = model.route;
+	if (_p0.ctor === 'RouteHome') {
+		return _user$project$Home_Main$view(model);
+	} else {
+		return _user$project$ControlCharacters$view(model);
+	}
+};
+var _user$project$View$view = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _user$project$View$page(model),
+			_1: {ctor: '[]'}
+		});
+};
+
 var _user$project$Validations$validatePort = function (portStr) {
 	if (_elm_lang$core$Native_Utils.eq(portStr, '')) {
 		return _user$project$Msgs$EmptyPort;
@@ -8592,6 +8819,30 @@ var _user$project$Validations$validateIp = function (ip) {
 	return _user$project$Msgs$ValidIp;
 };
 
+var _user$project$Update$getCharStr = function (i) {
+	return _elm_lang$core$String$fromChar(
+		_elm_lang$core$Char$fromCode(i));
+};
+var _user$project$Update$getWrappedHl7 = function (model) {
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		_user$project$Update$getCharStr(model.controlCharacters.startOfText),
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			model.hl7,
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				_user$project$Update$getCharStr(model.controlCharacters.endOfLine),
+				_user$project$Update$getCharStr(model.controlCharacters.endOfText))));
+};
+var _user$project$Update$getInt = function (str) {
+	var _p0 = _elm_lang$core$String$toInt(str);
+	if (_p0.ctor === 'Ok') {
+		return _p0._0;
+	} else {
+		return 0;
+	}
+};
 var _user$project$Update$connect = _elm_lang$core$Native_Platform.outgoingPort(
 	'connect',
 	function (v) {
@@ -8609,26 +8860,26 @@ var _user$project$Update$send = _elm_lang$core$Native_Platform.outgoingPort(
 	});
 var _user$project$Update$update = F2(
 	function (msg, model) {
-		var _p0 = msg;
-		switch (_p0.ctor) {
+		var _p1 = msg;
+		switch (_p1.ctor) {
 			case 'ChangeDestinationIp':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{destinationIp: _p0._0}),
+						{destinationIp: _p1._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'ChangeDestinationPort':
-				var _p1 = _user$project$Validations$validatePort(_p0._0);
-				switch (_p1.ctor) {
+				var _p2 = _user$project$Validations$validatePort(_p1._0);
+				switch (_p2.ctor) {
 					case 'ValidPort':
 						return {
 							ctor: '_Tuple2',
 							_0: _elm_lang$core$Native_Utils.update(
 								model,
 								{
-									destinationPort: A3(_elm_lang$core$Basics$clamp, 1, 65535, _p1._0)
+									destinationPort: A3(_elm_lang$core$Basics$clamp, 1, 65535, _p2._0)
 								}),
 							_1: _elm_lang$core$Platform_Cmd$none
 						};
@@ -8648,18 +8899,19 @@ var _user$project$Update$update = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{hl7: _p0._0}),
+						{hl7: _p1._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'Send':
 				return {
 					ctor: '_Tuple2',
 					_0: model,
-					_1: _user$project$Update$send(model.hl7)
+					_1: _user$project$Update$send(
+						_user$project$Update$getWrappedHl7(model))
 				};
 			case 'ToggleConnection':
-				var _p2 = model.isConnected;
-				if (_p2 === false) {
+				var _p3 = model.isConnected;
+				if (_p3 === false) {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
@@ -8692,16 +8944,74 @@ var _user$project$Update$update = F2(
 						model,
 						{
 							isConnected: false,
-							connectionMessage: A2(_elm_lang$core$Basics_ops['++'], 'Disconnected: ', _p0._0)
+							connectionMessage: A2(_elm_lang$core$Basics_ops['++'], 'Disconnected: ', _p1._0)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			default:
+			case 'Disconnected':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{isConnected: false, connectionMessage: 'Disconnected'}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'EditControlCharacters':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{route: _user$project$Models$RouteControlCharacters}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'GoHome':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{route: _user$project$Models$RouteHome}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'UpdateStartOfText':
+				var oldChars = model.controlCharacters;
+				var newChars = _elm_lang$core$Native_Utils.update(
+					oldChars,
+					{
+						startOfText: _user$project$Update$getInt(_p1._0)
+					});
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{controlCharacters: newChars}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'UpdateEndOfText':
+				var oldChars = model.controlCharacters;
+				var newChars = _elm_lang$core$Native_Utils.update(
+					oldChars,
+					{
+						endOfText: _user$project$Update$getInt(_p1._0)
+					});
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{controlCharacters: newChars}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				var oldChars = model.controlCharacters;
+				var newChars = _elm_lang$core$Native_Utils.update(
+					oldChars,
+					{
+						endOfLine: _user$project$Update$getInt(_p1._0)
+					});
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{controlCharacters: newChars}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 		}

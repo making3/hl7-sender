@@ -4,89 +4,22 @@ import Html exposing (Html, Attribute, program, div, span, input, button, text, 
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onClick)
 import Msgs exposing (Msg(..))
-import Models exposing (Model)
+import Models exposing (Model, Route(..))
+import ControlCharacters
+import Home.Main
 
 
 view : Model -> Html Msg
 view model =
     div []
-        [ div [ class "container" ]
-            [ div [ class "row" ]
-                [ div [ class "col-12" ]
-                    [ div []
-                        [ div [ class "form-group" ]
-                            [ label []
-                                [ text "HL7 Message"
-                                ]
-                            , textarea
-                                [ class "form-control"
-                                , onInput ChangeHl7
-                                , rows 8
-                                ]
-                                []
-                            ]
-                        , button
-                            [ class "btn btn-default float-right"
-                            , onClick Send
-                            , disabled (model.isConnected == False)
-                            ]
-                            [ text "Send"
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        , Html.footer [ class "footer" ]
-            [ div [ class "container" ]
-                [ div [ class "row" ]
-                    [ div [ class "col-8" ]
-                        [ div [ class "form-inline" ]
-                            [ input
-                                [ class "form-control mr-sm-2"
-                                , placeholder "IP Address"
-                                , onInput ChangeDestinationIp
-                                , readonly model.isConnected
-                                , value model.destinationIp
-                                ]
-                                []
-                            , input
-                                [ class "form-control mr-sm-2"
-                                , placeholder "Port"
-                                , readonly model.isConnected
-                                , onInput ChangeDestinationPort
-                                , value (getPortDisplay model.destinationPort)
-                                ]
-                                []
-                            , button
-                                [ class "btn btn-default"
-                                , onClick ToggleConnection
-                                ]
-                                [ text (getConnectButtonText model.isConnected)
-                                ]
-                            ]
-                        ]
-                    , div [ class "col-4" ]
-                        [ label [ class "float-right" ] [ text model.connectionMessage ]
-                        ]
-                    ]
-                ]
-            ]
-        ]
+        [ page model ]
 
 
-getPortDisplay : Int -> String
-getPortDisplay destinationPort =
-    if destinationPort == 0 then
-        ""
-    else
-        toString destinationPort
+page : Model -> Html Msg
+page model =
+    case model.route of
+        RouteHome ->
+            Home.Main.view model
 
-
-getConnectButtonText : Bool -> String
-getConnectButtonText isConnected =
-    case isConnected of
-        True ->
-            "Disconnect"
-
-        False ->
-            "Connect"
+        RouteControlCharacters ->
+            ControlCharacters.view model

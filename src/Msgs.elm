@@ -1,5 +1,7 @@
 module Msgs exposing (..)
 
+import Models exposing (ControlCharacters)
+
 
 type Msg
     = ToggleConnection
@@ -10,6 +12,12 @@ type Msg
     | ChangeHl7 String
     | ChangeDestinationIp String
     | ChangeDestinationPort String
+    | EditControlCharacters
+      -- | SaveControlCharacters
+    | GoHome
+    | UpdateStartOfText String
+    | UpdateEndOfText String
+    | UpdateEndOfLine String
 
 
 type PortValidation

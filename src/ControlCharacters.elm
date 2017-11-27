@@ -1,14 +1,44 @@
 module ControlCharacters exposing (..)
 
-import Html exposing (div)
-import Html.Attributes exposing (class)
-import Models exposing (ControlCharacters)
+import Html exposing (Html, div, input, text, button, label)
+import Html.Attributes exposing (class, value)
+import Html.Events exposing (onClick, onInput)
+import Msgs exposing (Msg(..))
+import Models exposing (Model)
 
 
-view : ControlCharacters -> Html Msg
-view characters =
-    div []
-        [ input [] [ text characters.startOfText ]
-        , input [] [ text characters.endOfText ]
-        , input [] [ text characters.endOfLine ]
+view : Model -> Html Msg
+view model =
+    div [ class "form" ]
+        [ div [ class "form-input" ]
+            [ label [] [ text "Start Of HL7" ]
+            , input
+                [ class "form-control"
+                , onInput UpdateStartOfText
+                , value (toString model.controlCharacters.startOfText)
+                ]
+                [ text (toString model.controlCharacters.startOfText) ]
+            ]
+        , div [ class "form-input" ]
+            [ label [] [ text "End Of HL7" ]
+            , input
+                [ class "form-control"
+                , onInput UpdateEndOfText
+                , value (toString model.controlCharacters.endOfText)
+                ]
+                []
+            ]
+        , div [ class "form-input" ]
+            [ label [] [ text "End Of Segment" ]
+            , input
+                [ class "form-control"
+                , onInput UpdateEndOfLine
+                , value (toString model.controlCharacters.endOfLine)
+                ]
+                []
+            ]
+        , button [ class "btn btn-default", onClick GoHome ] [ text "Go Back" ]
+
+        -- TODO: Re-enable once some form of saving happens
+        -- , button [ class "btn btn-primary", onClick SaveControlCharacters ] [ text "Save" ]
         ]

@@ -1,8 +1,9 @@
 port module Update exposing (..)
 
 import Msgs exposing (..)
-import Models exposing (Model)
+import Models exposing (Model, Route(..), ControlCharacters)
 import Validations exposing (..)
+import Char
 
 
 port connect : ( String, Int ) -> Cmd msg
@@ -35,7 +36,7 @@ update msg model =
             ( { model | hl7 = newHl7 }, Cmd.none )
 
         Send ->
-            ( model, send model.hl7 )
+            ( model, send (getWrappedHl7 model) )
 
         ToggleConnection ->
             case model.isConnected of
@@ -54,3 +55,65 @@ update msg model =
 
         Disconnected _ ->
             ( { model | isConnected = False, connectionMessage = "Disconnected" }, Cmd.none )
+
+        EditControlCharacters ->
+            ( { model | route = RouteControlCharacters }, Cmd.none )
+
+        -- SaveControlCharacters ->
+        --     ( { model | controlCharacters = model.ControlCharacters, route = RouteHome }, Cmd.none )
+        GoHome ->
+            ( { model | route = RouteHome }, Cmd.none )
+
+        UpdateStartOfText newSot ->
+            let
+                oldChars =
+                    model.controlCharacters
+
+                newChars =
+                    { oldChars | startOfText = getInt newSot }
+            in
+                ( { model | controlCharacters = newChars }, Cmd.none )
+
+        UpdateEndOfText newEot ->
+            let
+                oldChars =
+                    model.controlCharacters
+
+                newChars =
+                    { oldChars | endOfText = getInt newEot }
+            in
+                ( { model | controlCharacters = newChars }, Cmd.none )
+
+        UpdateEndOfLine newEol ->
+            let
+                oldChars =
+                    model.controlCharacters
+
+                newChars =
+                    { oldChars | endOfLine = getInt newEol }
+            in
+                ( { model | controlCharacters = newChars }, Cmd.none )
+
+
+getInt : String -> Int
+getInt str =
+    -- TODO: Error handling (Err msg)
+    case String.toInt str of
+        Ok i ->
+            i
+
+        Err _ ->
+            0
+
+
+getWrappedHl7 : Model -> String
+getWrappedHl7 model =
+    getCharStr model.controlCharacters.startOfText
+        ++ model.hl7
+        ++ getCharStr model.controlCharacters.endOfLine
+        ++ getCharStr model.controlCharacters.endOfText
+
+
+getCharStr : Int -> String
+getCharStr i =
+    String.fromChar (Char.fromCode i)
