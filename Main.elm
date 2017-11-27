@@ -1,29 +1,36 @@
-module Main exposing (..)
+port module Main exposing (..)
 
-import Html exposing (Html, Attribute, div, span, input, button, text, label)
+import Html exposing (Html, Attribute, program, div, span, input, button, text, label)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onClick)
 
 
+main : Program Never Model Msg
 main =
-    Html.beginnerProgram { model = model, view = view, update = update }
+    program
+        { init = init
+        , view = view
+        , update = update
+        , subscriptions = subscriptions
+        }
+
+
+
+-- MODEL
 
 
 type alias Model =
     { content : String
-    , status : String
+    , isConnected : Bool
+    , connectionMessage : String
     , destinationIp : String
     , destinationPort : Int
     }
 
 
-model : Model
-model =
-    { content = ""
-    , status = "Disconnected"
-    , destinationIp = ""
-    , destinationPort = 0
-    }
+init : ( Model, Cmd Msg )
+init =
+    ( Model "" False "Disconnected" "127.0.0.1" 1337, Cmd.none )
 
 
 type PortValidation
@@ -32,35 +39,63 @@ type PortValidation
     | InvalidPort
 
 
+type IpValidation
+    = ValidIp
+
+
 type Msg
     = Change String
-    | Connect
+    | ToggleConnection
+    | Connected String
+    | ConnectionError String
+    | Disconnected String
     | ChangeDestinationIp String
     | ChangeDestinationPort String
 
 
-update : Msg -> Model -> Model
+port connect : ( String, Int ) -> Cmd msg
+
+
+port disconnect : String -> Cmd msg
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Change newContent ->
-            { model | content = newContent }
+            ( { model | content = newContent }, Cmd.none )
 
         ChangeDestinationIp newIp ->
-            { model | destinationIp = "nopelol" }
+            ( { model | destinationIp = newIp }, Cmd.none )
 
         ChangeDestinationPort newPort ->
-            case getValidPort newPort of
+            case validatePort newPort of
                 ValidPort validatedPort ->
-                    { model | destinationPort = clamp 1 65535 validatedPort }
+                    ( { model | destinationPort = clamp 1 65535 validatedPort }, Cmd.none )
 
                 EmptyPort ->
-                    { model | destinationPort = 0 }
+                    ( { model | destinationPort = 0 }, Cmd.none )
 
                 InvalidPort ->
-                    model
+                    ( model, Cmd.none )
 
-        Connect ->
-            { model | status = "Connected to " ++ (toString model.destinationPort) }
+        ToggleConnection ->
+            case model.isConnected of
+                False ->
+                    ( { model | connectionMessage = "Connecting" }, connect ( model.destinationIp, model.destinationPort ) )
+
+                True ->
+                    ( { model | connectionMessage = "Disconnecting..." }, disconnect "" )
+
+        Connected _ ->
+            ( { model | isConnected = True, connectionMessage = "Connected" }, Cmd.none )
+
+        ConnectionError errorMsg ->
+            -- TODO: Write error somewhere..
+            ( { model | isConnected = False, connectionMessage = ("Disconnected: " ++ errorMsg) }, Cmd.none )
+
+        Disconnected _ ->
+            ( { model | isConnected = False, connectionMessage = "Disconnected" }, Cmd.none )
 
 
 view : Model -> Html Msg
@@ -74,14 +109,14 @@ view model =
                 , div [] [ text (String.reverse model.content) ]
                 ]
             , div [ class "row" ]
-                [ input [ placeholder "IP Address", onInput ChangeDestinationIp ] [ text model.destinationIp ]
-                , input [ placeholder "Port", onInput ChangeDestinationPort, value (getPort model.destinationPort) ] []
-                , button [ class "btn btn-default", onClick Connect ] [ text "Connect" ]
+                [ input [ placeholder "IP Address", onInput ChangeDestinationIp, value model.destinationIp ] []
+                , input [ placeholder "Port", onInput ChangeDestinationPort, value (getPortDisplay model.destinationPort) ] []
+                , button [ class "btn btn-default", onClick ToggleConnection ] [ text (getConnectButtonText model.isConnected) ]
                 ]
             ]
         , Html.footer [ class "footer" ]
             [ div [ class "container" ]
-                [ span [] [ text model.status ]
+                [ span [] [ text model.connectionMessage ]
                 ]
             ]
         ]
@@ -91,8 +126,13 @@ view model =
 -- TODO: Validate port range (1-65535)
 
 
-getValidPort : String -> PortValidation
-getValidPort portStr =
+validateIp : String -> IpValidation
+validateIp ip =
+    ValidIp
+
+
+validatePort : String -> PortValidation
+validatePort portStr =
     if portStr == "" then
         EmptyPort
     else
@@ -104,9 +144,42 @@ getValidPort portStr =
                 InvalidPort
 
 
-getPort : Int -> String
-getPort destinationPort =
+getPortDisplay : Int -> String
+getPortDisplay destinationPort =
     if destinationPort == 0 then
         ""
     else
         toString destinationPort
+
+
+getConnectButtonText : Bool -> String
+getConnectButtonText isConnected =
+    case isConnected of
+        True ->
+            "Disconnect"
+
+        False ->
+            "Connect"
+
+
+
+-- SUBS
+-- Since Elm doesn't allow functions without parameters, just use empty strings
+
+
+port connected : (String -> msg) -> Sub msg
+
+
+port connectionError : (String -> msg) -> Sub msg
+
+
+port disconnected : (String -> msg) -> Sub msg
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.batch
+        [ connected Connected
+        , connectionError ConnectionError
+        , disconnected Disconnected
+        ]

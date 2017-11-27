@@ -9,7 +9,7 @@ let mainWindow;
 
 app.on('ready', createWindow);
 
-chokidar.watch([ 'ports.js', 'index.html', 'elm.js' ]).on('change', () => {
+chokidar.watch([ 'ports.js', 'index.html', 'elm.js', './lib/connection.js' ]).on('change', () => {
   if (mainWindow) {
     mainWindow.reload();
   }
