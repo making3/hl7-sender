@@ -12,7 +12,7 @@ view model =
     div []
         [ div [ class "container" ]
             [ div [ class "row" ]
-                [ button [ onClick EditControlCharacters ] [ text "EditCharacters" ]
+                [ button [ class "btn btn-secondary float-right", onClick EditControlCharacters ] [ text "EditCharacters" ]
                 ]
             , div [ class "row" ]
                 [ div [ class "col-12" ]
@@ -29,7 +29,7 @@ view model =
                                 []
                             ]
                         , button
-                            [ class "btn btn-default float-right"
+                            [ class "btn btn-primary float-right"
                             , onClick Send
                             , disabled (model.isConnected == False)
                             ]
@@ -61,7 +61,7 @@ view model =
                                 ]
                                 []
                             , button
-                                [ class "btn btn-default"
+                                [ class "btn btn-primary"
                                 , onClick ToggleConnection
                                 ]
                                 [ text (getConnectButtonText model.isConnected)
