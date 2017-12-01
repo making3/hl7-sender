@@ -3,6 +3,7 @@ port module Update exposing (..)
 import Msgs exposing (..)
 import Models exposing (Model, Route(..), ControlCharacters)
 import Validations exposing (..)
+import Menu exposing (..)
 import Char
 
 
@@ -57,12 +58,7 @@ update msg model =
             ( { model | isConnected = False, connectionMessage = "Disconnected" }, Cmd.none )
 
         MenuClick menuItem ->
-            case menuItem of
-                "edit-control-characters" ->
-                    ( { model | route = RouteControlCharacters }, Cmd.none )
-
-                _ ->
-                    ( { model | route = RouteHome }, Cmd.none )
+            menuClick model menuItem
 
         -- SaveControlCharacters ->
         --     ( { model | controlCharacters = model.ControlCharacters, route = RouteHome }, Cmd.none )
