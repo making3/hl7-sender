@@ -31,6 +31,9 @@ init =
 -- Since Elm doesn't allow functions without parameters, just use empty strings
 
 
+port menuClick : (String -> msg) -> Sub msg
+
+
 port connected : (String -> msg) -> Sub msg
 
 
@@ -43,7 +46,8 @@ port disconnected : (String -> msg) -> Sub msg
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ connected Connected
+        [ menuClick MenuClick
+        , connected Connected
         , connectionError ConnectionError
         , disconnected Disconnected
         ]

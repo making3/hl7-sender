@@ -71,7 +71,10 @@ function getMenu() {
             label: 'Settings',
             submenu: [
                 {
-                    label: 'Special Characters'
+                    label: 'Control Characters',
+                    click: () => {
+                        mainWindow.webContents.send('menu-click', 'edit-control-characters');
+                    }
                 }
             ]
         }

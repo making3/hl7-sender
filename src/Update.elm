@@ -56,8 +56,13 @@ update msg model =
         Disconnected _ ->
             ( { model | isConnected = False, connectionMessage = "Disconnected" }, Cmd.none )
 
-        EditControlCharacters ->
-            ( { model | route = RouteControlCharacters }, Cmd.none )
+        MenuClick menuItem ->
+            case menuItem of
+                "edit-control-characters" ->
+                    ( { model | route = RouteControlCharacters }, Cmd.none )
+
+                _ ->
+                    ( { model | route = RouteHome }, Cmd.none )
 
         -- SaveControlCharacters ->
         --     ( { model | controlCharacters = model.ControlCharacters, route = RouteHome }, Cmd.none )

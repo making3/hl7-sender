@@ -12,7 +12,7 @@ type Msg
     | ChangeHl7 String
     | ChangeDestinationIp String
     | ChangeDestinationPort String
-    | EditControlCharacters
+    | MenuClick String
       -- | SaveControlCharacters
     | GoHome
     | UpdateStartOfText String
