@@ -1,13 +1,15 @@
-module ControlCharacters exposing (..)
+module Settings.ControlCharacters.View.ControlCharacters exposing (..)
 
 import Html exposing (Html, div, input, text, button, label)
 import Html.Attributes exposing (class, value)
 import Html.Events exposing (onClick, onInput)
-import Msgs exposing (Msg(..))
-import Models exposing (Model)
+import Msg as Main exposing (..)
+import Route.Msg as Route exposing (..)
+import Settings.ControlCharacters.Model as ControlCharacters
+import Settings.ControlCharacters.Msg exposing (..)
 
 
-view : Model -> Html Msg
+view : ControlCharacters.Model -> Html Main.Msg
 view model =
     div [ class "container" ]
         [ div [ class "row" ]
@@ -16,17 +18,17 @@ view model =
                     [ label [] [ text "Start Of HL7" ]
                     , input
                         [ class "form-control"
-                        , onInput UpdateStartOfText
-                        , value (toString model.controlCharacters.startOfText)
+                        , onInput (MsgForControlCharacters << UpdateStartOfText)
+                        , value (toString model.startOfText)
                         ]
-                        [ text (toString model.controlCharacters.startOfText) ]
+                        [ text (toString model.startOfText) ]
                     ]
                 , div [ class "form-input" ]
                     [ label [] [ text "End Of HL7" ]
                     , input
                         [ class "form-control"
-                        , onInput UpdateEndOfText
-                        , value (toString model.controlCharacters.endOfText)
+                        , onInput (MsgForControlCharacters << UpdateEndOfText)
+                        , value (toString model.endOfText)
                         ]
                         []
                     ]
@@ -34,12 +36,12 @@ view model =
                     [ label [] [ text "End Of Segment" ]
                     , input
                         [ class "form-control"
-                        , onInput UpdateEndOfLine
-                        , value (toString model.controlCharacters.endOfLine)
+                        , onInput (MsgForControlCharacters << UpdateEndOfLine)
+                        , value (toString model.endOfLine)
                         ]
                         []
                     ]
-                , button [ class "btn btn-secondary", onClick GoHome ] [ text "Go Back" ]
+                , button [ class "btn btn-secondary", onClick (MsgForRoute Route.GoHome) ] [ text "Go Back" ]
 
                 -- TODO: Re-enable once some form of saving happens
                 -- , button [ class "btn btn-primary", onClick SaveControlCharacters ] [ text "Save" ]

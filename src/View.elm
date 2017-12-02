@@ -3,23 +3,25 @@ module View exposing (..)
 import Html exposing (Html, Attribute, program, div, span, input, button, text, label, textarea)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onClick)
-import Msgs exposing (Msg(..))
-import Models exposing (Model, Route(..))
-import ControlCharacters
-import Home.Main
+import Msg exposing (Msg(..))
+import Model as Main exposing (Model)
+import Home.View.Home as Home
+import Home.Model exposing (Model)
+import Route.Model as Route exposing (Route)
+import Settings.ControlCharacters.View.ControlCharacters as ControlCharacters
 
 
-view : Model -> Html Msg
+view : Main.Model -> Html Msg
 view model =
     div []
         [ page model ]
 
 
-page : Model -> Html Msg
+page : Main.Model -> Html Msg
 page model =
     case model.route of
-        RouteHome ->
-            Home.Main.view model
+        Route.RouteHome ->
+            Home.view model
 
-        RouteControlCharacters ->
-            ControlCharacters.view model
+        Route.RouteControlCharacters ->
+            ControlCharacters.view model.controlCharacters

@@ -1,13 +1,16 @@
-module Home.Main exposing (..)
+module Home.View.Home exposing (..)
 
 import Html exposing (Html, Attribute, program, div, span, input, button, text, label, textarea)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onClick)
-import Msgs exposing (Msg(..))
-import Models exposing (Model)
+import Msg as Main exposing (..)
+import Model as Main
+import Home.Model as Home
+import Home.Msg as Home exposing (..)
+import Connection.Msg exposing (..)
 
 
-view : Model -> Html Msg
+view : Main.Model -> Html Main.Msg
 view model =
     div []
         [ div [ class "container" ]
@@ -20,15 +23,15 @@ view model =
                                 ]
                             , textarea
                                 [ class "form-control"
-                                , onInput ChangeHl7
+                                , onInput (MsgForHome << ChangeHl7)
                                 , rows 8
                                 ]
                                 []
                             ]
                         , button
                             [ class "btn btn-primary float-right"
-                            , onClick Send
-                            , disabled (model.isConnected == False)
+                            , onClick (MsgForConnection Send)
+                            , disabled (model.connection.isConnected == False)
                             ]
                             [ text "Send"
                             ]
@@ -44,29 +47,29 @@ view model =
                             [ input
                                 [ class "form-control mr-sm-2"
                                 , placeholder "IP Address"
-                                , onInput ChangeDestinationIp
-                                , readonly model.isConnected
-                                , value model.destinationIp
+                                , onInput (MsgForConnection << ChangeDestinationIp)
+                                , readonly model.connection.isConnected
+                                , value model.connection.destinationIp
                                 ]
                                 []
                             , input
                                 [ class "form-control mr-sm-2"
                                 , placeholder "Port"
-                                , readonly model.isConnected
-                                , onInput ChangeDestinationPort
-                                , value (getPortDisplay model.destinationPort)
+                                , readonly model.connection.isConnected
+                                , onInput (MsgForConnection << ChangeDestinationPort)
+                                , value (getPortDisplay model.connection.destinationPort)
                                 ]
                                 []
                             , button
                                 [ class "btn btn-primary"
-                                , onClick ToggleConnection
+                                , onClick (MsgForConnection ToggleConnection)
                                 ]
-                                [ text (getConnectButtonText model.isConnected)
+                                [ text (getConnectButtonText model.connection.isConnected)
                                 ]
                             ]
                         ]
                     , div [ class "col-4" ]
-                        [ label [ class "float-right" ] [ text model.connectionMessage ]
+                        [ label [ class "float-right" ] [ text model.connection.connectionMessage ]
                         ]
                     ]
                 ]

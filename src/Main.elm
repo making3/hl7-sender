@@ -1,18 +1,20 @@
 port module Main exposing (..)
 
 import Html exposing (program)
-import Msgs exposing (Msg(..))
-import Models exposing (Model, initialModel)
+import Msg as Main exposing (Msg(..))
+import Model as Main exposing (Model, initialModel)
 import View exposing (view)
-import Update exposing (update)
+import Update exposing (updateWithCmd)
+import Route.Msg as Route exposing (..)
+import Connection.Msg as Connection exposing (..)
 
 
-main : Program Never Model Msg
+main : Program Never Model Main.Msg
 main =
     program
         { init = init
         , view = view
-        , update = update
+        , update = updateWithCmd
         , subscriptions = subscriptions
         }
 
@@ -21,7 +23,7 @@ main =
 -- MODEL
 
 
-init : ( Model, Cmd Msg )
+init : ( Model, Cmd Main.Msg )
 init =
     ( initialModel, Cmd.none )
 
@@ -43,11 +45,15 @@ port connectionError : (String -> msg) -> Sub msg
 port disconnected : (String -> msg) -> Sub msg
 
 
-subscriptions : Model -> Sub Msg
+
+-- TODO: Re-add subscriptiosn
+
+
+subscriptions : Model -> Sub Main.Msg
 subscriptions model =
     Sub.batch
-        [ menuClick MenuClick
-        , connected Connected
-        , connectionError ConnectionError
-        , disconnected Disconnected
+        [ menuClick (MsgForRoute << MenuClick)
+        , connected (MsgForConnection << Connected)
+        , connectionError (MsgForConnection << ConnectionError)
+        , disconnected (MsgForConnection << Disconnected)
         ]

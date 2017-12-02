@@ -1,6 +1,4 @@
-module Msgs exposing (..)
-
-import Models exposing (ControlCharacters)
+module Connection.Msg exposing (..)
 
 
 type Msg
@@ -9,15 +7,8 @@ type Msg
     | Connected String
     | ConnectionError String
     | Disconnected String
-    | ChangeHl7 String
     | ChangeDestinationIp String
     | ChangeDestinationPort String
-    | MenuClick String
-      -- | SaveControlCharacters
-    | GoHome
-    | UpdateStartOfText String
-    | UpdateEndOfText String
-    | UpdateEndOfLine String
 
 
 type PortValidation

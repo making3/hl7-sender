@@ -1,120 +1,30 @@
-port module Update exposing (..)
+module Update exposing (..)
 
-import Msgs exposing (..)
-import Models exposing (Model, Route(..), ControlCharacters)
-import Validations exposing (..)
-import Menu exposing (..)
-import Char
-
-
-port connect : ( String, Int ) -> Cmd msg
+import Msg exposing (..)
+import Model exposing (Model)
+import Home.Update as Home
+import Route.Update as Route
+import Connection.Update as Connection
+import Settings.ControlCharacters.Update as ControlCharacters
 
 
-port disconnect : String -> Cmd msg
+updateWithCmd : Msg -> Model -> ( Model, Cmd Msg )
+updateWithCmd msg model =
+    ( update msg model, updateCmd msg model )
 
 
-port send : String -> Cmd msg
-
-
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> Model -> Model
 update msg model =
-    case msg of
-        ChangeDestinationIp newIp ->
-            ( { model | destinationIp = newIp }, Cmd.none )
-
-        ChangeDestinationPort newPort ->
-            case validatePort newPort of
-                ValidPort validatedPort ->
-                    ( { model | destinationPort = clamp 1 65535 validatedPort }, Cmd.none )
-
-                EmptyPort ->
-                    ( { model | destinationPort = 0 }, Cmd.none )
-
-                InvalidPort ->
-                    ( model, Cmd.none )
-
-        ChangeHl7 newHl7 ->
-            ( { model | hl7 = newHl7 }, Cmd.none )
-
-        Send ->
-            ( model, send (getWrappedHl7 model) )
-
-        ToggleConnection ->
-            case model.isConnected of
-                False ->
-                    ( { model | connectionMessage = "Connecting" }, connect ( model.destinationIp, model.destinationPort ) )
-
-                True ->
-                    ( { model | connectionMessage = "Disconnecting..." }, disconnect "" )
-
-        Connected _ ->
-            ( { model | isConnected = True, connectionMessage = "Connected" }, Cmd.none )
-
-        ConnectionError errorMsg ->
-            -- TODO: Write error somewhere..
-            ( { model | isConnected = False, connectionMessage = ("Disconnected: " ++ errorMsg) }, Cmd.none )
-
-        Disconnected _ ->
-            ( { model | isConnected = False, connectionMessage = "Disconnected" }, Cmd.none )
-
-        MenuClick menuItem ->
-            menuClick model menuItem
-
-        -- SaveControlCharacters ->
-        --     ( { model | controlCharacters = model.ControlCharacters, route = RouteHome }, Cmd.none )
-        GoHome ->
-            ( { model | route = RouteHome }, Cmd.none )
-
-        UpdateStartOfText newSot ->
-            let
-                oldChars =
-                    model.controlCharacters
-
-                newChars =
-                    { oldChars | startOfText = getInt newSot }
-            in
-                ( { model | controlCharacters = newChars }, Cmd.none )
-
-        UpdateEndOfText newEot ->
-            let
-                oldChars =
-                    model.controlCharacters
-
-                newChars =
-                    { oldChars | endOfText = getInt newEot }
-            in
-                ( { model | controlCharacters = newChars }, Cmd.none )
-
-        UpdateEndOfLine newEol ->
-            let
-                oldChars =
-                    model.controlCharacters
-
-                newChars =
-                    { oldChars | endOfLine = getInt newEol }
-            in
-                ( { model | controlCharacters = newChars }, Cmd.none )
+    { model
+        | home = Home.update msg model.home
+        , route = Route.update msg model.route
+        , connection = Connection.update msg model.connection
+        , controlCharacters = ControlCharacters.update msg model.controlCharacters
+    }
 
 
-getInt : String -> Int
-getInt str =
-    -- TODO: Error handling (Err msg)
-    case String.toInt str of
-        Ok i ->
-            i
-
-        Err _ ->
-            0
-
-
-getWrappedHl7 : Model -> String
-getWrappedHl7 model =
-    getCharStr model.controlCharacters.startOfText
-        ++ model.hl7
-        ++ getCharStr model.controlCharacters.endOfLine
-        ++ getCharStr model.controlCharacters.endOfText
-
-
-getCharStr : Int -> String
-getCharStr i =
-    String.fromChar (Char.fromCode i)
+updateCmd : Msg -> Model -> Cmd Msg
+updateCmd msg model =
+    Cmd.batch
+        [ Connection.updateCmd msg model
+        ]

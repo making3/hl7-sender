@@ -1,6 +1,6 @@
-module Validations exposing (..)
+module Connection.Validations exposing (..)
 
-import Msgs exposing (..)
+import Connection.Msg exposing (..)
 
 
 -- TODO: Validate port range (1-65535)
