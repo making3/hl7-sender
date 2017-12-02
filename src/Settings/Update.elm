@@ -1,11 +1,10 @@
 port module Settings.Update exposing (..)
 
-import Json.Encode exposing (encode, Value, object, int)
 import Msg as Main exposing (..)
 import Model as Main exposing (..)
 import Settings.Msg as Settings exposing (..)
 import Settings.Model as Settings exposing (..)
-import Settings.ControlCharacters.Update as ControlCharacters exposing (encode)
+import Settings.ControlCharacters.Model as ControlCharacters exposing (encode)
 
 
 update : Main.Msg -> Settings.Model -> Settings.Model
@@ -49,21 +48,7 @@ updateWithCmd : Settings.Msg -> Settings.Model -> Cmd a
 updateWithCmd msg settings =
     case msg of
         GetSettings ->
-            settingsGet (settingsToJson settings)
+            settingsGet (Settings.toJson settings)
 
         _ ->
             Cmd.none
-
-
-settingsToJson : Settings.Model -> String
-settingsToJson settings =
-    Json.Encode.encode 0 (encodeSettings settings)
-
-
-encodeSettings : Settings.Model -> Value
-encodeSettings settings =
-    object
-        [ ( "controlCharacters"
-          , ControlCharacters.encode settings.controlCharacters
-          )
-        ]

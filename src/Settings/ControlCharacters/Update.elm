@@ -1,6 +1,5 @@
 module Settings.ControlCharacters.Update exposing (..)
 
-import Json.Encode exposing (Value, object, int)
 import Msg as Main exposing (..)
 import Settings.ControlCharacters.Model exposing (Model)
 import Settings.ControlCharacters.Msg as ControlCharacters exposing (..)
@@ -38,12 +37,3 @@ getInt str =
 
         Err _ ->
             0
-
-
-encode : Model -> Value
-encode controlCharacters =
-    object
-        [ ( "startOfText", int controlCharacters.startOfText )
-        , ( "endOfText", int controlCharacters.endOfText )
-        , ( "endOfLine", int controlCharacters.endOfLine )
-        ]

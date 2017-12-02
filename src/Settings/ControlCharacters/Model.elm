@@ -1,5 +1,7 @@
 module Settings.ControlCharacters.Model exposing (..)
 
+import Json.Encode exposing (Value, object, int)
+
 
 type alias Model =
     { startOfText : Int
@@ -14,3 +16,12 @@ model =
     , endOfText = 45
     , endOfLine = 35
     }
+
+
+encode : Model -> Value
+encode controlCharacters =
+    object
+        [ ( "startOfText", int controlCharacters.startOfText )
+        , ( "endOfText", int controlCharacters.endOfText )
+        , ( "endOfLine", int controlCharacters.endOfLine )
+        ]
