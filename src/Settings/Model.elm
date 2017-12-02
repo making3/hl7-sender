@@ -1,6 +1,8 @@
 module Settings.Model exposing (..)
 
 import Json.Encode exposing (encode, Value, object, int)
+import Json.Decode as Decode exposing (Decoder, decodeString, int)
+import Json.Decode.Pipeline exposing (decode, required)
 import Connection.Model as Connection
 import Settings.ControlCharacters.Model as ControlCharacters
 
@@ -28,3 +30,14 @@ encode settings =
           , ControlCharacters.encode settings.controlCharacters
           )
         ]
+
+
+settingsDecoder : Decoder Model
+settingsDecoder =
+    decode Model
+        |> required "controlCharacters" ControlCharacters.decodeString
+
+
+toModel : String -> Result String Model
+toModel json =
+    Decode.decodeString settingsDecoder json

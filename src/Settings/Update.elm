@@ -23,9 +23,20 @@ updateSettings msg model =
         Saved error ->
             model
 
-        -- TODO: Update settings?
         InitialSettings ( error, settingsJson ) ->
-            model
+            case error of
+                "" ->
+                    case Settings.toModel settingsJson of
+                        Ok newModel ->
+                            newModel
+
+                        Err _ ->
+                            -- TODO: Log error
+                            model
+
+                errorMessage ->
+                    -- TODO: Log error
+                    model
 
         _ ->
             model
