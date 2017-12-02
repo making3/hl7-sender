@@ -13,9 +13,9 @@ app.on('ready', createWindow);
 const watchers = [
     'index.html',
     'elm.js',
-    './lib/ports/watch.js',
-    './lib/ports/settings.js',
-    './lib/ports/connection.js'
+    './src/ports/watch.js',
+    './src/ports/settings.js',
+    './src/ports/connection.js'
 ];
 
 chokidar.watch(watchers).on('change', () => {

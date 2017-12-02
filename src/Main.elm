@@ -7,6 +7,7 @@ import View exposing (view)
 import Update exposing (updateWithCmd)
 import Route.Msg as Route exposing (..)
 import Settings.Msg as Settings exposing (..)
+import Settings.Update as Settings exposing (updateCmd)
 import Connection.Msg as Connection exposing (..)
 
 
@@ -22,11 +23,12 @@ main =
 
 
 -- MODEL
+-- Settings.updateCmd : Main.Msg -> Main.Model -> Cmd a
 
 
 init : ( Model, Cmd Main.Msg )
 init =
-    ( initialModel, Cmd.none )
+    ( initialModel, Settings.updateCmd (Main.MsgForSettings Settings.GetSettings) initialModel )
 
 
 

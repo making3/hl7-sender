@@ -26,12 +26,9 @@ update msg model =
     }
 
 
-
--- TODO: How do I call settings??
-
-
 updateCmd : Msg -> Model -> Cmd Msg
 updateCmd msg model =
     Cmd.batch
         [ Connection.updateCmd msg model
+        , Settings.updateCmd msg model
         ]
