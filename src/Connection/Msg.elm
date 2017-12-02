@@ -4,9 +4,9 @@ module Connection.Msg exposing (..)
 type Msg
     = ToggleConnection
     | Send
-    | Connected String
+    | Connected
+    | Disconnected
     | ConnectionError String
-    | Disconnected String
     | ChangeDestinationIp String
     | ChangeDestinationPort String
 

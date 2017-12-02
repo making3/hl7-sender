@@ -20,7 +20,7 @@ function connect(app, ip, port) {
     client = new net.Socket();
 
     client.connect(port, ip, () => {
-        app.ports.connected.send('');
+        app.ports.connected.send(null);
     });
 
     client.on('error', (error) => {
@@ -28,7 +28,7 @@ function connect(app, ip, port) {
     });
 
     client.on('close', () => {
-        app.ports.disconnected.send('');
+        app.ports.disconnected.send(null);
         client.removeAllListeners();
         client = null;
     });

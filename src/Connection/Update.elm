@@ -35,15 +35,15 @@ updateConnection msg model =
                 InvalidPort ->
                     model
 
-        Connected _ ->
+        Connected ->
             { model | isConnected = True, connectionMessage = "Connected" }
+
+        Disconnected ->
+            { model | isConnected = False, connectionMessage = "Disconnected" }
 
         ConnectionError errorMsg ->
             -- TODO: Write error somewhere..
             { model | isConnected = False, connectionMessage = ("Disconnected: " ++ errorMsg) }
-
-        Disconnected _ ->
-            { model | isConnected = False, connectionMessage = "Disconnected" }
 
         _ ->
             model
@@ -52,7 +52,7 @@ updateConnection msg model =
 port connect : ( String, Int ) -> Cmd msg
 
 
-port disconnect : String -> Cmd msg
+port disconnect : () -> Cmd msg
 
 
 port send : String -> Cmd msg
@@ -83,7 +83,7 @@ updateWithCmd msg model =
                         )
 
                 True ->
-                    disconnect ""
+                    disconnect ()
 
         _ ->
             Cmd.none

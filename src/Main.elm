@@ -30,30 +30,25 @@ init =
 
 
 -- SUBS
--- Since Elm doesn't allow functions without parameters, just use empty strings
 
 
 port menuClick : (String -> msg) -> Sub msg
 
 
-port connected : (String -> msg) -> Sub msg
+port connected : (() -> msg) -> Sub msg
+
+
+port disconnected : (() -> msg) -> Sub msg
 
 
 port connectionError : (String -> msg) -> Sub msg
-
-
-port disconnected : (String -> msg) -> Sub msg
-
-
-
--- TODO: Re-add subscriptiosn
 
 
 subscriptions : Model -> Sub Main.Msg
 subscriptions model =
     Sub.batch
         [ menuClick (MsgForRoute << MenuClick)
-        , connected (MsgForConnection << Connected)
+        , connected (MsgForConnection << (always Connected))
+        , disconnected (MsgForConnection << (always Disconnected))
         , connectionError (MsgForConnection << ConnectionError)
-        , disconnected (MsgForConnection << Disconnected)
         ]
