@@ -7,6 +7,8 @@ Desktop GUI tool for pasting and sending an HL7 message to a port. Mostly useful
 
 This app is currently in development with very basic features. This is also an Electron & Elm learning project.
 
+Refer to the [TODO](TODO.md) for upcoming tasks.
+
 # Installing
 
 Node.js. Use NVM.
