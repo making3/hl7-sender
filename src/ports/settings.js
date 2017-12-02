@@ -19,7 +19,13 @@ exports.watchForEvents = (app) => {
 
     app.ports.settingsGet.subscribe((defaultSettingsJson) => {
         getSettingsJson(defaultSettingsJson, (error, settingsJson) => {
-            app.ports.settings.send(error.toString(), settingsJson);
+            if (error) {
+                error = error.toString();
+            }
+            app.ports.settings.send([
+                error ? error.toString() : '',
+                settingsJson
+            ]);
         });
     });
 };

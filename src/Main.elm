@@ -21,20 +21,9 @@ main =
         }
 
 
-
--- MODEL
--- Settings.updateCmd : Main.Msg -> Main.Model -> Cmd a
-
-
 init : ( Model, Cmd Main.Msg )
 init =
     ( initialModel, Settings.updateCmd (Main.MsgForSettings Settings.GetSettings) initialModel )
-
-
-
--- SUBS
--- settingsSaved(string errorMessage)
--- settings(string error, string jsonSettings)
 
 
 port menuClick : (String -> msg) -> Sub msg
@@ -43,8 +32,7 @@ port menuClick : (String -> msg) -> Sub msg
 port settingsSaved : (String -> msg) -> Sub msg
 
 
-
--- port settings : (( String, String ) -> msg) -> Sub msg
+port settings : (( String, String ) -> msg) -> Sub msg
 
 
 port connected : (() -> msg) -> Sub msg
@@ -61,8 +49,7 @@ subscriptions model =
     Sub.batch
         [ menuClick (MsgForRoute << MenuClick)
         , settingsSaved (MsgForSettings << Saved)
-
-        -- , settings (MsgForSettings << InitialSettings)
+        , settings (MsgForSettings << InitialSettings)
         , connected (MsgForConnection << (always Connected))
         , disconnected (MsgForConnection << (always Disconnected))
         , connectionError (MsgForConnection << ConnectionError)

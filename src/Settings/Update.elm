@@ -25,7 +25,7 @@ updateSettings msg model =
             model
 
         -- TODO: Update settings?
-        InitialSettings error settingsJson ->
+        InitialSettings ( error, settingsJson ) ->
             model
 
         _ ->
