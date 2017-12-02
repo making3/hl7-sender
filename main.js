@@ -10,7 +10,15 @@ let mainWindow;
 
 app.on('ready', createWindow);
 
-chokidar.watch([ 'ports.js', 'index.html', 'elm.js', './lib/connection.js' ]).on('change', () => {
+const watchers = [
+    'index.html',
+    'elm.js',
+    './lib/ports/watch.js',
+    './lib/ports/settings.js',
+    './lib/ports/connection.js'
+];
+
+chokidar.watch(watchers).on('change', () => {
     if (mainWindow) {
         mainWindow.reload();
     }
@@ -54,6 +62,7 @@ function getMenu() {
                 {
                     label: 'About',
                     click: () => {
+                        // TODO: Add an about page.
                     }
                 },
                 {

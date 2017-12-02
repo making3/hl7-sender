@@ -5,6 +5,7 @@ import Model exposing (Model)
 import Home.Update as Home
 import Route.Update as Route
 import Connection.Update as Connection
+import Settings.Update as Settings
 import Settings.ControlCharacters.Update as ControlCharacters
 
 
@@ -19,8 +20,14 @@ update msg model =
         | home = Home.update msg model.home
         , route = Route.update msg model.route
         , connection = Connection.update msg model.connection
-        , controlCharacters = ControlCharacters.update msg model.controlCharacters
+        , settings = Settings.update msg model.settings
+
+        -- , controlCharacters = ControlCharacters.update msg model.settings.controlCharacters
     }
+
+
+
+-- TODO: How do I call settings??
 
 
 updateCmd : Msg -> Model -> Cmd Msg
