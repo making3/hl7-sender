@@ -21,8 +21,6 @@ update msg model =
         , route = Route.update msg model.route
         , connection = Connection.update msg model.connection
         , settings = Settings.update msg model.settings
-
-        -- , controlCharacters = ControlCharacters.update msg model.settings.controlCharacters
     }
 
 

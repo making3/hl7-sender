@@ -4,6 +4,7 @@ import Msg as Main exposing (..)
 import Model as Main exposing (..)
 import Settings.Msg as Settings exposing (..)
 import Settings.Model as Settings exposing (..)
+import Settings.ControlCharacters.Update as ControlCharacters exposing (update)
 import Settings.ControlCharacters.Model as ControlCharacters exposing (encode)
 
 
@@ -21,6 +22,7 @@ updateSettings : Settings.Msg -> Settings.Model -> Settings.Model
 updateSettings msg model =
     case msg of
         Saved error ->
+            -- TODO: Log error
             model
 
         InitialSettings ( error, settingsJson ) ->
@@ -38,11 +40,19 @@ updateSettings msg model =
                     -- TODO: Log error
                     model
 
+        MsgForControlCharacters msgFor ->
+            { model
+                | controlCharacters = ControlCharacters.update msgFor model.controlCharacters
+            }
+
         _ ->
             model
 
 
 port settingsGet : String -> Cmd msg
+
+
+port settingsSave : String -> Cmd msg
 
 
 updateCmd : Main.Msg -> Main.Model -> Cmd a
@@ -60,6 +70,9 @@ updateWithCmd msg settings =
     case msg of
         GetSettings ->
             settingsGet (Settings.toJson settings)
+
+        SaveSettings ->
+            settingsSave (Settings.toJson settings)
 
         _ ->
             Cmd.none

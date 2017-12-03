@@ -12,4 +12,3 @@ type Msg
     | MsgForRoute Route.Msg
     | MsgForSettings Settings.Msg
     | MsgForConnection Connection.Msg
-    | MsgForControlCharacters ControlCharacters.Msg

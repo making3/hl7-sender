@@ -10,12 +10,11 @@ exports.watchForEvents = (app) => {
         'settings.json'
     );
 
-    // app.ports.settingsSave.subscribe((settingsJson) => {
-    //     console.log('settingsJson: ', settingsJson);
-    //     saveSettings(settingsJson, (error) => {
-    //         app.ports.settingsSaved.send(error.toString());
-    //     });
-    // });
+    app.ports.settingsSave.subscribe((settingsJson) => {
+        saveSettings(settingsJson, (error) => {
+            app.ports.settingsSaved.send(error ? error.toString() : '');
+        });
+    });
 
     app.ports.settingsGet.subscribe((defaultSettingsJson) => {
         getSettingsJson(defaultSettingsJson, (error, settingsJson) => {
@@ -53,7 +52,7 @@ function saveDefaultSettings(defaultSettingsJson, callback) {
 }
 
 function saveSettings(settingsJson, callback) {
-    // Pretty print the settings.
+    // Pretty print the settings
     const settingsFormatted = getFormattedSettings(settingsJson);
 
     fs.writeFile(settingsFile, settingsFormatted, 'utf8', callback);
@@ -62,13 +61,3 @@ function saveSettings(settingsJson, callback) {
 function getFormattedSettings(settingsJson) {
     return JSON.stringify(JSON.parse(settingsJson), null, 4);
 }
-
-/*
-    SUBS:
-    settingsSaved(string errorMessage)
-    settings(string error, string jsonSettings)
-
-    Commands:
-    settingsGet()
-    settingsSave(string jsonSettings)
-*/
