@@ -2,7 +2,7 @@ TODO
 ====
 
 # Main Application
-- [ ] Save control characters to user's hard drive.
+- [x] Save control characters to user's hard drive.
 - [ ] Save IP / Port to user's hard drive, on button click (i.e. don't save if they don't want it).
 - [ ] Option to accept an ACK from receiving application.
 - [ ] Notify the user that a message was sent, then notify if it was successfull / failed.
