@@ -91,10 +91,10 @@ updateWithCmd msg model =
 
 getWrappedHl7 : Main.Model -> String
 getWrappedHl7 model =
-    getCharStr model.controlCharacters.startOfText
+    getCharStr model.settings.controlCharacters.startOfText
         ++ model.home.hl7
-        ++ getCharStr model.controlCharacters.endOfLine
-        ++ getCharStr model.controlCharacters.endOfText
+        ++ getCharStr model.settings.controlCharacters.endOfLine
+        ++ getCharStr model.settings.controlCharacters.endOfText
 
 
 getCharStr : Int -> String

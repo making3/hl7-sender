@@ -6,6 +6,8 @@ import Model as Main exposing (Model, initialModel)
 import View exposing (view)
 import Update exposing (updateWithCmd)
 import Route.Msg as Route exposing (..)
+import Settings.Msg as Settings exposing (..)
+import Settings.Update as Settings exposing (updateCmd)
 import Connection.Msg as Connection exposing (..)
 
 
@@ -19,20 +21,18 @@ main =
         }
 
 
-
--- MODEL
-
-
 init : ( Model, Cmd Main.Msg )
 init =
-    ( initialModel, Cmd.none )
-
-
-
--- SUBS
+    ( initialModel, Settings.updateCmd (Main.MsgForSettings Settings.GetSettings) initialModel )
 
 
 port menuClick : (String -> msg) -> Sub msg
+
+
+port settingsSaved : (String -> msg) -> Sub msg
+
+
+port settings : (( String, String ) -> msg) -> Sub msg
 
 
 port connected : (() -> msg) -> Sub msg
@@ -48,6 +48,8 @@ subscriptions : Model -> Sub Main.Msg
 subscriptions model =
     Sub.batch
         [ menuClick (MsgForRoute << MenuClick)
+        , settingsSaved (MsgForSettings << Saved)
+        , settings (MsgForSettings << InitialSettings)
         , connected (MsgForConnection << (always Connected))
         , disconnected (MsgForConnection << (always Disconnected))
         , connectionError (MsgForConnection << ConnectionError)

@@ -5,6 +5,7 @@ import Html.Attributes exposing (class, value)
 import Html.Events exposing (onClick, onInput)
 import Msg as Main exposing (..)
 import Route.Msg as Route exposing (..)
+import Settings.Msg as Settings exposing (Msg(..))
 import Settings.ControlCharacters.Model as ControlCharacters
 import Settings.ControlCharacters.Msg exposing (..)
 
@@ -18,16 +19,16 @@ view model =
                     [ label [] [ text "Start Of HL7" ]
                     , input
                         [ class "form-control"
-                        , onInput (MsgForControlCharacters << UpdateStartOfText)
+                        , onInput (MsgForSettings << MsgForControlCharacters << UpdateStartOfText)
                         , value (toString model.startOfText)
                         ]
-                        [ text (toString model.startOfText) ]
+                        []
                     ]
                 , div [ class "form-input" ]
                     [ label [] [ text "End Of HL7" ]
                     , input
                         [ class "form-control"
-                        , onInput (MsgForControlCharacters << UpdateEndOfText)
+                        , onInput (MsgForSettings << MsgForControlCharacters << UpdateEndOfText)
                         , value (toString model.endOfText)
                         ]
                         []
@@ -36,15 +37,17 @@ view model =
                     [ label [] [ text "End Of Segment" ]
                     , input
                         [ class "form-control"
-                        , onInput (MsgForControlCharacters << UpdateEndOfLine)
+                        , onInput (MsgForSettings << MsgForControlCharacters << UpdateEndOfLine)
                         , value (toString model.endOfLine)
                         ]
                         []
                     ]
                 , button [ class "btn btn-secondary", onClick (MsgForRoute Route.GoHome) ] [ text "Go Back" ]
-
-                -- TODO: Re-enable once some form of saving happens
-                -- , button [ class "btn btn-primary", onClick SaveControlCharacters ] [ text "Save" ]
+                , button
+                    [ class "btn btn-primary"
+                    , onClick (MsgForSettings SaveSettings)
+                    ]
+                    [ text "Save" ]
                 ]
             ]
         ]
