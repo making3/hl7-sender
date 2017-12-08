@@ -8,14 +8,14 @@ import Model as Main
 import Home.Model as Home
 import Home.Msg as Home exposing (..)
 import Connection.Msg exposing (..)
-import Connection.View.Connection as Connection exposing (..)
+import Connection.View.Footer as Connection exposing (..)
 
 
 view : Main.Model -> Html Main.Msg
 view model =
     div []
-        [ div [ class "container" ]
-            [ div [ class "row" ]
+        [ div [ class "container-fluid" ]
+            [ div [ class "row-fluid" ]
                 [ div [ class "col-12" ]
                     [ div []
                         [ div [ class "form-group" ]

@@ -92,3 +92,7 @@ function getMenu() {
     const menu = Menu.buildFromTemplate(menuTemplate);
     return menu;
 }
+
+require('electron-context-menu')({
+    showInspectElement: true
+});
