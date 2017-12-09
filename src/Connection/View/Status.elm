@@ -8,4 +8,4 @@ import Model as Main
 
 view : Main.Model -> Html Main.Msg
 view model =
-    label [ class "float-right" ] [ text model.connection.connectionMessage ]
+    label [ class "connection-status" ] [ text model.connection.connectionMessage ]

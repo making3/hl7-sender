@@ -30,7 +30,7 @@ connectionForm model =
 
 separator : Html Main.Msg
 separator =
-    hr [] []
+    hr [ class "connection-status-separator" ] []
 
 
 statusForm : Main.Model -> Html Main.Msg

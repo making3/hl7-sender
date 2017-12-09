@@ -49,3 +49,16 @@ body {
   width: 100%;
   box-sizing: border-box;
 }
+
+.connection-status {
+  padding-right: 15px;
+  float: right !important;
+  margin-top: 3px;
+  margin-bottom: 3px;
+  font-size: 14px;
+}
+
+.connection-status-separator {
+  margin-top: 0;
+  margin-bottom: 0
+}
