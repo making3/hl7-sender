@@ -22,8 +22,8 @@ view model =
 
 connectionForm : Main.Model -> Html Main.Msg
 connectionForm model =
-    div [ class "row-fluid" ]
-        [ div [ class "col-8" ] (Connection.view model)
+    div [ class "row container" ]
+        [ div [ class "col-6" ] [ Connection.view model ]
         , div [ class "col-6" ] (Log.view model)
         ]
 
@@ -35,5 +35,5 @@ separator =
 
 statusForm : Main.Model -> Html Main.Msg
 statusForm model =
-    div [ class "row-fluid" ]
+    div [ class "clearfix" ]
         [ Status.view model ]

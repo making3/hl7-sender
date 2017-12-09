@@ -10,11 +10,12 @@ import Connection.Msg exposing (..)
 import Connection.Model as Connection exposing (Model)
 
 
-view : Main.Model -> List (Html Main.Msg)
+view : Main.Model -> Html Main.Msg
 view model =
-    [ div [ class "col-9" ] (connectionFormControls model.connection)
-    , div [ class "col-3" ] (connectionButtons model)
-    ]
+    div [ class "row" ]
+        [ div [ class "col-8" ] (connectionFormControls model.connection)
+        , div [ class "col-4" ] (connectionButtons model)
+        ]
 
 
 connectionFormControls : Connection.Model -> List (Html Main.Msg)
@@ -47,10 +48,10 @@ formInput connection name inputControl =
     div
         [ class "form-group row" ]
         [ label
-            [ class "col-sm-1 col-form-label col-form-label-sm" ]
+            [ class "col-sm-2 col-form-label col-form-label-sm" ]
             [ text name ]
         , div
-            [ class "col-4" ]
+            [ class "col-8" ]
             [ inputControl connection ]
         ]
 

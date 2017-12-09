@@ -14,31 +14,27 @@ import Connection.View.Footer as Connection exposing (..)
 view : Main.Model -> Html Main.Msg
 view model =
     div []
-        [ div [ class "container-fluid" ]
-            [ div [ class "row-fluid" ]
-                [ div [ class "col-12" ]
-                    [ div []
-                        [ div [ class "form-group" ]
-                            [ label []
-                                [ text "HL7 Message"
-                                ]
-                            , textarea
-                                [ class "form-control"
-                                , onInput (MsgForHome << ChangeHl7)
-                                , rows 8
-                                ]
-                                []
-                            ]
-                        , button
-                            [ class "btn btn-primary float-right"
-                            , onClick (MsgForConnection Send)
-                            , disabled (model.connection.isConnected == False)
-                            ]
-                            [ text "Send"
-                            ]
-                        ]
-                    ]
+        [ div [ class "container-fluid form-group" ]
+            [ label []
+                [ text "HL7 Message"
+                ]
+            , textarea
+                [ class "form-control"
+                , onInput (MsgForHome << ChangeHl7)
+                , rows 8
+                ]
+                []
+            ]
+        , div [ class "container-fluid float-right" ]
+            [ button
+                [ class "btn btn-primary"
+                , onClick (MsgForConnection Send)
+                , disabled (model.connection.isConnected == False)
+                ]
+                [ text "Send"
                 ]
             ]
+        , Html.br [] [] --TEMP
+        , Html.br [] []
         , Connection.view model
         ]
