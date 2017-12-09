@@ -8,45 +8,80 @@ import Connection.Msg as Connection exposing (..)
 import Connection.Validations exposing (..)
 
 
-update : Main.Msg -> Connection.Model -> Connection.Model
-update msgFor connection =
+update : Main.Msg -> Main.Model -> Main.Model
+update msgFor model =
     case msgFor of
         MsgForConnection msg ->
-            updateConnection msg connection
+            updateConnection msg model
 
         _ ->
-            connection
+            model
 
 
-updateConnection : Connection.Msg -> Connection.Model -> Connection.Model
+updateConnection : Connection.Msg -> Main.Model -> Main.Model
 updateConnection msg model =
     case msg of
         ChangeDestinationIp newIp ->
-            { model | destinationIp = newIp }
+            { model
+                | connection = updateIpAddress model.connection newIp
+            }
 
         ChangeDestinationPort newPort ->
             case validatePort newPort of
                 ValidPort validatedPort ->
-                    { model | destinationPort = clamp 1 65535 validatedPort }
+                    { model
+                        | connection = updatePort model.connection validatedPort
+                    }
 
                 EmptyPort ->
-                    { model | destinationPort = 0 }
+                    { model
+                        | connection = updatePort model.connection 0
+                    }
 
                 InvalidPort ->
                     model
 
         Connected ->
-            { model | isConnected = True, connectionMessage = "Connected" }
+            log model "info" "Connected"
+                |> connected
 
         Disconnected ->
-            { model | isConnected = False, connectionMessage = "Disconnected" }
+            log model "info" "Disconnected"
+                |> disconnected
 
         ConnectionError errorMsg ->
-            -- TODO: Write error somewhere..
-            { model | isConnected = False, connectionMessage = ("Disconnected: " ++ errorMsg) }
+            log model "error" errorMsg
+                |> disconnected
 
         _ ->
             model
+
+
+updateIpAddress connection newIp =
+    { connection | destinationIp = newIp }
+
+
+updatePort connection newPort =
+    { connection | destinationPort = clamp 1 65535 newPort }
+
+
+connected model =
+    { model
+        | connection = updateConnectionStatus model.connection True "Connected"
+    }
+
+
+disconnected model =
+    { model
+        | connection = updateConnectionStatus model.connection False "Disconnected"
+    }
+
+
+updateConnectionStatus connection isConnected message =
+    { connection
+        | isConnected = isConnected
+        , connectionMessage = message
+    }
 
 
 port connect : ( String, Int ) -> Cmd msg
