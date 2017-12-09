@@ -1,6 +1,6 @@
 module Connection.View.Status exposing (..)
 
-import Html exposing (Html, label, text)
+import Html exposing (Html, div, label, text)
 import Html.Attributes exposing (class)
 import Msg as Main exposing (..)
 import Model as Main
@@ -8,4 +8,10 @@ import Model as Main
 
 view : Main.Model -> Html Main.Msg
 view model =
-    label [ class "connection-status" ] [ text model.connection.connectionMessage ]
+    div [ class "status-row" ]
+        [ label [ class "sent-count" ]
+            [ text "Sent Count: 0" ]
+        , label
+            [ class "connection-status" ]
+            [ text model.connection.connectionMessage ]
+        ]

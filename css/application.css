@@ -50,12 +50,19 @@ body {
   box-sizing: border-box;
 }
 
+.status-row > label {
+  margin-top: 3px;
+  margin-bottom: 3px;
+  font-size: 12px;
+}
+
+.sent-count {
+  padding-left: 15px;
+}
+
 .connection-status {
   padding-right: 15px;
   float: right !important;
-  margin-top: 3px;
-  margin-bottom: 3px;
-  font-size: 14px;
 }
 
 .connection-status-separator {
