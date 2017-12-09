@@ -8,45 +8,48 @@ import Settings.ControlCharacters.Update as ControlCharacters exposing (update)
 import Settings.ControlCharacters.Model as ControlCharacters exposing (encode)
 
 
-update : Main.Msg -> Settings.Model -> Settings.Model
-update msgFor settings =
+update : Main.Msg -> Main.Model -> Main.Model
+update msgFor model =
     case msgFor of
         MsgForSettings msg ->
-            updateSettings msg settings
+            updateSettings msg model
 
         _ ->
-            settings
+            model
 
 
-updateSettings : Settings.Msg -> Settings.Model -> Settings.Model
+updateSettings : Settings.Msg -> Main.Model -> Main.Model
 updateSettings msg model =
     case msg of
-        Saved error ->
-            -- TODO: Log error
-            model
+        Saved errorMessage ->
+            log model "error" errorMessage
 
         InitialSettings ( error, settingsJson ) ->
             case error of
                 "" ->
                     case Settings.toModel settingsJson of
-                        Ok newModel ->
-                            newModel
+                        Ok newSettings ->
+                            { model | settings = newSettings }
 
-                        Err _ ->
-                            -- TODO: Log error
-                            model
+                        Err errorMessage ->
+                            log model "error" errorMessage
 
                 errorMessage ->
-                    -- TODO: Log error
-                    model
+                    log model "error" errorMessage
 
         MsgForControlCharacters msgFor ->
             { model
-                | controlCharacters = ControlCharacters.update msgFor model.controlCharacters
+                | settings = updateControlCharacters model.settings msgFor
             }
 
         _ ->
             model
+
+
+updateControlCharacters settings msgFor =
+    { settings
+        | controlCharacters = ControlCharacters.update msgFor model.controlCharacters
+    }
 
 
 port settingsGet : String -> Cmd msg

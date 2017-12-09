@@ -16,12 +16,9 @@ updateWithCmd msg model =
 
 update : Msg -> Model -> Model
 update msg model =
-    updateNoMapConnection msg model
-        |> updateNoMap msg
-
-
-updateNoMapConnection msg model =
     Connection.update msg model
+        |> Settings.update msg
+        |> updateNoMap msg
 
 
 updateNoMap : Msg -> Model -> Model
@@ -29,7 +26,6 @@ updateNoMap msg model =
     { model
         | home = Home.update msg model.home
         , route = Route.update msg model.route
-        , settings = Settings.update msg model.settings
     }
 
 
