@@ -3,11 +3,14 @@ HL7 Sender
 
 Desktop GUI tool for pasting and sending an HL7 message to a port. Mostly useful testing in-house systems or re-running individual messages.
 
+# Preview
+
+This a work in progress, but here is a preview of the current state of the application.
+![preview](https://i.imgur.com/aEnjgbg.png)
+
 # Development
 
-This app is currently in development with very basic features. This is also an Electron & Elm learning project.
-
-Refer to the [TODO](TODO.md) for upcoming tasks.
+HL7 Sender is an Electron and Elm learning project. Refer to the [TODO](TODO.md) for upcoming tasks / features.
 
 # Installing
 
