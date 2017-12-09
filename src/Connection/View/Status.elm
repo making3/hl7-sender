@@ -12,6 +12,14 @@ view model =
         [ label [ class "sent-count" ]
             [ text "Sent Count: 0" ]
         , label
-            [ class "connection-status" ]
+            [ class ("connection-status " ++ (getConnectionColor model.connection.isConnected)) ]
             [ text model.connection.connectionMessage ]
         ]
+
+
+getConnectionColor : Bool -> String
+getConnectionColor isConnected =
+    if isConnected then
+        "connected"
+    else
+        "disconnected"
