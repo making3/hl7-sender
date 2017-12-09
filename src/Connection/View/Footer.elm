@@ -23,8 +23,8 @@ view model =
 connectionForm : Main.Model -> Html Main.Msg
 connectionForm model =
     div [ class "row container" ]
-        [ div [ class "col-6" ] [ Connection.view model ]
-        , div [ class "col-6" ] (Log.view model)
+        [ div [ class "col-4" ] [ Connection.view model ]
+        , div [ class "col-8" ] (Log.view model)
         ]
 
 

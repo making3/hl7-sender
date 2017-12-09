@@ -48,10 +48,10 @@ formInput connection name inputControl =
     div
         [ class "form-group row" ]
         [ label
-            [ class "col-sm-2 col-form-label col-form-label-sm" ]
+            [ class "col-sm-3 col-form-label col-form-label-sm" ]
             [ text name ]
         , div
-            [ class "col-8" ]
+            [ class "col-9" ]
             [ inputControl connection ]
         ]
 
@@ -79,11 +79,14 @@ getPortDisplay destinationPort =
 connectionButtons : Main.Model -> List (Html Main.Msg)
 connectionButtons model =
     [ button
-        [ class "btn btn-primary"
+        [ class "btn btn-sm btn-block btn-primary"
         , onClick (MsgForConnection ToggleConnection)
         ]
-        [ text (getConnectButtonText model.connection.isConnected)
-        ]
+        [ text (getConnectButtonText model.connection.isConnected) ]
+    , button [ class "btn btn-sm btn-block btn-secondary" ]
+        [ text "Clear Log" ]
+    , button [ class "btn btn-sm btn-block btn-secondary" ]
+        [ text "Save" ]
     ]
 
 
