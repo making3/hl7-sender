@@ -7,6 +7,17 @@ body {
   margin-bottom: 60px;
 }
 
+.simple-sender {
+  padding-top: 5px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.simple-sender .validate {
+  margin-right: 5px;
+  display: none; /* Re-enable once this btuton is implemented */
+}
+
 .footer {
   padding-top: 5px;
   position: absolute;

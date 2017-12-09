@@ -14,10 +14,9 @@ import Connection.View.Footer as Connection exposing (..)
 view : Main.Model -> Html Main.Msg
 view model =
     div []
-        [ div [ class "container-fluid form-group" ]
-            [ label []
-                [ text "HL7 Message"
-                ]
+        [ div [ class "simple-sender" ]
+            [ label [] [ text "HL7 Message" ]
+            , simpleSenderButtons model
             , textarea
                 [ class "form-control"
                 , onInput (MsgForHome << ChangeHl7)
@@ -25,16 +24,22 @@ view model =
                 ]
                 []
             ]
-        , div [ class "container-fluid float-right" ]
-            [ button
-                [ class "btn btn-primary"
-                , onClick (MsgForConnection Send)
-                , disabled (model.connection.isConnected == False)
-                ]
-                [ text "Send"
-                ]
-            ]
-        , Html.br [] [] --TEMP
-        , Html.br [] []
         , Connection.view model
+        ]
+
+
+simpleSenderButtons : Main.Model -> Html Main.Msg
+simpleSenderButtons model =
+    div [ class "float-right" ]
+        [ button
+            [ class "validate btn btn-sm btn-primary"
+            , disabled True
+            ]
+            [ text "Validate" ]
+        , button
+            [ class "btn btn-sm btn-primary"
+            , onClick (MsgForConnection Send)
+            , disabled (model.connection.isConnected == False)
+            ]
+            [ text "Send" ]
         ]
