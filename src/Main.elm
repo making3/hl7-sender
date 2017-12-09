@@ -26,6 +26,10 @@ init =
     ( initialModel, Settings.updateCmd (Main.MsgForSettings Settings.GetSettings) initialModel )
 
 
+
+-- TODO: Preferably move these to their specific domains
+
+
 port menuClick : (String -> msg) -> Sub msg
 
 
