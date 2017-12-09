@@ -26,3 +26,26 @@ body {
 .container label {
   margin-bottom: 0;
 }
+
+.connection-row {
+  height: 115px;
+}
+
+.connection {
+  margin-left: 15px;
+  padding-left: 15px;
+  padding-right: 5px;
+  width: 350px;
+  float: left;
+}
+
+.log {
+  margin-right: 15px;
+  overflow: hidden
+}
+
+.log > textarea {
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
