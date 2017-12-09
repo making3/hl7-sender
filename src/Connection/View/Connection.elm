@@ -47,10 +47,10 @@ formInput connection name inputControl =
     div
         [ class "form-group row" ]
         [ label
-            [ class "class-2 col-form-label" ]
+            [ class "col-sm-1 col-form-label col-form-label-sm" ]
             [ text name ]
         , div
-            [ class "col-10" ]
+            [ class "col-4" ]
             [ inputControl connection ]
         ]
 
@@ -58,7 +58,7 @@ formInput connection name inputControl =
 inputControl : String -> String -> Bool -> (String -> Main.Msg) -> Html Main.Msg
 inputControl inputPlaceholder getValue isConnected msg =
     input
-        [ class "form-control mr-sm-2"
+        [ class "form-control form-control-sm"
         , placeholder inputPlaceholder
         , readonly isConnected
         , onInput msg
