@@ -53,6 +53,10 @@ updateConnection msg model =
             log model "error" errorMsg
                 |> disconnected
 
+        Sent ->
+            log model "info" "Sent a message"
+                |> updateSentCount
+
         _ ->
             model
 
@@ -81,6 +85,12 @@ updateConnectionStatus connection isConnected message =
     { connection
         | isConnected = isConnected
         , connectionMessage = message
+    }
+
+
+updateSentCount model =
+    { model
+        | connection = Connection.updateSentCount model.connection
     }
 
 

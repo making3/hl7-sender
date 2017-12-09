@@ -12,7 +12,9 @@ exports.watchForEvents = (app) => {
     });
 
     app.ports.send.subscribe((hl7) => {
-        send(hl7);
+        send(hl7, () => {
+            app.ports.sent.send(null);
+        });
     });
 };
 
@@ -42,8 +44,11 @@ function connect(app, ip, port) {
     return client;
 }
 
-function send(hl7) {
+function send(hl7, callback) {
     client.write(hl7);
+
+    // TODO: Call back once an ack has been received.
+    callback();
 }
 
 function disconnect() {

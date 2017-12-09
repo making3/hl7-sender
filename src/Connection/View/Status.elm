@@ -10,7 +10,7 @@ view : Main.Model -> Html Main.Msg
 view model =
     div [ class "status-row" ]
         [ label [ class "sent-count" ]
-            [ text "Sent Count: 0" ]
+            [ text ("Sent Count: " ++ (toString model.connection.sentCount)) ]
         , label
             [ class ("connection-status " ++ (getConnectionColor model.connection.isConnected)) ]
             [ text model.connection.connectionMessage ]

@@ -44,6 +44,9 @@ port disconnected : (() -> msg) -> Sub msg
 port connectionError : (String -> msg) -> Sub msg
 
 
+port sent : (() -> msg) -> Sub msg
+
+
 subscriptions : Model -> Sub Main.Msg
 subscriptions model =
     Sub.batch
@@ -53,4 +56,5 @@ subscriptions model =
         , connected (MsgForConnection << (always Connected))
         , disconnected (MsgForConnection << (always Disconnected))
         , connectionError (MsgForConnection << ConnectionError)
+        , sent (MsgForConnection << always Sent)
         ]
