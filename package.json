@@ -6,8 +6,9 @@
   "scripts": {
     "elm": "elm make src/Main.elm --output elm.js || true",
     "elm:watch": "chokidar '**/*.elm' -c 'npm run elm'",
+    "debug": "electron main.js --debug",
     "start": "electron main.js",
-    "watch": "npm run start & npm run elm:watch"
+    "watch": "npm run debug & npm run elm:watch"
   },
   "keywords": [
     "hl7",

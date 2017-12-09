@@ -1,39 +1,47 @@
 'use strict';
-const electron = require('electron');
-const chokidar = require('chokidar');
+const electron    = require('electron');
+const chokidar    = require('chokidar');
+const contextMenu = require('electron-context-menu');
 
 const app = electron.app;
 const Menu = electron.Menu;
 const BrowserWindow = electron.BrowserWindow;
 
+let debug = process.argv.indexOf('--debug') > -1 ||
+    process.argv.indexOf('-d') > -1;
+
 let mainWindow;
 
 app.on('ready', createWindow);
 
-const watchers = [
-    'index.html',
-    'elm.js',
-    './css/application.css',
-    './src/ports/watch.js',
-    './src/ports/settings.js',
-    './src/ports/connection.js'
-];
+if (debug) {
+    const watchers = [
+        'index.html',
+        'elm.js',
+        './css/application.css',
+        './src/ports/watch.js',
+        './src/ports/settings.js',
+        './src/ports/connection.js'
+    ];
 
-chokidar.watch(watchers).on('change', () => {
-    if (mainWindow) {
-        mainWindow.reload();
-    }
-});
+    chokidar.watch(watchers).on('change', () => {
+        if (mainWindow) {
+            mainWindow.reload();
+        }
+    });
+}
 
 function createWindow() {
     mainWindow = new BrowserWindow({
-        width: 1024,
-        height: 768
+        width: debug ? 1024 : 768,
+        height: debug ? 768 : 512
     });
 
     mainWindow.loadURL(`file://${ __dirname }/index.html`);
 
-    mainWindow.webContents.openDevTools();
+    if (debug) {
+        mainWindow.webContents.openDevTools();
+    }
 
     const menu = getMenu(app);
     Menu.setApplicationMenu(menu);
@@ -41,6 +49,7 @@ function createWindow() {
     mainWindow.on('closed', () => {
         mainWindow = null;
     });
+    contextMenu({ showInspectElement: true });
 }
 
 app.on('window-all-closed', () => {
@@ -93,7 +102,3 @@ function getMenu() {
     const menu = Menu.buildFromTemplate(menuTemplate);
     return menu;
 }
-
-require('electron-context-menu')({
-    showInspectElement: true
-});

@@ -43,6 +43,9 @@ Node.js. Use NVM.
     // or
     npm run start
 
+    // or debug it
+    npm run debug
+
     // or build & watch for changes
     npm run watch
 
