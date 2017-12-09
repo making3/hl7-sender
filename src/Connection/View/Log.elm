@@ -6,7 +6,6 @@ import Msg as Main exposing (..)
 import Model as Main
 
 
-view : Main.Model -> Html Main.Msg
+view : Main.Model -> List (Html Main.Msg)
 view model =
-    div []
-        []
+    []
