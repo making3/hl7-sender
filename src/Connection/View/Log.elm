@@ -13,5 +13,5 @@ view model =
         , rows 5
         , class "form-control"
         ]
-        [ text "test" ]
+        [ text "log..." ]
     ]

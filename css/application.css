@@ -45,6 +45,14 @@ body {
   float: left;
 }
 
+.clear-log {
+  display: none; /* Re-enable once this btuton is implemented */
+}
+
+.save-connection {
+  display: none; /* Re-enable once this btuton is implemented */
+}
+
 .log {
   margin-right: 15px;
   overflow: hidden
