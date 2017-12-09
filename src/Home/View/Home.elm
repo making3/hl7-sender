@@ -18,7 +18,7 @@ view model =
             [ label [] [ text "HL7 Message" ]
             , simpleSenderButtons model
             , textarea
-                [ class "form-control"
+                [ class "hl7 form-control"
                 , onInput (MsgForHome << ChangeHl7)
                 , rows 8
                 ]

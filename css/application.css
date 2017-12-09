@@ -18,6 +18,10 @@ body {
   display: none; /* Re-enable once this btuton is implemented */
 }
 
+.simple-sender .hl7 {
+  font-size: 12px;
+}
+
 .footer {
   padding-top: 5px;
   position: absolute;
