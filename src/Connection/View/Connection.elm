@@ -12,64 +12,59 @@ import Connection.Model as Connection exposing (Model)
 
 view : Main.Model -> List (Html Main.Msg)
 view model =
-    [ connectionForm model.connection
-    , connectionButtons model
+    [ div [ class "col-9" ] (connectionFormControls model.connection)
+    , div [ class "col-3" ] (connectionButtons model)
     ]
 
 
-host : Connection.Model -> Html Main.Msg
-host model =
-    div [ class "form-group row" ]
-        [ label [ class "class-2 col-form-label" ]
-            [ text "Host" ]
-        , div [ class "col-10" ]
-            [ inputIpAddress model
-            ]
-        ]
+connectionFormControls : Connection.Model -> List (Html Main.Msg)
+connectionFormControls connection =
+    [ formInput connection "Host" inputIpAddress
+    , formInput connection "Port" inputPort
+    ]
 
 
 inputIpAddress : Connection.Model -> Html Main.Msg
-inputIpAddress model =
-    input
-        [ class "form-control"
-        , placeholder "IP Address"
-        , onInput (MsgForConnection << ChangeDestinationIp)
-        , readonly model.isConnected
-        , value model.destinationIp
-        ]
-        []
+inputIpAddress connection =
+    inputControl
+        "Host"
+        connection.destinationIp
+        connection.isConnected
+        (MsgForConnection << ChangeDestinationIp)
 
 
 inputPort : Connection.Model -> Html Main.Msg
-inputPort model =
+inputPort connection =
+    inputControl
+        "Port"
+        (getPortDisplay connection.destinationPort)
+        connection.isConnected
+        (MsgForConnection << ChangeDestinationPort)
+
+
+formInput : Connection.Model -> String -> (Connection.Model -> Html Main.Msg) -> Html Main.Msg
+formInput connection name inputControl =
+    div
+        [ class "form-group row" ]
+        [ label
+            [ class "class-2 col-form-label" ]
+            [ text name ]
+        , div
+            [ class "col-10" ]
+            [ inputControl connection ]
+        ]
+
+
+inputControl : String -> String -> Bool -> (String -> Main.Msg) -> Html Main.Msg
+inputControl inputPlaceholder getValue isConnected msg =
     input
         [ class "form-control mr-sm-2"
-        , placeholder "Port"
-        , readonly model.isConnected
-        , onInput (MsgForConnection << ChangeDestinationPort)
-        , value (getPortDisplay model.destinationPort)
+        , placeholder inputPlaceholder
+        , readonly isConnected
+        , onInput msg
+        , value getValue
         ]
         []
-
-
-connectionForm : Connection.Model -> Html Main.Msg
-connectionForm model =
-    div [ class "col-9" ]
-        [ host model
-        , inputPort model
-        ]
-
-
-connectionButtons : Main.Model -> Html Main.Msg
-connectionButtons model =
-    div [ class "col-3" ]
-        [ button
-            [ class "btn btn-primary"
-            , onClick (MsgForConnection ToggleConnection)
-            ]
-            [ text (getConnectButtonText model.connection.isConnected)
-            ]
-        ]
 
 
 getPortDisplay : Int -> String
@@ -78,6 +73,17 @@ getPortDisplay destinationPort =
         ""
     else
         toString destinationPort
+
+
+connectionButtons : Main.Model -> List (Html Main.Msg)
+connectionButtons model =
+    [ button
+        [ class "btn btn-primary"
+        , onClick (MsgForConnection ToggleConnection)
+        ]
+        [ text (getConnectButtonText model.connection.isConnected)
+        ]
+    ]
 
 
 getConnectButtonText : Bool -> String
