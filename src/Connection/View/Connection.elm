@@ -3,48 +3,69 @@ module Connection.View.Connection exposing (..)
 import Html exposing (Html, Attribute, program, div, input, button, text, label)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onClick)
+import Connection.View.Log as Log exposing (view)
 import Msg as Main exposing (..)
 import Model as Main
 import Connection.Msg exposing (..)
+import Connection.Model as Connection exposing (Model)
 
 
 view : Main.Model -> Html Main.Msg
 view model =
-    Html.footer [ class "footer" ]
-        [ div [ class "container" ]
-            [ div [ class "row" ]
-                [ div [ class "col-8" ]
-                    [ div [ class "form-inline" ]
-                        [ input
-                            [ class "form-control mr-sm-2"
-                            , placeholder "IP Address"
-                            , onInput (MsgForConnection << ChangeDestinationIp)
-                            , readonly model.connection.isConnected
-                            , value model.connection.destinationIp
-                            ]
-                            []
-                        , input
-                            [ class "form-control mr-sm-2"
-                            , placeholder "Port"
-                            , readonly model.connection.isConnected
-                            , onInput (MsgForConnection << ChangeDestinationPort)
-                            , value (getPortDisplay model.connection.destinationPort)
-                            ]
-                            []
-                        , button
-                            [ class "btn btn-primary"
-                            , onClick (MsgForConnection ToggleConnection)
-                            ]
-                            [ text (getConnectButtonText model.connection.isConnected)
-                            ]
-                        ]
-                    ]
-                , div [ class "col-4" ]
-                    [ label [ class "float-right" ] [ text model.connection.connectionMessage ]
-                    ]
-                ]
-            ]
+    div [ class "row" ]
+        [ div [ class "col-8" ] (connectionFormControls model.connection)
+        , div [ class "col-4" ] (connectionButtons model)
         ]
+
+
+connectionFormControls : Connection.Model -> List (Html Main.Msg)
+connectionFormControls connection =
+    [ formInput connection "Host" inputIpAddress
+    , formInput connection "Port" inputPort
+    ]
+
+
+inputIpAddress : Connection.Model -> Html Main.Msg
+inputIpAddress connection =
+    inputControl
+        "Host"
+        connection.destinationIp
+        connection.isConnected
+        (MsgForConnection << ChangeDestinationIp)
+
+
+inputPort : Connection.Model -> Html Main.Msg
+inputPort connection =
+    inputControl
+        "Port"
+        (getPortDisplay connection.destinationPort)
+        connection.isConnected
+        (MsgForConnection << ChangeDestinationPort)
+
+
+formInput : Connection.Model -> String -> (Connection.Model -> Html Main.Msg) -> Html Main.Msg
+formInput connection name inputControl =
+    div
+        [ class "form-group row" ]
+        [ label
+            [ class "col-sm-3 col-form-label col-form-label-sm" ]
+            [ text name ]
+        , div
+            [ class "col-9" ]
+            [ inputControl connection ]
+        ]
+
+
+inputControl : String -> String -> Bool -> (String -> Main.Msg) -> Html Main.Msg
+inputControl inputPlaceholder getValue isConnected msg =
+    input
+        [ class "form-control form-control-sm"
+        , placeholder inputPlaceholder
+        , readonly isConnected
+        , onInput msg
+        , value getValue
+        ]
+        []
 
 
 getPortDisplay : Int -> String
@@ -53,6 +74,20 @@ getPortDisplay destinationPort =
         ""
     else
         toString destinationPort
+
+
+connectionButtons : Main.Model -> List (Html Main.Msg)
+connectionButtons model =
+    [ button
+        [ class "btn btn-sm btn-block btn-primary"
+        , onClick (MsgForConnection ToggleConnection)
+        ]
+        [ text (getConnectButtonText model.connection.isConnected) ]
+    , button [ class "clear-log btn btn-sm btn-block btn-secondary" ]
+        [ text "Clear Log" ]
+    , button [ class "save-connection btn btn-sm btn-block btn-secondary" ]
+        [ text "Save" ]
+    ]
 
 
 getConnectButtonText : Bool -> String

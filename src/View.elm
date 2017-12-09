@@ -13,8 +13,7 @@ import Settings.ControlCharacters.View.ControlCharacters as ControlCharacters
 
 view : Main.Model -> Html Msg
 view model =
-    div []
-        [ page model ]
+    page model
 
 
 page : Main.Model -> Html Msg

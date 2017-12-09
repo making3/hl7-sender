@@ -13,6 +13,7 @@ app.on('ready', createWindow);
 const watchers = [
     'index.html',
     'elm.js',
+    './css/application.css',
     './src/ports/watch.js',
     './src/ports/settings.js',
     './src/ports/connection.js'
@@ -92,3 +93,7 @@ function getMenu() {
     const menu = Menu.buildFromTemplate(menuTemplate);
     return menu;
 }
+
+require('electron-context-menu')({
+    showInspectElement: true
+});

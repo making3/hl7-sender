@@ -4,17 +4,25 @@ html {
 }
 
 body {
-  /* Margin bottom by footer height */
   margin-bottom: 60px;
 }
 
+.simple-sender {
+  padding-top: 5px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.simple-sender .validate {
+  margin-right: 5px;
+  display: none; /* Re-enable once this btuton is implemented */
+}
+
 .footer {
+  padding-top: 5px;
   position: absolute;
   bottom: 0;
   width: 100%;
-  /* Set the fixed height of the footer here */
-  height: 60px;
-  line-height: 60px; /* Vertically center the text there */
   background-color: #f5f5f5;
 }
 
@@ -24,4 +32,54 @@ body {
 
 .container label {
   margin-bottom: 0;
+}
+
+.connection-row {
+  height: 115px;
+}
+
+.connection {
+  padding-left: 15px;
+  padding-right: 5px;
+  width: 350px;
+  float: left;
+}
+
+.clear-log {
+  display: none; /* Re-enable once this btuton is implemented */
+}
+
+.save-connection {
+  display: none; /* Re-enable once this btuton is implemented */
+}
+
+.log {
+  margin-right: 15px;
+  overflow: hidden
+}
+
+.log > textarea {
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.status-row > label {
+  margin-top: 3px;
+  margin-bottom: 3px;
+  font-size: 12px;
+}
+
+.sent-count {
+  padding-left: 15px;
+}
+
+.connection-status {
+  padding-right: 15px;
+  float: right !important;
+}
+
+.connection-status-separator {
+  margin-top: 0;
+  margin-bottom: 0
 }
