@@ -13,5 +13,10 @@ view model =
         , rows 5
         , class "form-control"
         ]
-        [ text "log..." ]
+        [ text (getLogs model) ]
     ]
+
+
+getLogs : Main.Model -> String
+getLogs model =
+    String.join "\n" model.logs
