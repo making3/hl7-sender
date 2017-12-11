@@ -55,7 +55,7 @@ viewCharacters settings =
             [ class "btn btn-primary settings-save"
             , onClick (MsgForSettings SaveSettings)
             ]
-            [ text "Save" ]
+            [ text "Save to Disk" ]
         ]
 
 
