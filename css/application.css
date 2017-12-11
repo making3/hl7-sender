@@ -7,6 +7,12 @@ body {
   margin-bottom: 60px;
 }
 
+.layout-padding {
+  padding-top: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
 .simple-sender {
   padding-top: 5px;
   padding-left: 15px;
@@ -37,6 +43,8 @@ body {
 .container label {
   margin-bottom: 0;
 }
+
+/* Connection footer */
 
 .connection-row {
   height: 115px;
@@ -93,4 +101,51 @@ body {
 .connection-status-separator {
   margin-top: 0;
   margin-bottom: 0
+}
+
+/* Settings CSS */
+
+.settings .close {
+  padding-top: 5px;
+  padding-right: 10px;
+}
+
+.settings-save {
+    margin-left: 182px;
+    margin-top: 5px;
+}
+
+.settings {
+}
+
+.settings h3 {
+  display: inline;
+}
+
+.control-character {
+}
+
+.control-character label {
+  width: 140px;
+}
+
+.control-character input {
+  margin-right: 20px;
+  width: 55px;
+  display: inline-block;
+}
+
+.settings-label-control-character {
+  width: 140px;
+}
+
+.settings-label-control-decimal {
+  width: 75px;
+}
+
+.settings-label-control-ascii {
+  width: 55px !important;
+}
+
+.settings-label-control-hex {
 }

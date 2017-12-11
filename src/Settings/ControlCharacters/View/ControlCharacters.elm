@@ -1,53 +1,98 @@
 module Settings.ControlCharacters.View.ControlCharacters exposing (..)
 
+import Char
+import Hex as Hex exposing (toString)
 import Html exposing (Html, div, input, text, button, label)
 import Html.Attributes exposing (class, value)
 import Html.Events exposing (onClick, onInput)
 import Msg as Main exposing (..)
 import Route.Msg as Route exposing (..)
 import Settings.Msg as Settings exposing (Msg(..))
+import Settings.Model as Settings
+import Settings.View.Layout as SettingsLayout
 import Settings.ControlCharacters.Model as ControlCharacters
 import Settings.ControlCharacters.Msg exposing (..)
 
 
-view : ControlCharacters.Model -> Html Main.Msg
-view model =
-    div [ class "container" ]
-        [ div [ class "row" ]
-            [ div [ class "form" ]
-                [ div [ class "form-input" ]
-                    [ label [] [ text "Start Of HL7" ]
-                    , input
-                        [ class "form-control"
-                        , onInput (MsgForSettings << MsgForControlCharacters << UpdateStartOfText)
-                        , value (toString model.startOfText)
-                        ]
-                        []
-                    ]
-                , div [ class "form-input" ]
-                    [ label [] [ text "End Of HL7" ]
-                    , input
-                        [ class "form-control"
-                        , onInput (MsgForSettings << MsgForControlCharacters << UpdateEndOfText)
-                        , value (toString model.endOfText)
-                        ]
-                        []
-                    ]
-                , div [ class "form-input" ]
-                    [ label [] [ text "End Of Segment" ]
-                    , input
-                        [ class "form-control"
-                        , onInput (MsgForSettings << MsgForControlCharacters << UpdateEndOfLine)
-                        , value (toString model.endOfLine)
-                        ]
-                        []
-                    ]
-                , button [ class "btn btn-secondary", onClick (MsgForRoute Route.GoHome) ] [ text "Go Back" ]
-                , button
-                    [ class "btn btn-primary"
-                    , onClick (MsgForSettings SaveSettings)
-                    ]
-                    [ text "Save" ]
-                ]
+view : Settings.Model -> Html Main.Msg
+view settings =
+    SettingsLayout.view settings
+        "Control Characters"
+        (div []
+            [ viewHeading
+            , viewCharacters settings
             ]
+        )
+
+
+viewHeading : Html Main.Msg
+viewHeading =
+    div []
+        [ label [ class "settings-label-control-character" ] [ text "Control Character" ]
+        , label [ class "settings-label-control-decimal" ] [ text "Decimal" ]
+        , label [ class "settings-label-control-ascii" ] [ text "ASCII" ]
+        , label [ class "settings-label-control-hex" ] [ text "Hex" ]
         ]
+
+
+viewCharacters : Settings.Model -> Html Main.Msg
+viewCharacters settings =
+    div
+        [ class "form" ]
+        [ viewInput
+            settings.controlCharacters.startOfText
+            "Start of HL7"
+            (MsgForSettings << MsgForControlCharacters << UpdateStartOfText)
+        , viewInput
+            settings.controlCharacters.endOfText
+            "End of HL7"
+            (MsgForSettings << MsgForControlCharacters << UpdateEndOfText)
+        , viewInput
+            settings.controlCharacters.endOfLine
+            "End of Segment"
+            (MsgForSettings << MsgForControlCharacters << UpdateEndOfLine)
+        , button
+            [ class "btn btn-primary settings-save"
+            , onClick (MsgForSettings SaveSettings)
+            ]
+            [ text "Save to Disk" ]
+        ]
+
+
+viewInput : Int -> String -> (String -> Main.Msg) -> Html Main.Msg
+viewInput controlCharacter labelText inputMsg =
+    div [ class "control-character" ]
+        [ label []
+            [ text labelText ]
+        , input
+            [ class "form-control"
+            , onInput inputMsg
+            , value (Basics.toString controlCharacter)
+            ]
+            []
+        , label [ class "settings-label-control-ascii" ] [ text (viewAsciiCharacter controlCharacter) ]
+        , label [ class "settings-label-control-hex" ] [ text (viewHexCode controlCharacter) ]
+        ]
+
+
+viewAsciiCharacter : Int -> String
+viewAsciiCharacter character =
+    if character < 32 then
+        "N/A"
+    else
+        Char.fromCode (character)
+            |> Basics.toString
+            |> printStr
+
+
+printStr : String -> String
+printStr str =
+    if String.left 1 str == "'" then
+        String.dropRight 1 (String.dropLeft 1 str)
+    else
+        str
+
+
+viewHexCode : Int -> String
+viewHexCode character =
+    "0x" ++ (Hex.toString character)

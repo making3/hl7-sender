@@ -7,15 +7,16 @@ TODO
 - [ ] Option to accept an ACK from receiving application.
 - [x] Notify the user that a message was sent
 - [ ] Notify if a message was successful / failed (i.e. rejected by the other system).
-- [ ] Add a simple About screen.
+- [ ] Add a simple About screen. This should use the layout from Settings, except "Settings - ". So create a "default layout" sort of page..
 - [x] Add an event-log sort of thing (i.e. "Connected to IP / Port", "Sent message").
 - [ ] Create an installer / bundler.
+- [ ] When editing control characters, disable "Save to Disk" unless the settings are updated.
 
 # Future
 - [ ] Read HL7 from a file.
 - [ ] Read multiple messages from a file and display them in a table.
 - [ ] Basic HL7 validation.
-- [ ] Reverse the text log output & auto scroll for new messages. 
+- [ ] Reverse the text log output & auto scroll for new messages.
 
 # Future Ideas
 - Broadcast messages to multiple connections / ports.
