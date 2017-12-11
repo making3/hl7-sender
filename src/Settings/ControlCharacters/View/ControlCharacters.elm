@@ -77,8 +77,20 @@ viewInput controlCharacter labelText inputMsg =
 
 viewAsciiCharacter : Int -> String
 viewAsciiCharacter character =
-    Char.fromCode (character)
-        |> Basics.toString
+    if character < 32 then
+        "N/A"
+    else
+        Char.fromCode (character)
+            |> Basics.toString
+            |> printStr
+
+
+printStr : String -> String
+printStr str =
+    if String.left 1 str == "'" then
+        String.dropRight 1 (String.dropLeft 1 str)
+    else
+        str
 
 
 viewHexCode : Int -> String
