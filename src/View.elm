@@ -23,4 +23,4 @@ page model =
             Home.view model
 
         Route.RouteControlCharacters ->
-            ControlCharacters.view model.settings.controlCharacters
+            ControlCharacters.view model.settings

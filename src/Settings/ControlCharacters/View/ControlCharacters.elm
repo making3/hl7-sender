@@ -6,48 +6,48 @@ import Html.Events exposing (onClick, onInput)
 import Msg as Main exposing (..)
 import Route.Msg as Route exposing (..)
 import Settings.Msg as Settings exposing (Msg(..))
+import Settings.Model as Settings
+import Settings.View.Layout as SettingsLayout
 import Settings.ControlCharacters.Model as ControlCharacters
 import Settings.ControlCharacters.Msg exposing (..)
 
 
-view : ControlCharacters.Model -> Html Main.Msg
-view model =
-    div [ class "container" ]
-        [ div [ class "row" ]
-            [ div [ class "form" ]
-                [ div [ class "form-input" ]
-                    [ label [] [ text "Start Of HL7" ]
-                    , input
-                        [ class "form-control"
-                        , onInput (MsgForSettings << MsgForControlCharacters << UpdateStartOfText)
-                        , value (toString model.startOfText)
-                        ]
-                        []
-                    ]
-                , div [ class "form-input" ]
-                    [ label [] [ text "End Of HL7" ]
-                    , input
-                        [ class "form-control"
-                        , onInput (MsgForSettings << MsgForControlCharacters << UpdateEndOfText)
-                        , value (toString model.endOfText)
-                        ]
-                        []
-                    ]
-                , div [ class "form-input" ]
-                    [ label [] [ text "End Of Segment" ]
-                    , input
-                        [ class "form-control"
-                        , onInput (MsgForSettings << MsgForControlCharacters << UpdateEndOfLine)
-                        , value (toString model.endOfLine)
-                        ]
-                        []
-                    ]
-                , button [ class "btn btn-secondary", onClick (MsgForRoute Route.GoHome) ] [ text "Go Back" ]
-                , button
-                    [ class "btn btn-primary"
-                    , onClick (MsgForSettings SaveSettings)
-                    ]
-                    [ text "Save" ]
+view : Settings.Model -> Html Main.Msg
+view settings =
+    SettingsLayout.view settings
+        "Control Characters"
+        (div
+            [ class "form" ]
+            [ viewInput
+                settings.controlCharacters.startOfText
+                "Start of HL7"
+                (MsgForSettings << MsgForControlCharacters << UpdateStartOfText)
+            , viewInput
+                settings.controlCharacters.endOfText
+                "End of HL7"
+                (MsgForSettings << MsgForControlCharacters << UpdateEndOfText)
+            , viewInput
+                settings.controlCharacters.endOfLine
+                "End of Segment"
+                (MsgForSettings << MsgForControlCharacters << UpdateEndOfLine)
+            , button
+                [ class "btn btn-primary settings-save"
+                , onClick (MsgForSettings SaveSettings)
                 ]
+                [ text "Save" ]
             ]
+        )
+
+
+viewInput : Int -> String -> (String -> Main.Msg) -> Html Main.Msg
+viewInput controlCharacter labelText inputMsg =
+    div [ class "control-character" ]
+        [ label []
+            [ text labelText ]
+        , input
+            [ class "form-control"
+            , onInput inputMsg
+            , value (toString controlCharacter)
+            ]
+            []
         ]
