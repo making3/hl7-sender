@@ -12,8 +12,4 @@ type alias Model =
 
 model : Route
 model =
-    RouteControlCharacters
-
-
-
--- TEMP: Reset back to RouteHome
+    RouteHome
