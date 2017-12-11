@@ -130,6 +130,22 @@ body {
 }
 
 .control-character input {
+  margin-right: 20px;
   width: 55px;
   display: inline-block;
+}
+
+.settings-label-control-character {
+  width: 140px;
+}
+
+.settings-label-control-decimal {
+  width: 75px;
+}
+
+.settings-label-control-ascii {
+  width: 55px !important;
+}
+
+.settings-label-control-hex {
 }
