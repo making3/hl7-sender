@@ -83,9 +83,13 @@ connectionButtons model =
         , onClick (MsgForConnection ToggleConnection)
         ]
         [ text (getConnectButtonText model.connection.isConnected) ]
-    , button [ class "clear-log btn btn-sm btn-block btn-secondary" ]
+    , button
+        [ class "clear-log btn btn-sm btn-block btn-secondary"
+        , onClick (MsgForConnection ClearLog)
+        ]
         [ text "Clear Log" ]
-    , button [ class "save-connection btn btn-sm btn-block btn-secondary" ]
+    , button
+        [ class "save-connection btn btn-sm btn-block btn-secondary" ]
         [ text "Save" ]
     ]
 

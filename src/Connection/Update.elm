@@ -57,6 +57,9 @@ updateConnection msg model =
             log model "info" "Sent a message"
                 |> updateSentCount
 
+        ClearLog ->
+            { model | logs = [] }
+
         _ ->
             model
 

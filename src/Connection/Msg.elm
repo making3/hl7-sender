@@ -7,6 +7,7 @@ type Msg
     | Sent
     | Connected
     | Disconnected
+    | ClearLog
     | ConnectionError String
     | ChangeDestinationIp String
     | ChangeDestinationPort String
