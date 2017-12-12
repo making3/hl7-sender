@@ -1,5 +1,8 @@
 module Model exposing (..)
 
+import Task
+import Dom.Scroll
+import Msg exposing (..)
 import Home.Model as Home
 import Route.Model as Route
 import Connection.Model as Connection
@@ -28,3 +31,8 @@ initialModel =
 log : Model -> String -> String -> Model
 log model level message =
     { model | logs = (message :: model.logs) }
+
+
+scrollLogsToBottom : Cmd Msg
+scrollLogsToBottom =
+    Task.attempt (always NoOp) <| Dom.Scroll.toBottom "logs"

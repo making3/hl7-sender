@@ -34,4 +34,5 @@ updateCmd msg model =
     Cmd.batch
         [ Connection.updateCmd msg model
         , Settings.updateCmd msg model
+        , Model.scrollLogsToBottom
         ]
