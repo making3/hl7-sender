@@ -1,6 +1,6 @@
 module Connection.View.Connection exposing (..)
 
-import Html exposing (Html, Attribute, program, div, input, button, text, label)
+import Html exposing (Html, Attribute, program, div, input, button, text, label, datalist, option)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onClick)
 import Connection.View.Log as Log exposing (view)
@@ -22,6 +22,7 @@ connectionFormControls : Connection.Model -> List (Html Main.Msg)
 connectionFormControls connection =
     [ formInput connection "Host" inputIpAddress
     , formInput connection "Port" inputPort
+    , formInput connection "Saved" inputSavedConnections
     ]
 
 
@@ -46,7 +47,7 @@ inputPort connection =
 formInput : Connection.Model -> String -> (Connection.Model -> Html Main.Msg) -> Html Main.Msg
 formInput connection name inputControl =
     div
-        [ class "form-group row" ]
+        [ class "form-group row connection-input-form" ]
         [ label
             [ class "col-sm-3 col-form-label col-form-label-sm" ]
             [ text name ]
@@ -66,6 +67,16 @@ inputControl inputPlaceholder getValue isConnected msg =
         , value getValue
         ]
         []
+
+
+inputSavedConnections : Connection.Model -> Html Main.Msg
+inputSavedConnections connection =
+    div []
+        [ input [ class "form-control form-control-sm", list "saved-connections" ]
+            []
+        , datalist [ id "saved-connections" ]
+            [ option [ value "foo" ] [] ]
+        ]
 
 
 getPortDisplay : Int -> String

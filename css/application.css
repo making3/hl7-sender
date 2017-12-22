@@ -60,8 +60,8 @@ body {
 .clear-log {
 }
 
-.save-connection {
-  display: none; /* Re-enable once this btuton is implemented */
+.connection-input-form {
+    margin-bottom: .5em !important;
 }
 
 .log {
