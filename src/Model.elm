@@ -1,5 +1,8 @@
 module Model exposing (..)
 
+import Task
+import Dom.Scroll
+import Msg exposing (..)
 import Home.Model as Home
 import Route.Model as Route
 import Connection.Model as Connection
@@ -25,6 +28,16 @@ initialModel =
     }
 
 
-log : Model -> String -> String -> Model
-log model level message =
-    { model | logs = (message :: model.logs) }
+getLogId : String
+getLogId =
+    "logs"
+
+
+log : String -> String -> Model -> ( Model, Cmd Msg )
+log level message model =
+    ( { model | logs = (message :: model.logs) }, scrollLogsToBottom )
+
+
+scrollLogsToBottom : Cmd Msg
+scrollLogsToBottom =
+    Task.attempt (always NoOp) <| Dom.Scroll.toBottom getLogId

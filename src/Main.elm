@@ -4,10 +4,10 @@ import Html exposing (program)
 import Msg as Main exposing (Msg(..))
 import Model as Main exposing (Model, initialModel)
 import View exposing (view)
-import Update exposing (updateWithCmd)
+import Update exposing (update)
 import Route.Msg as Route exposing (..)
 import Settings.Msg as Settings exposing (..)
-import Settings.Update as Settings exposing (updateCmd)
+import Settings.Update as Settings exposing (updateWithCmd)
 import Connection.Msg as Connection exposing (..)
 
 
@@ -16,14 +16,14 @@ main =
     program
         { init = init
         , view = view
-        , update = updateWithCmd
+        , update = update
         , subscriptions = subscriptions
         }
 
 
 init : ( Model, Cmd Main.Msg )
 init =
-    ( initialModel, Settings.updateCmd (Main.MsgForSettings Settings.GetSettings) initialModel )
+    ( initialModel, Settings.updateWithCmd Settings.GetSettings initialModel )
 
 
 

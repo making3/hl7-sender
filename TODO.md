@@ -11,12 +11,12 @@ TODO
 - [x] Add an event-log sort of thing (i.e. "Connected to IP / Port", "Sent message").
 - [ ] Create an installer / bundler.
 - [ ] When editing control characters, disable "Save to Disk" unless the settings are updated.
+- [x] Reverse the text log output & auto scroll for new messages.
 
 # Future
 - [ ] Read HL7 from a file.
 - [ ] Read multiple messages from a file and display them in a table.
 - [ ] Basic HL7 validation.
-- [ ] Reverse the text log output & auto scroll for new messages.
 
 # Future Ideas
 - Broadcast messages to multiple connections / ports.
