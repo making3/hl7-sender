@@ -6,12 +6,7 @@ import Model as Main exposing (Model, initialModel)
 import Router exposing (route)
 import Update exposing (update)
 import Subs as Subs exposing (init)
-
-
--- Commands
-
-import Settings.Ports as Settings exposing (get)
-import Home.Ports as Home exposing (loadVersion)
+import Commands as Commands exposing (init)
 
 
 main : Program Never Model Main.Msg
@@ -26,12 +21,4 @@ main =
 
 init : ( Model, Cmd Main.Msg )
 init =
-    ( initialModel, initialCommands )
-
-
-initialCommands : Cmd Main.Msg
-initialCommands =
-    Cmd.batch
-        [ Settings.get initialModel.settings
-        , Home.loadVersion
-        ]
+    ( initialModel, Commands.init initialModel )
