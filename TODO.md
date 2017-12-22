@@ -10,7 +10,7 @@ TODO
 - [ ] Add a simple About screen. This should use the layout from Settings, except "Settings - ". So create a "default layout" sort of page..
 - [x] Add an event-log sort of thing (i.e. "Connected to IP / Port", "Sent message").
 - [ ] Create an installer / bundler.
-- [ ] When editing control characters, disable "Save to Disk" unless the settings are updated.
+- [x] When editing control characters, disable "Save to Disk" unless the settings are updated.
 - [x] Reverse the text log output & auto scroll for new messages.
 
 # Future
