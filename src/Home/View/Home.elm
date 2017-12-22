@@ -8,23 +8,19 @@ import Model as Main
 import Home.Model as Home
 import Home.Msg as Home exposing (..)
 import Connection.Msg exposing (..)
-import Connection.View.Footer as Connection exposing (..)
 
 
 view : Main.Model -> Html Main.Msg
 view model =
-    div []
-        [ div [ class "simple-sender" ]
-            [ label [] [ text "HL7 Message" ]
-            , simpleSenderButtons model
-            , textarea
-                [ class "hl7 form-control"
-                , onInput (MsgForHome << ChangeHl7)
-                , rows 8
-                ]
-                [ text model.home.hl7 ]
+    div [ class "simple-sender" ]
+        [ label [] [ text "HL7 Message" ]
+        , simpleSenderButtons model
+        , textarea
+            [ class "hl7 form-control"
+            , onInput (MsgForHome << ChangeHl7)
+            , rows 8
             ]
-        , Connection.view model
+            [ text model.home.hl7 ]
         ]
 
 
