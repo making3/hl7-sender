@@ -1,26 +1,25 @@
 module Route.Update exposing (..)
 
 import Msg as Main exposing (..)
-import Route.Model exposing (..)
+import Model as Main exposing (..)
+import Route.Model as Route exposing (..)
 import Route.Msg as Route exposing (..)
 import Route.Menu exposing (..)
 
 
-update : Main.Msg -> Model -> Model
-update msgFor route =
-    case msgFor of
-        MsgForRoute msg ->
-            updateRoute msg route
-
-        _ ->
-            route
-
-
-updateRoute : Route.Msg -> Model -> Model
-updateRoute msg model =
+update : Route.Msg -> Main.Model -> ( Main.Model, Cmd Main.Msg )
+update msg model =
     case msg of
         GoHome ->
-            RouteHome
+            ( updateRoute model RouteHome, Cmd.none )
 
         MenuClick menuItem ->
-            menuClick model menuItem
+            ( menuClick model.route menuItem
+                |> updateRoute model
+            , Cmd.none
+            )
+
+
+updateRoute : Main.Model -> Route -> Main.Model
+updateRoute model newRoute =
+    { model | route = newRoute }

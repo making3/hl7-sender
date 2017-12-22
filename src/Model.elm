@@ -28,9 +28,9 @@ initialModel =
     }
 
 
-log : Model -> String -> String -> Model
-log model level message =
-    { model | logs = (message :: model.logs) }
+log : String -> String -> Model -> ( Model, Cmd Msg )
+log level message model =
+    ( { model | logs = (message :: model.logs) }, scrollLogsToBottom )
 
 
 scrollLogsToBottom : Cmd Msg
