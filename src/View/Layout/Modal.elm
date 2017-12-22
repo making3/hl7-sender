@@ -10,7 +10,7 @@ import Route.Msg as Route exposing (..)
 view : String -> Html Main.Msg -> Html Main.Msg
 view title content =
     div [ class "layout-padding" ]
-        [ div [ class "settings" ]
+        [ div [ class "modal-layout" ]
             [ h3 [] [ text title ]
             , button
                 [ class "float-right close"
