@@ -14,6 +14,20 @@ import Settings.ControlCharacters.Model as ControlCharacters
 import Settings.ControlCharacters.Msg exposing (..)
 
 
+route : Settings.Model -> Settings.Model
+route settings =
+    { settings | controlCharacters = resetTempCharacters settings.controlCharacters }
+
+
+resetTempCharacters : ControlCharacters.Model -> ControlCharacters.Model
+resetTempCharacters controlCharacters =
+    { controlCharacters
+        | tempStartOfText = controlCharacters.startOfText
+        , tempEndOfText = controlCharacters.endOfText
+        , tempEndOfLine = controlCharacters.endOfLine
+    }
+
+
 view : Settings.Model -> Html Main.Msg
 view settings =
     SettingsLayout.view settings
@@ -40,20 +54,20 @@ viewCharacters settings =
     div
         [ class "form" ]
         [ viewInput
-            settings.controlCharacters.startOfText
+            settings.controlCharacters.tempStartOfText
             "Start of HL7"
             (MsgForSettings << MsgForControlCharacters << UpdateStartOfText)
         , viewInput
-            settings.controlCharacters.endOfText
+            settings.controlCharacters.tempEndOfText
             "End of HL7"
             (MsgForSettings << MsgForControlCharacters << UpdateEndOfText)
         , viewInput
-            settings.controlCharacters.endOfLine
+            settings.controlCharacters.tempEndOfLine
             "End of Segment"
             (MsgForSettings << MsgForControlCharacters << UpdateEndOfLine)
         , button
             [ class "btn btn-primary settings-save"
-            , onClick (MsgForSettings SaveSettings)
+            , onClick (MsgForSettings (MsgForControlCharacters SaveControlCharacters))
             ]
             [ text "Save to Disk" ]
         ]

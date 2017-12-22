@@ -1,13 +1,15 @@
 module Route.Menu exposing (..)
 
-import Route.Model exposing (..)
+import Route.Model as Route exposing (..)
+import Model as Main exposing (..)
+import Settings.Router as Settings exposing (route)
 
 
-menuClick : Model -> String -> Model
+menuClick : Main.Model -> String -> Main.Model
 menuClick model menuItem =
     case menuItem of
         "edit-control-characters" ->
-            RouteControlCharacters
+            Settings.route model
 
         _ ->
-            RouteHome
+            { model | route = RouteHome }
