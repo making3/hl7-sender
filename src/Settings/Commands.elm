@@ -1,4 +1,4 @@
-port module Settings.Ports exposing (..)
+port module Settings.Commands exposing (..)
 
 import Msg as Main exposing (..)
 import Settings.Model as Settings exposing (..)

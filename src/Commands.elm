@@ -6,8 +6,8 @@ import Model as Main exposing (Model)
 
 -- Commands
 
-import Settings.Ports as Settings exposing (get)
-import Home.Ports as Home exposing (loadVersion)
+import Settings.Commands as Settings exposing (get)
+import Home.Commands as Home exposing (loadVersion)
 
 
 init : Model -> Cmd Msg

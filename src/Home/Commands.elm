@@ -1,4 +1,4 @@
-port module Home.Ports exposing (..)
+port module Home.Commands exposing (..)
 
 import Msg exposing (..)
 

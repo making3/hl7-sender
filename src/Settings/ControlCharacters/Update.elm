@@ -4,7 +4,7 @@ import Msg as Main exposing (..)
 import Model as Main exposing (..)
 import Settings.Msg as Settings exposing (..)
 import Settings.Model as Settings exposing (..)
-import Settings.Ports as Settings exposing (save)
+import Settings.Commands as Settings exposing (save)
 import Settings.ControlCharacters.Model as ControlCharacters exposing (Model)
 import Settings.ControlCharacters.Msg as ControlCharacters exposing (..)
 
