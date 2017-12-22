@@ -22,7 +22,7 @@ view model =
                 , onInput (MsgForHome << ChangeHl7)
                 , rows 8
                 ]
-                []
+                [ text model.home.hl7 ]
             ]
         , Connection.view model
         ]
