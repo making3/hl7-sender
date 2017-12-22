@@ -3,19 +3,21 @@ port module Main exposing (..)
 import Html exposing (program)
 import Msg as Main exposing (Msg(..))
 import Model as Main exposing (Model, initialModel)
-import View exposing (view)
+import Router exposing (route)
 import Update exposing (update)
+import Home.Msg as Home exposing (..)
 import Route.Msg as Route exposing (..)
 import Settings.Msg as Settings exposing (..)
-import Settings.Update as Settings exposing (updateWithCmd)
 import Connection.Msg as Connection exposing (..)
+import Settings.Ports as Settings exposing (get)
+import Home.Ports as Home exposing (loadVersion)
 
 
 main : Program Never Model Main.Msg
 main =
     program
         { init = init
-        , view = view
+        , view = route
         , update = update
         , subscriptions = subscriptions
         }
@@ -23,7 +25,15 @@ main =
 
 init : ( Model, Cmd Main.Msg )
 init =
-    ( initialModel, Settings.updateWithCmd Settings.GetSettings initialModel )
+    ( initialModel, initialCommands )
+
+
+initialCommands : Cmd Main.Msg
+initialCommands =
+    Cmd.batch
+        [ Settings.get initialModel.settings
+        , Home.loadVersion
+        ]
 
 
 
@@ -51,6 +61,9 @@ port connectionError : (String -> msg) -> Sub msg
 port sent : (() -> msg) -> Sub msg
 
 
+port version : (String -> msg) -> Sub msg
+
+
 subscriptions : Model -> Sub Main.Msg
 subscriptions model =
     Sub.batch
@@ -61,4 +74,5 @@ subscriptions model =
         , disconnected (MsgForConnection << (always Disconnected))
         , connectionError (MsgForConnection << ConnectionError)
         , sent (MsgForConnection << always Sent)
+        , version (MsgForHome << Version)
         ]

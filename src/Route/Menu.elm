@@ -11,5 +11,8 @@ menuClick model menuItem =
         "edit-control-characters" ->
             Settings.route model
 
+        "about" ->
+            { model | route = RouteAbout }
+
         _ ->
             { model | route = RouteHome }

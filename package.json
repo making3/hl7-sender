@@ -24,10 +24,8 @@
   "license": "MIT",
   "devDependencies": {
     "chokidar": "^1.7.0",
-    "electron-context-menu": "^0.9.1",
-    "webpack": "^3.8.1"
-  },
-  "dependencies": {
-    "bootstrap": "^4.0.0-alpha.6"
+    "bootstrap": "^4.0.0-alpha.6",
+    "electron": "^1.7.10",
+    "electron-context-menu": "^0.9.1"
   }
 }

@@ -47,7 +47,7 @@ body {
 /* Connection footer */
 
 .connection-row {
-  height: 115px;
+  height: 123px;
 }
 
 .connection {
@@ -105,7 +105,7 @@ body {
 
 /* Settings CSS */
 
-.settings .close {
+.modal-layout .close {
   padding-top: 5px;
   padding-right: 10px;
 }
@@ -119,10 +119,10 @@ body {
     margin-left: 5px;
 }
 
-.settings {
+.modal-layout {
 }
 
-.settings h3 {
+.modal-layout h3 {
   display: inline;
 }
 
@@ -152,4 +152,8 @@ body {
 }
 
 .settings-label-control-hex {
+}
+
+.block {
+    display: block;
 }

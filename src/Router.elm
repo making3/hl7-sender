@@ -1,18 +1,17 @@
-module View exposing (..)
+module Router exposing (..)
 
-import Html exposing (Html, Attribute, program, div, span, input, button, text, label, textarea)
-import Html.Attributes exposing (..)
-import Html.Events exposing (onInput, onClick)
+import Html exposing (Html)
 import Msg exposing (Msg(..))
 import Model as Main exposing (Model)
 import Home.View.Home as Home
+import Home.View.About as About
 import Home.Model exposing (Model)
 import Route.Model as Route exposing (Route)
 import Settings.ControlCharacters.View.ControlCharacters as ControlCharacters
 
 
-view : Main.Model -> Html Msg
-view model =
+route : Main.Model -> Html Msg
+route model =
     page model
 
 
@@ -22,5 +21,9 @@ page model =
         Route.RouteHome ->
             Home.view model
 
+        Route.RouteAbout ->
+            About.view model
+
+        -- TODO: Move this route to Settings.Router
         Route.RouteControlCharacters ->
             ControlCharacters.view model.settings

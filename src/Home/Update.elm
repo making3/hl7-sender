@@ -12,7 +12,22 @@ update msg model =
         ChangeHl7 newHl7 ->
             ( { model | home = updateHl7 model.home newHl7 }, Cmd.none )
 
+        Version version ->
+            ( updateVersion model version, Cmd.none )
+
 
 updateHl7 : Home.Model -> String -> Home.Model
 updateHl7 home newHl7 =
     { home | hl7 = newHl7 }
+
+
+updateVersion : Main.Model -> String -> Main.Model
+updateVersion model version =
+    let
+        home =
+            model.home
+
+        newHome =
+            { home | version = version }
+    in
+        { model | home = newHome }
