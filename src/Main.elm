@@ -7,7 +7,7 @@ import Router exposing (route)
 import Update exposing (update)
 import Route.Msg as Route exposing (..)
 import Settings.Msg as Settings exposing (..)
-import Settings.Update as Settings exposing (updateWithCmd)
+import Settings.Ports as Settings exposing (get)
 import Connection.Msg as Connection exposing (..)
 
 
@@ -23,7 +23,14 @@ main =
 
 init : ( Model, Cmd Main.Msg )
 init =
-    ( initialModel, Settings.updateWithCmd Settings.GetSettings initialModel )
+    ( initialModel, initialCommands )
+
+
+initialCommands : Cmd Main.Msg
+initialCommands =
+    Cmd.batch
+        [ Settings.get initialModel.settings
+        ]
 
 
 

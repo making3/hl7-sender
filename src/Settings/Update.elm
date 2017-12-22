@@ -34,18 +34,8 @@ update msg model =
         MsgForControlCharacters msgFor ->
             ControlCharacters.update msgFor model
 
-        _ ->
-            ( model, updateWithCmd msg model )
-
-
-updateWithCmd : Settings.Msg -> Main.Model -> Cmd Main.Msg
-updateWithCmd msg model =
-    case msg of
         GetSettings ->
-            get model.settings
+            ( model, get model.settings )
 
         SaveSettings ->
-            save model.settings
-
-        _ ->
-            Cmd.none
+            ( model, save model.settings )
