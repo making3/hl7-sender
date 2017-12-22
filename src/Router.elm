@@ -1,8 +1,6 @@
 module Router exposing (..)
 
-import Html exposing (Html, Attribute, program, div, span, input, button, text, label, textarea)
-import Html.Attributes exposing (..)
-import Html.Events exposing (onInput, onClick)
+import Html exposing (Html)
 import Msg exposing (Msg(..))
 import Model as Main exposing (Model)
 import Home.View.Home as Home
@@ -26,5 +24,6 @@ page model =
         Route.RouteAbout ->
             About.view
 
+        -- TODO: Move this route to Settings.Router
         Route.RouteControlCharacters ->
             ControlCharacters.view model.settings
