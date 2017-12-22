@@ -1,13 +1,14 @@
 module Connection.View.Connection exposing (..)
 
+import Json.Decode as Json
 import Html exposing (Html, Attribute, program, div, input, button, text, label, datalist, option)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onInput, onClick)
+import Html.Events exposing (on, onInput, onClick)
 import Connection.View.Log as Log exposing (view)
 import Msg as Main exposing (..)
 import Model as Main
 import Connection.Msg exposing (..)
-import Connection.Model as Connection exposing (Model)
+import Connection.Model as Connection exposing (Model, Connection)
 
 
 view : Main.Model -> Html Main.Msg
@@ -72,11 +73,30 @@ inputControl inputPlaceholder getValue isConnected msg =
 inputSavedConnections : Connection.Model -> Html Main.Msg
 inputSavedConnections connection =
     div []
-        [ input [ class "form-control form-control-sm", list "saved-connections" ]
+        [ input
+            [ class "form-control form-control-sm"
+            , list getSavedConnectionsId
+            , onInput (MsgForConnection << ChangeSavedConnection)
+            ]
             []
-        , datalist [ id "saved-connections" ]
-            [ option [ value "foo" ] [] ]
+        , datalist [ id getSavedConnectionsId ]
+            (List.map toOptions connection.savedConnections)
         ]
+
+
+getSavedConnectionsId : String
+getSavedConnectionsId =
+    "saved-connections"
+
+
+toOptions : Connection.Connection -> Html msg
+toOptions connection =
+    option [ value connection.name ] []
+
+
+onChange : (String -> msg) -> Attribute msg
+onChange handler =
+    on "change" <| Json.map handler <| Json.at [ "target", "value" ] Json.string
 
 
 getPortDisplay : Int -> String

@@ -1,6 +1,7 @@
 port module Connection.Update exposing (..)
 
 import Char
+import List exposing (head, filter)
 import Msg as Main exposing (..)
 import Model as Main exposing (..)
 import Connection.Model as Connection exposing (Model)
@@ -11,12 +12,8 @@ import Connection.Validations exposing (..)
 update : Connection.Msg -> Main.Model -> ( Main.Model, Cmd Main.Msg )
 update msg model =
     case msg of
-        ChangeDestinationIp newIp ->
-            ( { model
-                | connection = updateIpAddress model.connection newIp
-              }
-            , Cmd.none
-            )
+        ChangeDestinationIp ipAddress ->
+            ( updateIpAddress model ipAddress, Cmd.none )
 
         ChangeDestinationPort newPort ->
             case validatePort newPort of
@@ -74,9 +71,43 @@ update msg model =
                     , disconnect ()
                     )
 
+        ChangeSavedConnection savedConnectionName ->
+            ( updateConnectionFromSaved model savedConnectionName, Cmd.none )
 
-updateIpAddress connection newIp =
-    { connection | destinationIp = newIp }
+
+updateConnectionFromSaved : Main.Model -> String -> Main.Model
+updateConnectionFromSaved model connectionName =
+    let
+        connection =
+            model.connection
+
+        foundConnection =
+            List.head (List.filter (\m -> m.name == connectionName) connection.savedConnections)
+
+        replacedConnection =
+            case foundConnection of
+                Nothing ->
+                    connection
+
+                Just newConnection ->
+                    { connection
+                        | destinationIp = newConnection.destinationIp
+                        , destinationPort = newConnection.destinationPort
+                    }
+    in
+        { model | connection = replacedConnection }
+
+
+updateIpAddress : Main.Model -> String -> Main.Model
+updateIpAddress model ipAddress =
+    let
+        connection =
+            model.connection
+
+        newConnection =
+            { connection | destinationIp = ipAddress }
+    in
+        { model | connection = newConnection }
 
 
 updatePort connection newPort =

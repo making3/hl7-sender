@@ -11,6 +11,7 @@ type Msg
     | ConnectionError String
     | ChangeDestinationIp String
     | ChangeDestinationPort String
+    | ChangeSavedConnection String
 
 
 type PortValidation
