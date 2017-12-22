@@ -13,7 +13,13 @@ update : ControlCharacters.Msg -> Main.Model -> ( Main.Model, Cmd Main.Msg )
 update msg model =
     case msg of
         SaveControlCharacters ->
-            ( model, saveControlCharacters model.settings )
+            let
+                updatedModel =
+                    { model
+                        | settings = saveControlCharacters model.settings
+                    }
+            in
+                ( updatedModel, Settings.save updatedModel.settings )
 
         ResetControlCharacters ->
             ( resetTempCharacters msg model, Cmd.none )
@@ -24,13 +30,6 @@ update msg model =
               }
             , Cmd.none
             )
-
-
-updateTempCharacters : ControlCharacters.Msg -> Settings.Model -> Settings.Model
-updateTempCharacters msg settings =
-    { settings
-        | controlCharacters = updateForm msg settings.controlCharacters
-    }
 
 
 resetTempCharacters : ControlCharacters.Msg -> Main.Model -> Main.Model
@@ -48,6 +47,13 @@ resetTempCharacters msg model =
             }
     in
         { model | settings = updateSettings model.settings }
+
+
+updateTempCharacters : ControlCharacters.Msg -> Settings.Model -> Settings.Model
+updateTempCharacters msg settings =
+    { settings
+        | controlCharacters = updateForm msg settings.controlCharacters
+    }
 
 
 updateForm : ControlCharacters.Msg -> ControlCharacters.Model -> ControlCharacters.Model
@@ -76,18 +82,18 @@ isPending controlCharacters =
     }
 
 
-saveControlCharacters : Settings.Model -> Cmd Main.Msg
+saveControlCharacters : Settings.Model -> Settings.Model
 saveControlCharacters settings =
-    Settings.save { settings | controlCharacters = applyControlCharacters settings.controlCharacters }
-
-
-applyControlCharacters : ControlCharacters.Model -> ControlCharacters.Model
-applyControlCharacters controlCharacters =
-    { controlCharacters
-        | startOfText = controlCharacters.tempStartOfText
-        , endOfText = controlCharacters.tempEndOfText
-        , endOfLine = controlCharacters.tempEndOfLine
-    }
+    let
+        applyControlCharacters controlCharacters =
+            { controlCharacters
+                | startOfText = controlCharacters.tempStartOfText
+                , endOfText = controlCharacters.tempEndOfText
+                , endOfLine = controlCharacters.tempEndOfLine
+                , pendingUpdate = False
+            }
+    in
+        { settings | controlCharacters = applyControlCharacters settings.controlCharacters }
 
 
 getInt : String -> Int
