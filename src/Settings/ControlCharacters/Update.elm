@@ -34,16 +34,26 @@ updateForm : ControlCharacters.Msg -> ControlCharacters.Model -> ControlCharacte
 updateForm msg model =
     case msg of
         UpdateStartOfText newSot ->
-            { model | tempStartOfText = getInt newSot }
+            { model | tempStartOfText = getInt newSot } |> isPending
 
         UpdateEndOfText newEot ->
-            { model | tempEndOfText = getInt newEot }
+            { model | tempEndOfText = getInt newEot } |> isPending
 
         UpdateEndOfLine newEol ->
-            { model | tempEndOfLine = getInt newEol }
+            { model | tempEndOfLine = getInt newEol } |> isPending
 
         _ ->
             model
+
+
+isPending : ControlCharacters.Model -> ControlCharacters.Model
+isPending controlCharacters =
+    { controlCharacters
+        | pendingUpdate =
+            (controlCharacters.tempStartOfText /= controlCharacters.startOfText)
+                || (controlCharacters.tempEndOfText /= controlCharacters.endOfText)
+                || (controlCharacters.tempEndOfLine /= controlCharacters.endOfLine)
+    }
 
 
 saveControlCharacters : Settings.Model -> Cmd Main.Msg

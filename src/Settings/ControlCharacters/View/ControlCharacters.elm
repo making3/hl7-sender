@@ -3,7 +3,7 @@ module Settings.ControlCharacters.View.ControlCharacters exposing (..)
 import Char
 import Hex as Hex exposing (toString)
 import Html exposing (Html, div, input, text, button, label)
-import Html.Attributes exposing (class, value)
+import Html.Attributes exposing (class, value, disabled)
 import Html.Events exposing (onClick, onInput)
 import Msg as Main exposing (..)
 import Route.Msg as Route exposing (..)
@@ -12,20 +12,6 @@ import Settings.Model as Settings
 import Settings.View.Layout as SettingsLayout
 import Settings.ControlCharacters.Model as ControlCharacters
 import Settings.ControlCharacters.Msg exposing (..)
-
-
-route : Settings.Model -> Settings.Model
-route settings =
-    { settings | controlCharacters = resetTempCharacters settings.controlCharacters }
-
-
-resetTempCharacters : ControlCharacters.Model -> ControlCharacters.Model
-resetTempCharacters controlCharacters =
-    { controlCharacters
-        | tempStartOfText = controlCharacters.startOfText
-        , tempEndOfText = controlCharacters.endOfText
-        , tempEndOfLine = controlCharacters.endOfLine
-    }
 
 
 view : Settings.Model -> Html Main.Msg
@@ -68,6 +54,7 @@ viewCharacters settings =
         , button
             [ class "btn btn-primary settings-save"
             , onClick (MsgForSettings (MsgForControlCharacters SaveControlCharacters))
+            , disabled (settings.controlCharacters.pendingUpdate == False)
             ]
             [ text "Save to Disk" ]
         ]

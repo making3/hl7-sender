@@ -12,7 +12,8 @@ route settings =
 resetTempCharacters : ControlCharacters.Model -> ControlCharacters.Model
 resetTempCharacters controlCharacters =
     { controlCharacters
-        | tempStartOfText = controlCharacters.startOfText
+        | pendingUpdate = False
+        , tempStartOfText = controlCharacters.startOfText
         , tempEndOfText = controlCharacters.endOfText
         , tempEndOfLine = controlCharacters.endOfLine
     }
