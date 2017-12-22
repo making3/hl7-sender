@@ -8,42 +8,34 @@ import Settings.ControlCharacters.Update as ControlCharacters exposing (update)
 import Settings.ControlCharacters.Model as ControlCharacters exposing (encode)
 
 
-update : Main.Msg -> Main.Model -> Main.Model
-update msgFor model =
-    case msgFor of
-        MsgForSettings msg ->
-            updateSettings msg model
-
-        _ ->
-            model
-
-
-updateSettings : Settings.Msg -> Main.Model -> Main.Model
-updateSettings msg model =
+update : Settings.Msg -> Main.Model -> ( Main.Model, Cmd Main.Msg )
+update msg model =
     case msg of
         Saved errorMessage ->
-            log model "error" errorMessage
+            log "error" errorMessage model
 
         InitialSettings ( error, settingsJson ) ->
             case error of
                 "" ->
                     case Settings.toModel settingsJson of
                         Ok newSettings ->
-                            { model | settings = newSettings }
+                            ( { model | settings = newSettings }, Cmd.none )
 
                         Err errorMessage ->
-                            log model "error" errorMessage
+                            log "error" errorMessage model
 
                 errorMessage ->
-                    log model "error" errorMessage
+                    log "error" errorMessage model
 
         MsgForControlCharacters msgFor ->
-            { model
+            ( { model
                 | settings = updateControlCharacters model.settings msgFor
-            }
+              }
+            , Cmd.none
+            )
 
         _ ->
-            model
+            ( model, updateWithCmd msg model )
 
 
 updateControlCharacters settings msgFor =
@@ -58,24 +50,14 @@ port settingsGet : String -> Cmd msg
 port settingsSave : String -> Cmd msg
 
 
-updateCmd : Main.Msg -> Main.Model -> Cmd a
-updateCmd msgFor model =
-    case msgFor of
-        MsgForSettings msg ->
-            updateWithCmd msg model.settings
-
-        _ ->
-            Cmd.none
-
-
-updateWithCmd : Settings.Msg -> Settings.Model -> Cmd a
-updateWithCmd msg settings =
+updateWithCmd : Settings.Msg -> Main.Model -> Cmd Main.Msg
+updateWithCmd msg model =
     case msg of
         GetSettings ->
-            settingsGet (Settings.toJson settings)
+            settingsGet (Settings.toJson model.settings)
 
         SaveSettings ->
-            settingsSave (Settings.toJson settings)
+            settingsSave (Settings.toJson model.settings)
 
         _ ->
             Cmd.none
