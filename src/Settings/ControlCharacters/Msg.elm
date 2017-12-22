@@ -5,3 +5,5 @@ type Msg
     = UpdateStartOfText String
     | UpdateEndOfText String
     | UpdateEndOfLine String
+    | SaveControlCharacters
+    | ResetControlCharacters

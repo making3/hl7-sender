@@ -110,9 +110,13 @@ body {
   padding-right: 10px;
 }
 
-.settings-save {
-    margin-left: 182px;
+.settings-buttons {
+    margin-left: 165px;
     margin-top: 5px;
+}
+
+.settings-buttons button {
+    margin-left: 5px;
 }
 
 .settings {

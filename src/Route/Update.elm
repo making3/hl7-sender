@@ -14,10 +14,7 @@ update msg model =
             ( updateRoute model RouteHome, Cmd.none )
 
         MenuClick menuItem ->
-            ( menuClick model.route menuItem
-                |> updateRoute model
-            , Cmd.none
-            )
+            ( menuClick model menuItem, Cmd.none )
 
 
 updateRoute : Main.Model -> Route -> Main.Model

@@ -3,7 +3,7 @@ module Settings.ControlCharacters.View.ControlCharacters exposing (..)
 import Char
 import Hex as Hex exposing (toString)
 import Html exposing (Html, div, input, text, button, label)
-import Html.Attributes exposing (class, value)
+import Html.Attributes exposing (class, value, disabled)
 import Html.Events exposing (onClick, onInput)
 import Msg as Main exposing (..)
 import Route.Msg as Route exposing (..)
@@ -40,22 +40,31 @@ viewCharacters settings =
     div
         [ class "form" ]
         [ viewInput
-            settings.controlCharacters.startOfText
+            settings.controlCharacters.tempStartOfText
             "Start of HL7"
             (MsgForSettings << MsgForControlCharacters << UpdateStartOfText)
         , viewInput
-            settings.controlCharacters.endOfText
+            settings.controlCharacters.tempEndOfText
             "End of HL7"
             (MsgForSettings << MsgForControlCharacters << UpdateEndOfText)
         , viewInput
-            settings.controlCharacters.endOfLine
+            settings.controlCharacters.tempEndOfLine
             "End of Segment"
             (MsgForSettings << MsgForControlCharacters << UpdateEndOfLine)
-        , button
-            [ class "btn btn-primary settings-save"
-            , onClick (MsgForSettings SaveSettings)
+        , div [ class "settings-buttons" ]
+            [ button
+                [ class "btn btn-primary"
+                , onClick (MsgForSettings (MsgForControlCharacters SaveControlCharacters))
+                , disabled (settings.controlCharacters.pendingUpdate == False)
+                ]
+                [ text "Save" ]
+            , button
+                [ class "btn btn-primary"
+                , onClick (MsgForSettings (MsgForControlCharacters ResetControlCharacters))
+                , disabled (settings.controlCharacters.pendingUpdate == False)
+                ]
+                [ text "Reset" ]
             ]
-            [ text "Save to Disk" ]
         ]
 
 
