@@ -1,4 +1,4 @@
-port module Settings.Update exposing (..)
+module Settings.Update exposing (..)
 
 import Msg as Main exposing (..)
 import Model as Main exposing (..)

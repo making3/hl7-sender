@@ -1,7 +1,8 @@
 'use strict';
-const fs   = require('fs');
-const path = require('path');
-const electron = require('electron');
+const fs          = require('fs');
+const path        = require('path');
+const electron    = require('electron');
+const packageJson = require('../../package');
 
 let settingsFile;
 exports.watchForEvents = (app) => {
@@ -26,6 +27,10 @@ exports.watchForEvents = (app) => {
                 settingsJson
             ]);
         });
+    });
+
+    app.ports.versionGet.subscribe(() => {
+        app.ports.version.send(packageJson.version);
     });
 };
 
