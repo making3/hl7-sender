@@ -1,4 +1,4 @@
-module View exposing (..)
+module Router exposing (..)
 
 import Html exposing (Html, Attribute, program, div, span, input, button, text, label, textarea)
 import Html.Attributes exposing (..)
@@ -12,8 +12,8 @@ import Route.Model as Route exposing (Route)
 import Settings.ControlCharacters.View.ControlCharacters as ControlCharacters
 
 
-view : Main.Model -> Html Msg
-view model =
+route : Main.Model -> Html Msg
+route model =
     page model
 
 

@@ -3,7 +3,7 @@ port module Main exposing (..)
 import Html exposing (program)
 import Msg as Main exposing (Msg(..))
 import Model as Main exposing (Model, initialModel)
-import View exposing (view)
+import Router exposing (route)
 import Update exposing (update)
 import Route.Msg as Route exposing (..)
 import Settings.Msg as Settings exposing (..)
@@ -15,7 +15,7 @@ main : Program Never Model Main.Msg
 main =
     program
         { init = init
-        , view = view
+        , view = route
         , update = update
         , subscriptions = subscriptions
         }
