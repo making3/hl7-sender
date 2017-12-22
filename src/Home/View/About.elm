@@ -3,16 +3,25 @@ module Home.View.About exposing (..)
 import Msg exposing (..)
 import Model exposing (Model)
 import View.Layout.Modal as Layout exposing (view)
-import Html exposing (Html, div, label, text)
+import Html exposing (Html, div, label, text, hr)
+import Html.Attributes exposing (class)
 
 
 view : Html Msg
 view =
     Layout.view
-        "About"
-        (div [] [ label [] [ text aboutText ] ])
+        "HL7 Sender"
+        about
+
+
+about : Html Msg
+about =
+    div []
+        [ label [ class "block" ] [ text aboutText ]
+        , label [ class "block" ] [ text "Version 0.1.0" ]
+        ]
 
 
 aboutText : String
 aboutText =
-    "This is text about the application"
+    "HL7 Sender is a utility for testing internal hl7 receiving applications."

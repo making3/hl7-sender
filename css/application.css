@@ -153,3 +153,7 @@ body {
 
 .settings-label-control-hex {
 }
+
+.block {
+    display: block;
+}
