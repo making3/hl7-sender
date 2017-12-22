@@ -15,7 +15,6 @@ type alias Model =
     , route : Route.Model
     , connection : Connection.Model
     , settings : Settings.Model
-    , version : String
     }
 
 
@@ -26,7 +25,6 @@ initialModel =
     , route = Route.model
     , connection = Connection.model
     , settings = Settings.model
-    , version = "N/A"
     }
 
 

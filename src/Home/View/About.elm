@@ -18,7 +18,7 @@ about : Model -> Html Msg
 about model =
     div []
         [ label [ class "block" ] [ text aboutText ]
-        , label [ class "block" ] [ text ("Version " ++ model.version) ]
+        , label [ class "block" ] [ text ("Version " ++ model.home.version) ]
         ]
 
 
