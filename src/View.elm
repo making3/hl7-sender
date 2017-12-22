@@ -6,6 +6,7 @@ import Html.Events exposing (onInput, onClick)
 import Msg exposing (Msg(..))
 import Model as Main exposing (Model)
 import Home.View.Home as Home
+import Home.View.About as About
 import Home.Model exposing (Model)
 import Route.Model as Route exposing (Route)
 import Settings.ControlCharacters.View.ControlCharacters as ControlCharacters
@@ -21,6 +22,9 @@ page model =
     case model.route of
         Route.RouteHome ->
             Home.view model
+
+        Route.RouteAbout ->
+            About.view
 
         Route.RouteControlCharacters ->
             ControlCharacters.view model.settings

@@ -72,7 +72,7 @@ function getMenu() {
                 {
                     label: 'About',
                     click: () => {
-                        // TODO: Add an about page.
+                        mainWindow.webContents.send('menu-click', 'about');
                     }
                 },
                 {
