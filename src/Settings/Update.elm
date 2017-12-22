@@ -13,7 +13,10 @@ update : Settings.Msg -> Main.Model -> ( Main.Model, Cmd Main.Msg )
 update msg model =
     case msg of
         Saved errorMessage ->
-            log "error" errorMessage model
+            if errorMessage == "" then
+                log "info" "Saved settings" model
+            else
+                log "error" errorMessage model
 
         InitialSettings ( error, settingsJson ) ->
             case error of
