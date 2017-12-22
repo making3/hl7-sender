@@ -9,7 +9,7 @@ import Model as Main
 view : Main.Model -> List (Html Main.Msg)
 view model =
     [ textarea
-        [ id "logs"
+        [ id Main.getLogId
         , readonly True
         , rows 5
         , class "form-control"

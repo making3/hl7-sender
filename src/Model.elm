@@ -28,6 +28,11 @@ initialModel =
     }
 
 
+getLogId : String
+getLogId =
+    "logs"
+
+
 log : String -> String -> Model -> ( Model, Cmd Msg )
 log level message model =
     ( { model | logs = (message :: model.logs) }, scrollLogsToBottom )
@@ -35,4 +40,4 @@ log level message model =
 
 scrollLogsToBottom : Cmd Msg
 scrollLogsToBottom =
-    Task.attempt (always NoOp) <| Dom.Scroll.toBottom "logs"
+    Task.attempt (always NoOp) <| Dom.Scroll.toBottom getLogId
