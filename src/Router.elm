@@ -22,7 +22,7 @@ page model =
             Home.view model
 
         Route.RouteAbout ->
-            About.view
+            About.view model
 
         -- TODO: Move this route to Settings.Router
         Route.RouteControlCharacters ->

@@ -7,18 +7,18 @@ import Html exposing (Html, div, label, text, hr)
 import Html.Attributes exposing (class)
 
 
-view : Html Msg
-view =
+view : Model -> Html Msg
+view model =
     Layout.view
         "HL7 Sender"
-        about
+        (about model)
 
 
-about : Html Msg
-about =
+about : Model -> Html Msg
+about model =
     div []
         [ label [ class "block" ] [ text aboutText ]
-        , label [ class "block" ] [ text "Version 0.1.0" ]
+        , label [ class "block" ] [ text ("Version " ++ model.version) ]
         ]
 
 
