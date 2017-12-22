@@ -56,7 +56,7 @@ viewCharacters settings =
             , onClick (MsgForSettings (MsgForControlCharacters SaveControlCharacters))
             , disabled (settings.controlCharacters.pendingUpdate == False)
             ]
-            [ text "Save to Disk" ]
+            [ text "Save" ]
         ]
 
 
