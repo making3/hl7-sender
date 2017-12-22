@@ -16,7 +16,7 @@ import Settings.ControlCharacters.Msg exposing (..)
 
 view : Settings.Model -> Html Main.Msg
 view settings =
-    SettingsLayout.view settings
+    SettingsLayout.view
         "Control Characters"
         (div []
             [ viewHeading
