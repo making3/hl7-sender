@@ -12,6 +12,7 @@ TODO
 - [ ] Create an installer / bundler.
 - [x] When editing control characters, disable "Save to Disk" unless the settings are updated.
 - [x] Reverse the text log output & auto scroll for new messages.
+- [ ] Add escape functionality when viewing a "modal" screen.
 
 # Future
 - [ ] Read HL7 from a file.
