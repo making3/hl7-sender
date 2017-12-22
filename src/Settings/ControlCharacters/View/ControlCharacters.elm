@@ -51,12 +51,20 @@ viewCharacters settings =
             settings.controlCharacters.tempEndOfLine
             "End of Segment"
             (MsgForSettings << MsgForControlCharacters << UpdateEndOfLine)
-        , button
-            [ class "btn btn-primary settings-save"
-            , onClick (MsgForSettings (MsgForControlCharacters SaveControlCharacters))
-            , disabled (settings.controlCharacters.pendingUpdate == False)
+        , div [ class "settings-buttons" ]
+            [ button
+                [ class "btn btn-primary"
+                , onClick (MsgForSettings (MsgForControlCharacters SaveControlCharacters))
+                , disabled (settings.controlCharacters.pendingUpdate == False)
+                ]
+                [ text "Save" ]
+            , button
+                [ class "btn btn-primary"
+                , onClick (MsgForSettings (MsgForControlCharacters ResetControlCharacters))
+                , disabled (settings.controlCharacters.pendingUpdate == False)
+                ]
+                [ text "Reset" ]
             ]
-            [ text "Save" ]
         ]
 
 

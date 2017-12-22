@@ -6,3 +6,4 @@ type Msg
     | UpdateEndOfText String
     | UpdateEndOfLine String
     | SaveControlCharacters
+    | ResetControlCharacters

@@ -15,6 +15,9 @@ update msg model =
         SaveControlCharacters ->
             ( model, saveControlCharacters model.settings )
 
+        ResetControlCharacters ->
+            ( resetTempCharacters msg model, Cmd.none )
+
         _ ->
             ( { model
                 | settings = updateTempCharacters msg model.settings
@@ -28,6 +31,23 @@ updateTempCharacters msg settings =
     { settings
         | controlCharacters = updateForm msg settings.controlCharacters
     }
+
+
+resetTempCharacters : ControlCharacters.Msg -> Main.Model -> Main.Model
+resetTempCharacters msg model =
+    let
+        updateSettings settings =
+            { settings | controlCharacters = updateControlCharacters settings.controlCharacters }
+
+        updateControlCharacters controlCharacters =
+            { controlCharacters
+                | tempStartOfText = controlCharacters.startOfText
+                , tempEndOfText = controlCharacters.endOfText
+                , tempEndOfLine = controlCharacters.endOfLine
+                , pendingUpdate = False
+            }
+    in
+        { model | settings = updateSettings model.settings }
 
 
 updateForm : ControlCharacters.Msg -> ControlCharacters.Model -> ControlCharacters.Model
