@@ -5,6 +5,7 @@ type Route
     = RouteHome
     | RouteControlCharacters
     | RouteAbout
+    | RouteSaveConnection
 
 
 type alias Model =

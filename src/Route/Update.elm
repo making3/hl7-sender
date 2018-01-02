@@ -16,6 +16,9 @@ update msg model =
         MenuClick menuItem ->
             ( menuClick model menuItem, Cmd.none )
 
+        SaveConnection ->
+            ( updateRoute model RouteSaveConnection, Cmd.none )
+
 
 updateRoute : Main.Model -> Route -> Main.Model
 updateRoute model newRoute =

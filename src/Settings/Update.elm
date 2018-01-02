@@ -39,3 +39,6 @@ update msg model =
 
         SaveSettings ->
             ( model, save model.settings )
+
+        SaveConnection ->
+            ( model, Cmd.none )

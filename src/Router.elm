@@ -9,6 +9,7 @@ import View.Layout.Primary as PrimaryLayout exposing (view)
 import Home.Model exposing (Model)
 import Route.Model as Route exposing (Route)
 import Settings.ControlCharacters.View.ControlCharacters as ControlCharacters
+import Settings.View.SaveConnection as SaveConnection
 
 
 route : Main.Model -> Html Msg
@@ -28,3 +29,6 @@ page model =
         -- TODO: Move this route to Settings.Router
         Route.RouteControlCharacters ->
             ControlCharacters.view model.settings
+
+        Route.RouteSaveConnection ->
+            SaveConnection.view model.settings

@@ -1,7 +1,7 @@
 module Connection.View.Connection exposing (..)
 
 import Json.Decode as Json
-import Html exposing (Html, Attribute, program, div, input, button, text, label, datalist, option)
+import Html exposing (Html, Attribute, div, input, button, text, label, select, option)
 import Html.Attributes exposing (..)
 import Html.Events exposing (on, onInput, onClick)
 import Connection.View.Log as Log exposing (view)
@@ -9,6 +9,7 @@ import Msg as Main exposing (..)
 import Model as Main
 import Connection.Msg exposing (..)
 import Connection.Model as Connection exposing (Model, Connection)
+import Route.Msg as Route exposing (..)
 
 
 view : Main.Model -> Html Main.Msg
@@ -21,9 +22,9 @@ view model =
 
 connectionFormControls : Connection.Model -> List (Html Main.Msg)
 connectionFormControls connection =
-    [ formInput connection "Host" inputIpAddress
+    [ formInput connection "Saved" inputSavedConnections
+    , formInput connection "Host" inputIpAddress
     , formInput connection "Port" inputPort
-    , formInput connection "Saved" inputSavedConnections
     ]
 
 
@@ -73,13 +74,11 @@ inputControl inputPlaceholder getValue isConnected msg =
 inputSavedConnections : Connection.Model -> Html Main.Msg
 inputSavedConnections connection =
     div []
-        [ input
-            [ class "form-control form-control-sm"
-            , list getSavedConnectionsId
+        [ select
+            [ id getSavedConnectionsId
+            , class "form-control form-control-sm"
             , onInput (MsgForConnection << ChangeSavedConnection)
             ]
-            []
-        , datalist [ id getSavedConnectionsId ]
             (List.map toOptions connection.savedConnections)
         ]
 
@@ -91,7 +90,7 @@ getSavedConnectionsId =
 
 toOptions : Connection.Connection -> Html msg
 toOptions connection =
-    option [ value connection.name ] []
+    option [ value connection.name ] [ text connection.name ]
 
 
 onChange : (String -> msg) -> Attribute msg
@@ -120,7 +119,9 @@ connectionButtons model =
         ]
         [ text "Clear Log" ]
     , button
-        [ class "save-connection btn btn-sm btn-block btn-secondary" ]
+        [ class "save-connection btn btn-sm btn-block btn-secondary"
+        , onClick (MsgForRoute SaveConnection)
+        ]
         [ text "Save" ]
     ]
 

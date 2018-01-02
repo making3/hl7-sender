@@ -9,5 +9,5 @@ route : Main.Model -> Main.Model
 route model =
     { model
         | settings = ControlCharacters.route model.settings
-        , route = RouteControlCharacters
+        , route = Route.RouteControlCharacters
     }
