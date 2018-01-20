@@ -9,6 +9,11 @@ import Home.View.Home as Home
 import Home.View.About as About
 
 
+routeHome : Main.Model -> Main.Model
+routeHome model =
+    { model | route = Root.RouteHome Home.RouteHome }
+
+
 routeMenu : Main.Model -> String -> Main.Model
 routeMenu model route =
     case route of
@@ -16,7 +21,7 @@ routeMenu model route =
             { model | route = Root.RouteHome Home.RouteAbout }
 
         _ ->
-            { model | route = Root.RouteHome Home.RouteHome }
+            routeHome model
 
 
 render : Main.Model -> Home.Route -> Html Msg
