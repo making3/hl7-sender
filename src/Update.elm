@@ -1,12 +1,11 @@
 module Update exposing (..)
 
-import Msg exposing (..)
+import Msg exposing (Msg(..))
 import Model exposing (Model)
-import Home.Update as Home
-import Route.Update as Route
-import Connection.Update as Connection
-import Settings.Update as Settings
-import Settings.ControlCharacters.Update as ControlCharacters
+import Home.Update as Home exposing (update)
+import Route.Update as Route exposing (update)
+import Connection.Update as Connection exposing (update)
+import Settings.Update as Settings exposing (update)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -24,5 +23,5 @@ update msgFor model =
         MsgForConnection msg ->
             Connection.update msg model
 
-        _ ->
+        NoOp ->
             ( model, Cmd.none )
