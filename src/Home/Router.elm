@@ -9,8 +9,8 @@ import Home.View.Home as Home
 import Home.View.About as About
 
 
-route : Main.Model -> String -> Main.Model
-route model route =
+routeMenu : Main.Model -> String -> Main.Model
+routeMenu model route =
     case route of
         "about" ->
             { model | route = Root.RouteHome Home.RouteAbout }

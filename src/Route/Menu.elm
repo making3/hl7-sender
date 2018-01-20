@@ -2,7 +2,7 @@ module Route.Menu exposing (..)
 
 import Model as Main exposing (Model)
 import Settings.Router as Settings exposing (route)
-import Home.Router as Home exposing (route)
+import Home.Router as Home exposing (routeMenu)
 import Route.Model as Root exposing (Route)
 import Home.Route as Home exposing (Route)
 
@@ -14,4 +14,4 @@ menuClick model menuItem =
             Settings.route model
 
         _ ->
-            Home.route model menuItem
+            Home.routeMenu model menuItem
