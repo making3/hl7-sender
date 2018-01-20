@@ -24,5 +24,5 @@ update msgFor model =
         MsgForConnection msg ->
             Connection.update msg model
 
-        _ ->
+        NoOp ->
             ( model, Cmd.none )
