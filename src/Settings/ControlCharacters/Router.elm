@@ -4,14 +4,26 @@ import Html exposing (Html)
 import Msg exposing (Msg(..))
 import Model as Main exposing (Model)
 import Settings.Model as Settings exposing (Model)
+import Route.Model as Root exposing (Route)
+import Settings.Route as Settings exposing (Route)
 import Settings.ControlCharacters.Model as ControlCharacters exposing (Model)
 import Settings.ControlCharacters.Route as ControlCharacters exposing (Route)
 import Settings.ControlCharacters.View.ControlCharacters as ControlCharacters
 
 
-route : Settings.Model -> Settings.Model
-route settings =
-    { settings | controlCharacters = resetTempCharacters settings.controlCharacters }
+route : Main.Model -> Main.Model
+route model =
+    let
+        settings =
+            model.settings
+
+        routedSettings =
+            { settings | controlCharacters = resetTempCharacters settings.controlCharacters }
+    in
+        { model
+            | settings = routedSettings
+            , route = Root.RouteSettings (Settings.RouteControlCharacters ControlCharacters.RouteHome)
+        }
 
 
 resetTempCharacters : ControlCharacters.Model -> ControlCharacters.Model
