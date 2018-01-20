@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "elm": "elm make src/Main.elm --output elm.js || true",
-    "elm:watch": "chokidar '**/*.elm' -c 'npm run elm'",
+    "elm:watch": "./node_modules/.bin/chokidar '**/*.elm' -c 'npm run elm'",
     "debug": "electron main.js --debug",
     "start": "electron main.js",
     "watch": "npm run debug & npm run elm:watch"
@@ -23,8 +23,8 @@
   "author": "Matthew King <making3dev@gmail.com> (https://making3.github.io/)",
   "license": "MIT",
   "devDependencies": {
-    "chokidar": "^1.7.0",
     "bootstrap": "^4.0.0-alpha.6",
+    "chokidar-cli": "^1.2.0",
     "electron": "^1.7.10",
     "electron-context-menu": "^0.9.1"
   }
