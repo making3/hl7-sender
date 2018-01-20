@@ -2,8 +2,9 @@ module Route.Menu exposing (..)
 
 import Model as Main exposing (Model)
 import Settings.Router as Settings exposing (route)
+import Home.Router as Home exposing (route)
 import Route.Model as Root exposing (Route)
-import Home.Route as Home exposing (Route(..))
+import Home.Route as Home exposing (Route)
 
 
 menuClick : Main.Model -> String -> Main.Model
@@ -12,8 +13,5 @@ menuClick model menuItem =
         "edit-control-characters" ->
             Settings.route model
 
-        "about" ->
-            { model | route = Root.RouteHome Home.RouteAbout }
-
         _ ->
-            { model | route = Root.RouteHome Home.RouteHome }
+            Home.route model menuItem
