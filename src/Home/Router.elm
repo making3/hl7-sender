@@ -8,8 +8,8 @@ import Home.View.Home as Home
 import Home.View.About as About
 
 
-route : Main.Model -> Route -> Html Msg
-route model internalRoute =
+render : Main.Model -> Route -> Html Msg
+render model internalRoute =
     case internalRoute of
         RouteHome ->
             Home.view model
