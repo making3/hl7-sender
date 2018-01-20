@@ -1,8 +1,10 @@
 module Route.Model exposing (..)
 
+import Home.Route as Home exposing (Route(..))
+
 
 type Route
-    = RouteHome
+    = RouteHome Home.Route
     | RouteControlCharacters
     | RouteAbout
 
@@ -13,4 +15,4 @@ type alias Model =
 
 model : Route
 model =
-    RouteHome
+    RouteHome Home.RouteHome

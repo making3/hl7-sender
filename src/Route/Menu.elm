@@ -1,8 +1,9 @@
 module Route.Menu exposing (..)
 
-import Route.Model as Route exposing (..)
-import Model as Main exposing (..)
+import Model as Main exposing (Model)
 import Settings.Router as Settings exposing (route)
+import Route.Model as Root exposing (Route)
+import Home.Route as Home exposing (Route(..))
 
 
 menuClick : Main.Model -> String -> Main.Model
@@ -12,7 +13,7 @@ menuClick model menuItem =
             Settings.route model
 
         "about" ->
-            { model | route = RouteAbout }
+            { model | route = Root.RouteAbout }
 
         _ ->
-            { model | route = RouteHome }
+            { model | route = Root.RouteHome Home.RouteHome }

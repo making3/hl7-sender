@@ -6,8 +6,9 @@ import Model as Main exposing (Model)
 import Home.View.Home as Home
 import Home.View.About as About
 import View.Layout.Primary as PrimaryLayout exposing (view)
-import Home.Model exposing (Model)
-import Route.Model as Route exposing (Route)
+import Home.Model as Home exposing (Model)
+import Route.Model as Root exposing (Route)
+import Home.Router as Home exposing (route)
 import Settings.ControlCharacters.View.ControlCharacters as ControlCharacters
 
 
@@ -19,12 +20,12 @@ route model =
 page : Main.Model -> Html Msg
 page model =
     case model.route of
-        Route.RouteHome ->
-            Home.view model
+        Root.RouteHome internalRoute ->
+            Home.route model internalRoute
 
-        Route.RouteAbout ->
+        Root.RouteAbout ->
             About.view model
 
         -- TODO: Move this route to Settings.Router
-        Route.RouteControlCharacters ->
+        Root.RouteControlCharacters ->
             ControlCharacters.view model.settings
