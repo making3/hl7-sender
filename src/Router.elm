@@ -23,9 +23,6 @@ page model =
         Root.RouteHome internalRoute ->
             Home.route model internalRoute
 
-        Root.RouteAbout ->
-            About.view model
-
         -- TODO: Move this route to Settings.Router
         Root.RouteControlCharacters ->
             ControlCharacters.view model.settings

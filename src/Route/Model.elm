@@ -6,7 +6,6 @@ import Home.Route as Home exposing (Route(..))
 type Route
     = RouteHome Home.Route
     | RouteControlCharacters
-    | RouteAbout
 
 
 type alias Model =

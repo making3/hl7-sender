@@ -13,7 +13,7 @@ menuClick model menuItem =
             Settings.route model
 
         "about" ->
-            { model | route = Root.RouteAbout }
+            { model | route = Root.RouteHome Home.RouteAbout }
 
         _ ->
             { model | route = Root.RouteHome Home.RouteHome }
