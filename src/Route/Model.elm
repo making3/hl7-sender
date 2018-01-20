@@ -1,11 +1,12 @@
 module Route.Model exposing (..)
 
 import Home.Route as Home exposing (Route(..))
+import Settings.Route as Settings exposing (Route(..))
 
 
 type Route
     = RouteHome Home.Route
-    | RouteControlCharacters
+    | RouteSettings Settings.Route
 
 
 type alias Model =
