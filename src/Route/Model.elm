@@ -7,7 +7,6 @@ import Settings.Route as Settings exposing (Route(..))
 type Route
     = RouteHome Home.Route
     | RouteSettings Settings.Route
-    | RouteSaveConnection
 
 
 type alias Model =

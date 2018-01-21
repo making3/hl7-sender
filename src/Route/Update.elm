@@ -7,6 +7,8 @@ import Route.Msg as Route exposing (..)
 import Route.Menu exposing (..)
 import Home.Route as Home exposing (Route)
 import Home.Router as Home exposing (routeHome)
+import Settings.Route as Settings exposing (Route)
+import Settings.Router as Settings exposing (route)
 
 
 update : Route.Msg -> Main.Model -> ( Main.Model, Cmd Main.Msg )
@@ -19,9 +21,4 @@ update msg model =
             ( menuClick model menuItem, Cmd.none )
 
         SaveConnection ->
-            ( updateRoute model Root.RouteSaveConnection, Cmd.none )
-
-
-updateRoute : Main.Model -> Root.Route -> Main.Model
-updateRoute model newRoute =
-    { model | route = newRoute }
+            ( Settings.route model Settings.RouteSaveConnection, Cmd.none )

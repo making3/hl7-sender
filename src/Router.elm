@@ -9,7 +9,6 @@ import View.Layout.Primary as PrimaryLayout exposing (view)
 import Route.Model as Root exposing (Route)
 import Home.Router as Home exposing (render)
 import Settings.Router as Settings exposing (render)
-import Settings.View.SaveConnection as SaveConnection
 
 
 render : Main.Model -> Html Msg
@@ -25,6 +24,3 @@ page model =
 
         Root.RouteSettings internalRoute ->
             Settings.render model internalRoute
-
-        Root.RouteSaveConnection ->
-            SaveConnection.view model.settings
