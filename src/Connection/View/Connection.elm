@@ -1,9 +1,8 @@
 module Connection.View.Connection exposing (..)
 
-import Json.Decode as Json
 import Html exposing (Html, Attribute, div, input, button, text, label, select, option)
 import Html.Attributes exposing (..)
-import Html.Events exposing (on, onInput, onClick)
+import Html.Events exposing (onInput, onClick)
 import Connection.View.Log as Log exposing (view)
 import Msg as Main exposing (..)
 import Model as Main
@@ -93,11 +92,6 @@ getSavedConnectionsId =
 toOptions : Connection.Connection -> Html msg
 toOptions connection =
     option [ value connection.name ] [ text connection.name ]
-
-
-onChange : (String -> msg) -> Attribute msg
-onChange handler =
-    on "change" <| Json.map handler <| Json.at [ "target", "value" ] Json.string
 
 
 getPortDisplay : Int -> String
