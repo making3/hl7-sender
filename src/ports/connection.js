@@ -76,13 +76,12 @@ function saveConnection(connectionName, ip, port, callback) {
             ip,
             port
         };
-        const formattedConnections = userData.formatJson(connections);
-        saveConnections(formattedConnections, callback);
+        saveConnections(connections, callback);
     });
 }
 
 function saveConnections(connections, callback) {
-    userData.saveUserData(userDataFileName, connections, callback);
+    userData.saveUserDataObject(userDataFileName, connections, callback);
 }
 
 function getSavedConnections(callback) {
