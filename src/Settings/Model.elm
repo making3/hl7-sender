@@ -32,12 +32,12 @@ encode settings =
         ]
 
 
+toModel : String -> Result String Model
+toModel json =
+    Decode.decodeString settingsDecoder json
+
+
 settingsDecoder : Decoder Model
 settingsDecoder =
     decode Model
         |> required "controlCharacters" ControlCharacters.decodeString
-
-
-toModel : String -> Result String Model
-toModel json =
-    Decode.decodeString settingsDecoder json

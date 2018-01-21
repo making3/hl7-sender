@@ -4,7 +4,7 @@ import Char
 import List exposing (head, filter)
 import Msg as Main exposing (..)
 import Model as Main exposing (..)
-import Connection.Model as Connection exposing (Model)
+import Connection.Model as Connection exposing (Model, toSavedConnectionsModels)
 import Connection.Msg as Connection exposing (..)
 import Connection.Validations exposing (..)
 
@@ -84,6 +84,26 @@ update msg model =
 
                 _ ->
                     log "error" ("Failed to save message" ++ errorMessage) model
+
+        InitialSavedConnections ( error, savedConnectionsJson ) ->
+            case error of
+                "" ->
+                    case toSavedConnectionsModels savedConnectionsJson of
+                        Ok savedConnections ->
+                            let
+                                connection =
+                                    model.connection
+
+                                newConnection =
+                                    { connection | savedConnections = savedConnections }
+                            in
+                                ( { model | connection = newConnection }, Cmd.none )
+
+                        Err errorMessage ->
+                            log "error" errorMessage model
+
+                errorMessage ->
+                    log "error" errorMessage model
 
 
 updateConnectionFromSaved : Main.Model -> String -> Main.Model

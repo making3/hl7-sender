@@ -14,3 +14,6 @@ port sent : (() -> msg) -> Sub msg
 
 
 port savedConnection : (String -> msg) -> Sub msg
+
+
+port initialSavedConnections : (( String, String ) -> msg) -> Sub msg

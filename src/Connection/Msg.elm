@@ -14,6 +14,7 @@ type Msg
     | ChangeSavedConnection String
     | SaveConnection
     | SavedConnection String
+    | InitialSavedConnections ( String, String )
 
 
 type PortValidation

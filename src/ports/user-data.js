@@ -4,7 +4,7 @@ const path = require('path');
 const electron = require('electron');
 
 exports.getUserData = getUserData;
-function getUserData (userDataFile, defaultContent, callback) {
+function getUserData(userDataFile, defaultContent, callback) {
     const fileName = getUserDataFileName(userDataFile);
     if (!fs.existsSync(fileName)) {
         return saveDefaultUserData(userDataFile, defaultContent, callback);
@@ -22,7 +22,6 @@ function getUserData (userDataFile, defaultContent, callback) {
 };
 
 exports.getUserDataObject = (userDataFile, defaultContent, callback) => {
-    // userData.getUserDataObject(userDataFileName, {}, callback);
     defaultContent = JSON.stringify(defaultContent);
     getUserData(userDataFile, defaultContent, (error, userDataJson) => {
         if (error) {

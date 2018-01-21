@@ -20,6 +20,15 @@ exports.watchForEvents = (app) => {
         });
     });
 
+    app.ports.getConnections.subscribe((defaultConnectionsJson) => {
+        userData.getUserData(userDataFileName, defaultConnectionsJson, (error, connectionsJson) => {
+            app.ports.initialSavedConnections.send([
+                error ? error.toString() : '',
+                connectionsJson
+            ]);
+        });
+    });
+
     app.ports.saveConnection.subscribe(([ connectionName, ip, port ]) => {
         saveConnection(connectionName, ip, port, (error) => {
             const errorMessage = error ? error.toString() : '';
@@ -72,10 +81,10 @@ function saveConnection(connectionName, ip, port, callback) {
         if (error) {
             return callback(error);
         }
-        connections[connectionName] = {
-            ip,
-            port
-        };
+        const connection = connections.find((c) => c.name === connectionName);
+        connection.destinationIp = ip;
+        connection.destinationPort = port;
+
         saveConnections(connections, callback);
     });
 }
