@@ -96,8 +96,11 @@ update msg model =
 
                                 newConnection =
                                     { connection | savedConnections = savedConnections }
+
+                                newModel =
+                                    { model | connection = newConnection }
                             in
-                                ( { model | connection = newConnection }, Cmd.none )
+                                ( updateConnectionFromSaved newModel "Default", Cmd.none )
 
                         Err errorMessage ->
                             log "error" errorMessage model
