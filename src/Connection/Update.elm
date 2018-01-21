@@ -151,9 +151,15 @@ port send : String -> Cmd msg
 getWrappedHl7 : Main.Model -> String
 getWrappedHl7 model =
     getCharStr model.settings.controlCharacters.startOfText
-        ++ model.home.hl7
+        ++ getStrWithCarriageReturns (model.home.hl7)
         ++ getCharStr model.settings.controlCharacters.endOfLine
         ++ getCharStr model.settings.controlCharacters.endOfText
+
+
+getStrWithCarriageReturns : String -> String
+getStrWithCarriageReturns str =
+    String.split "\n" str
+        |> String.join "\x0D"
 
 
 getCharStr : Int -> String
