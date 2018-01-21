@@ -10,6 +10,7 @@ import Model as Main
 import Connection.Msg exposing (..)
 import Connection.Model as Connection exposing (Model, Connection)
 import Route.Msg as Route exposing (..)
+import Settings.Route as Settings exposing (Route)
 
 
 view : Main.Model -> Html Main.Msg
@@ -120,7 +121,7 @@ connectionButtons model =
         [ text "Clear Log" ]
     , button
         [ class "save-connection btn btn-sm btn-block btn-secondary"
-        , onClick (MsgForRoute SaveConnection)
+        , onClick (MsgForRoute (RouteForSettings Settings.RouteSaveConnection))
         ]
         [ text "Save" ]
     ]

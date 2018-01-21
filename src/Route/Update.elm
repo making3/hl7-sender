@@ -20,5 +20,5 @@ update msg model =
         MenuClick menuItem ->
             ( menuClick model menuItem, Cmd.none )
 
-        SaveConnection ->
-            ( Settings.route model Settings.RouteSaveConnection, Cmd.none )
+        RouteForSettings internalRoute ->
+            ( Settings.route model internalRoute, Cmd.none )
