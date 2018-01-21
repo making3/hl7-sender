@@ -79,6 +79,7 @@ inputSavedConnections connection =
             [ id getSavedConnectionsId
             , class "form-control form-control-sm"
             , onInput (MsgForConnection << ChangeSavedConnection)
+            , disabled connection.isConnected
             ]
             (List.map toOptions connection.savedConnections)
         ]
