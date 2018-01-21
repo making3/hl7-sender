@@ -4,7 +4,7 @@ import Char
 import List exposing (head, filter)
 import Msg as Main exposing (..)
 import Model as Main exposing (..)
-import Connection.Model as Connection exposing (Model, toSavedConnectionsModels)
+import Connection.Model as Connection exposing (Model, Connection, toSavedConnectionsModels)
 import Connection.Msg as Connection exposing (..)
 import Connection.Validations exposing (..)
 
@@ -147,11 +147,24 @@ updateInitialSavedConnections model savedConnectionsJson =
 
                 newModel =
                     { model | connection = newConnection }
+
+                defaultConnectionName =
+                    getInitialConnectionName savedConnections
             in
-                ( updateConnectionFromSaved newModel "Default", Cmd.none )
+                ( updateConnectionFromSaved newModel defaultConnectionName, Cmd.none )
 
         Err errorMessage ->
             log "error" errorMessage model
+
+
+getInitialConnectionName : List Connection -> String
+getInitialConnectionName connections =
+    case List.head connections of
+        Just connection ->
+            connection.name
+
+        Nothing ->
+            ""
 
 
 connected model =
