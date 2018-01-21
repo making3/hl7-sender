@@ -77,6 +77,14 @@ update msg model =
         SaveConnection ->
             ( model, saveConnection ( model.connection.currentSavedConnectionName, model.connection.destinationIp, model.connection.destinationPort ) )
 
+        SavedConnection errorMessage ->
+            case errorMessage of
+                "" ->
+                    log "info" "Saved Connection!" model
+
+                _ ->
+                    log "error" ("Failed to save message" ++ errorMessage) model
+
 
 updateConnectionFromSaved : Main.Model -> String -> Main.Model
 updateConnectionFromSaved model connectionName =

@@ -11,3 +11,6 @@ port connectionError : (String -> msg) -> Sub msg
 
 
 port sent : (() -> msg) -> Sub msg
+
+
+port savedConnection : (String -> msg) -> Sub msg

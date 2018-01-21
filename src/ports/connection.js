@@ -22,8 +22,8 @@ exports.watchForEvents = (app) => {
 
     app.ports.saveConnection.subscribe(([ connectionName, ip, port ]) => {
         saveConnection(connectionName, ip, port, (error) => {
-            console.log('done: ', error);
-            // app.ports.savedConnection.send(error.toString());
+            const errorMessage = error ? error.toString() : '';
+            app.ports.savedConnection.send(errorMessage);
         });
     });
 };

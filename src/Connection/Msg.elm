@@ -13,6 +13,7 @@ type Msg
     | ChangeDestinationPort String
     | ChangeSavedConnection String
     | SaveConnection
+    | SavedConnection String
 
 
 type PortValidation
