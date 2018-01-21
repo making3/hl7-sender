@@ -7,6 +7,8 @@ import Model as Main exposing (..)
 import Connection.Model as Connection exposing (Model, Connection, toSavedConnectionsModels)
 import Connection.Msg as Connection exposing (..)
 import Connection.Validations exposing (..)
+import Settings.Router as Settings exposing (route)
+import Settings.Route as Settings exposing (Route)
 
 
 update : Connection.Msg -> Main.Model -> ( Main.Model, Cmd Main.Msg )
@@ -75,7 +77,12 @@ update msg model =
             ( updateConnectionFromSaved model savedConnectionName, Cmd.none )
 
         SaveConnection ->
-            ( model, saveConnection ( model.connection.currentSavedConnectionName, model.connection.destinationIp, model.connection.destinationPort ) )
+            case model.connection.currentSavedConnectionName of
+                "Create New" ->
+                    ( Settings.route model Settings.RouteSaveConnection, Cmd.none )
+
+                _ ->
+                    ( model, saveConnection ( model.connection.currentSavedConnectionName, model.connection.destinationIp, model.connection.destinationPort ) )
 
         SavedConnection errorMessage ->
             case errorMessage of
@@ -143,7 +150,7 @@ updateInitialSavedConnections model savedConnectionsJson =
                     model.connection
 
                 newConnection =
-                    { connection | savedConnections = savedConnections }
+                    { connection | savedConnections = appendCreateNewConnection savedConnections }
 
                 newModel =
                     { model | connection = newConnection }
@@ -165,6 +172,19 @@ getInitialConnectionName connections =
 
         Nothing ->
             ""
+
+
+appendCreateNewConnection : List Connection -> List Connection
+appendCreateNewConnection connections =
+    List.append connections [ getCreateNewConnection ]
+
+
+getCreateNewConnection : Connection
+getCreateNewConnection =
+    { name = "Create New"
+    , destinationIp = "127.0.0.1"
+    , destinationPort = 3000
+    }
 
 
 connected model =
