@@ -1,9 +1,12 @@
 'use strict';
 const net = require('net');
+const userData = require('./user-data');
+
 let client;
+const userDataFileName = 'connections.json';
 
 exports.watchForEvents = (app) => {
-    app.ports.connect.subscribe(([ ip, port /* end of transmission chars */ ]) => {
+    app.ports.connect.subscribe(([ ip, port ]) => {
         client = connect(app, ip, port);
     });
 
@@ -14,6 +17,13 @@ exports.watchForEvents = (app) => {
     app.ports.send.subscribe((hl7) => {
         send(hl7, () => {
             app.ports.sent.send(null);
+        });
+    });
+
+    app.ports.saveConnection.subscribe(([ connectionName, ip, port ]) => {
+        saveConnection(connectionName, ip, port, (error) => {
+            console.log('done: ', error);
+            // app.ports.savedConnection.send(error.toString());
         });
     });
 };
@@ -55,4 +65,26 @@ function disconnect() {
     if (client) {
         client.end();
     }
+}
+
+function saveConnection(connectionName, ip, port, callback) {
+    getSavedConnections((error, connections) => {
+        if (error) {
+            return callback(error);
+        }
+        connections[connectionName] = {
+            ip,
+            port
+        };
+        const formattedConnections = userData.formatJson(connections);
+        saveConnections(formattedConnections, callback);
+    });
+}
+
+function saveConnections(connections, callback) {
+    userData.saveUserData(userDataFileName, connections, callback);
+}
+
+function getSavedConnections(callback) {
+    userData.getUserDataObject(userDataFileName, {}, callback);
 }

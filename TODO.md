@@ -17,6 +17,10 @@ TODO
 - [ ] After the above, add an Edit & Delete button to the existing connections (header will be Name | IP | Port | Actions).
 - [ ] Create a side-navigation menu. The future menu will include Basic, File, and Analyze. "Basic" is the current home page. File/Analyze are ideas for the future (see the future TODO list).
 
+# JavaScript Ports
+- [ ] Add basic eslint for port related code
+- [ ] Implement async/await for ports instead of callbacks.
+
 # Future
 - [ ] Create an installer / bundler.
 - [ ] File page - Read HL7 from a file.

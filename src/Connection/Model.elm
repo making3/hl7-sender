@@ -15,6 +15,7 @@ type alias Model =
     , connectionMessage : String
     , sentCount : Int
     , savedConnections : List Connection
+    , currentSavedConnectionName : String
     }
 
 
@@ -35,6 +36,7 @@ model =
           , destinationPort = 5555
           }
         ]
+    , currentSavedConnectionName = "Default"
     }
 
 

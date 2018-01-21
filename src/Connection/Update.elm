@@ -74,6 +74,9 @@ update msg model =
         ChangeSavedConnection savedConnectionName ->
             ( updateConnectionFromSaved model savedConnectionName, Cmd.none )
 
+        SaveConnection ->
+            ( model, saveConnection ( model.connection.currentSavedConnectionName, model.connection.destinationIp, model.connection.destinationPort ) )
+
 
 updateConnectionFromSaved : Main.Model -> String -> Main.Model
 updateConnectionFromSaved model connectionName =
@@ -93,6 +96,7 @@ updateConnectionFromSaved model connectionName =
                     { connection
                         | destinationIp = newConnection.destinationIp
                         , destinationPort = newConnection.destinationPort
+                        , currentSavedConnectionName = connectionName
                     }
     in
         { model | connection = replacedConnection }
@@ -146,6 +150,9 @@ port disconnect : () -> Cmd msg
 
 
 port send : String -> Cmd msg
+
+
+port saveConnection : ( String, String, Int ) -> Cmd msg
 
 
 getWrappedHl7 : Main.Model -> String
