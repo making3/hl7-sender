@@ -54,8 +54,15 @@ function saveUserData(userDataFile, userData, callback) {
     fs.writeFile(fileName, userData, 'utf8', callback);
 }
 
-exports.formatJson = (json) => {
-    if (json === 'string') {
+exports.saveUserDataObject = saveUserDataObject;
+function saveUserDataObject(userDataFile, userData, callback) {
+    const userDataJson = formatJson(userData);
+    saveUserData(userDataFile, userDataJson, callback);
+}
+
+exports.formatJson = formatJson;
+function formatJson(json) {
+    if (typeof json === 'string') {
         json = JSON.parse(json);
     }
     return JSON.stringify(json, null, 2);
