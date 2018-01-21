@@ -88,22 +88,7 @@ update msg model =
         InitialSavedConnections ( error, savedConnectionsJson ) ->
             case error of
                 "" ->
-                    case toSavedConnectionsModels savedConnectionsJson of
-                        Ok savedConnections ->
-                            let
-                                connection =
-                                    model.connection
-
-                                newConnection =
-                                    { connection | savedConnections = savedConnections }
-
-                                newModel =
-                                    { model | connection = newConnection }
-                            in
-                                ( updateConnectionFromSaved newModel "Default", Cmd.none )
-
-                        Err errorMessage ->
-                            log "error" errorMessage model
+                    updateInitialSavedConnections model savedConnectionsJson
 
                 errorMessage ->
                     log "error" errorMessage model
@@ -147,6 +132,26 @@ updateIpAddress model ipAddress =
 
 updatePort connection newPort =
     { connection | destinationPort = clamp 1 65535 newPort }
+
+
+updateInitialSavedConnections : Main.Model -> String -> ( Main.Model, Cmd Main.Msg )
+updateInitialSavedConnections model savedConnectionsJson =
+    case toSavedConnectionsModels savedConnectionsJson of
+        Ok savedConnections ->
+            let
+                connection =
+                    model.connection
+
+                newConnection =
+                    { connection | savedConnections = savedConnections }
+
+                newModel =
+                    { model | connection = newConnection }
+            in
+                ( updateConnectionFromSaved newModel "Default", Cmd.none )
+
+        Err errorMessage ->
+            log "error" errorMessage model
 
 
 connected model =
