@@ -6,9 +6,9 @@ import Html.Events exposing (onInput)
 import Msg exposing (..)
 
 
-viewBasicInput : String -> String -> String -> String -> (String -> Msg) -> Html Msg
-viewBasicInput className labelText inputValue placeholderText inputMsg =
-    div [ class className ]
+viewBasicInput : String -> String -> String -> (String -> Msg) -> Html Msg
+viewBasicInput labelText inputValue placeholderText inputMsg =
+    div []
         [ label [] [ text labelText ]
         , input
             [ class "form-control"

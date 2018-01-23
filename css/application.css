@@ -158,12 +158,21 @@ body {
     display: block;
 }
 
-.new-connection-name label {
+.basic-form label {
   width: 140px;
 }
 
-.new-connection-name input {
+.basic-form input {
   margin-right: 20px;
   width: 220px;
   display: inline-block;
+}
+
+.save-connection-buttons {
+    margin-left: 190px;
+    margin-top: 5px;
+}
+
+.basic-form button {
+    margin-left: 5px;
 }
