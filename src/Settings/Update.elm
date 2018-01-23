@@ -40,5 +40,15 @@ update msg model =
         SaveSettings ->
             ( model, save model.settings )
 
+        UpdateNewConnectionName connectionName ->
+            let
+                settings =
+                    model.settings
+
+                newSettings =
+                    { settings | newConnectionName = connectionName }
+            in
+                ( { model | settings = newSettings }, Cmd.none )
+
         SaveConnection ->
             ( model, Cmd.none )

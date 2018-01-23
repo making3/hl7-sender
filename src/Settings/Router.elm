@@ -21,4 +21,4 @@ render model internalRoute =
             ControlCharacters.render model settingsInternalRoute
 
         Settings.RouteSaveConnection ->
-            SaveConnection.view model.settings
+            SaveConnection.view model

@@ -157,3 +157,13 @@ body {
 .block {
     display: block;
 }
+
+.new-connection-name label {
+  width: 140px;
+}
+
+.new-connection-name input {
+  margin-right: 20px;
+  width: 220px;
+  display: inline-block;
+}
