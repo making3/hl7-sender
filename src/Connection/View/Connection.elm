@@ -1,5 +1,6 @@
 module Connection.View.Connection exposing (..)
 
+import Array exposing (Array, map, toList)
 import Html exposing (Html, Attribute, div, input, button, text, label, select, option)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onClick)
@@ -80,7 +81,7 @@ inputSavedConnections connection =
             , onInput (MsgForConnection << ChangeSavedConnection)
             , disabled connection.isConnected
             ]
-            (List.map toOptions connection.savedConnections)
+            (Array.toList (Array.map toOptions connection.savedConnections))
         ]
 
 

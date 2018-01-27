@@ -1,5 +1,6 @@
 module Settings.Update exposing (..)
 
+import Array exposing (Array, push)
 import Msg as Main exposing (..)
 import Model as Main exposing (..)
 import Route.Model as Root exposing (..)
@@ -8,6 +9,7 @@ import Settings.Msg as Settings exposing (..)
 import Settings.Commands exposing (..)
 import Settings.Model as Settings exposing (..)
 import Connection.Model as Connection exposing (Connection)
+import Connection.Update as Connection exposing (appendCreateNewConnection)
 import Settings.ControlCharacters.Update as ControlCharacters exposing (update)
 import Settings.ControlCharacters.Model as ControlCharacters exposing (encode)
 
@@ -64,7 +66,7 @@ addNewConnection model =
             model.connection
 
         newConnection =
-            { connection | savedConnections = appendConnectionToList model model.connection.savedConnections }
+            { connection | savedConnections = appendConnectionToArray model model.connection.savedConnections }
     in
         { model
             | connection = newConnection
@@ -72,9 +74,11 @@ addNewConnection model =
         }
 
 
-appendConnectionToList : Main.Model -> List Connection -> List Connection
-appendConnectionToList model connections =
-    (getNewConnection model) :: connections
+appendConnectionToArray : Main.Model -> Array Connection -> Array Connection
+appendConnectionToArray model connections =
+    connections
+        |> Array.set ((Array.length connections) - 1) (getNewConnection model)
+        |> appendCreateNewConnection
 
 
 getNewConnection : Main.Model -> Connection

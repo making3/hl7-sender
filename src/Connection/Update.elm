@@ -1,6 +1,7 @@
 port module Connection.Update exposing (..)
 
 import Char
+import Array exposing (Array, get, toList, push)
 import List exposing (head, filter)
 import Msg as Main exposing (..)
 import Model as Main exposing (..)
@@ -108,7 +109,7 @@ updateConnectionFromSaved model connectionName =
             model.connection
 
         foundConnection =
-            List.head (List.filter (\m -> m.name == connectionName) connection.savedConnections)
+            List.head (List.filter (\m -> m.name == connectionName) (Array.toList connection.savedConnections))
 
         replacedConnection =
             case foundConnection of
@@ -164,9 +165,9 @@ updateInitialSavedConnections model savedConnectionsJson =
             log "error" errorMessage model
 
 
-getInitialConnectionName : List Connection -> String
+getInitialConnectionName : Array Connection -> String
 getInitialConnectionName connections =
-    case List.head connections of
+    case Array.get 0 connections of
         Just connection ->
             connection.name
 
@@ -174,9 +175,9 @@ getInitialConnectionName connections =
             ""
 
 
-appendCreateNewConnection : List Connection -> List Connection
+appendCreateNewConnection : Array Connection -> Array Connection
 appendCreateNewConnection connections =
-    List.append connections [ getCreateNewConnection ]
+    Array.push getCreateNewConnection connections
 
 
 getCreateNewConnection : Connection

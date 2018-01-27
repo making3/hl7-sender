@@ -1,6 +1,7 @@
 module Connection.Model exposing (..)
 
-import Json.Encode as Encode exposing (encode, Value, object, string, int, list)
+import Array exposing (Array, fromList)
+import Json.Encode as Encode exposing (encode, Value, object, string, int, array)
 import Json.Decode as Decode exposing (Decoder, decodeString, int)
 import Json.Decode.Pipeline exposing (decode, required)
 
@@ -18,7 +19,7 @@ type alias Model =
     , isConnected : Bool
     , connectionMessage : String
     , sentCount : Int
-    , savedConnections : List Connection
+    , savedConnections : Array Connection
     , currentSavedConnectionName : String
     }
 
@@ -31,11 +32,12 @@ model =
     , connectionMessage = "Disconnected"
     , sentCount = 0
     , savedConnections =
-        [ { name = "Default"
-          , destinationIp = "127.0.0.1"
-          , destinationPort = 1337
-          }
-        ]
+        Array.fromList
+            [ { name = "Default"
+              , destinationIp = "127.0.0.1"
+              , destinationPort = 1337
+              }
+            ]
     , currentSavedConnectionName = "Default"
     }
 
@@ -47,8 +49,8 @@ updateSentCount model =
 toSavedConnectionsJson : Model -> String
 toSavedConnectionsJson connection =
     connection.savedConnections
-        |> List.map encodeConnection
-        |> Encode.list
+        |> Array.map encodeConnection
+        |> Encode.array
         |> Encode.encode 0
 
 
@@ -61,9 +63,9 @@ encodeConnection connection =
         ]
 
 
-toSavedConnectionsModels : String -> Result String (List Connection)
+toSavedConnectionsModels : String -> Result String (Array Connection)
 toSavedConnectionsModels json =
-    Decode.decodeString (Decode.list decodeConnection) json
+    Decode.decodeString (Decode.array decodeConnection) json
 
 
 decodeConnection : Decoder Connection
