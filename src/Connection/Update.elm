@@ -104,24 +104,31 @@ update msg model =
 
 updateConnectionFromSaved : Main.Model -> String -> Main.Model
 updateConnectionFromSaved model connectionName =
+    case findConnectionByName model connectionName of
+        Nothing ->
+            model
+
+        Just newConnection ->
+            updateCurrentConnection model newConnection
+
+
+findConnectionByName : Main.Model -> String -> Maybe Connection
+findConnectionByName model connectionName =
+    List.head (List.filter (\m -> m.name == connectionName) (Array.toList model.connection.savedConnections))
+
+
+updateCurrentConnection : Main.Model -> Connection -> Main.Model
+updateCurrentConnection model newConnection =
     let
         connection =
             model.connection
 
-        foundConnection =
-            List.head (List.filter (\m -> m.name == connectionName) (Array.toList connection.savedConnections))
-
         replacedConnection =
-            case foundConnection of
-                Nothing ->
-                    connection
-
-                Just newConnection ->
-                    { connection
-                        | destinationIp = newConnection.destinationIp
-                        , destinationPort = newConnection.destinationPort
-                        , currentSavedConnectionName = connectionName
-                    }
+            { connection
+                | destinationIp = newConnection.destinationIp
+                , destinationPort = newConnection.destinationPort
+                , currentSavedConnectionName = newConnection.name
+            }
     in
         { model | connection = replacedConnection }
 

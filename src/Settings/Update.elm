@@ -9,7 +9,7 @@ import Settings.Msg as Settings exposing (..)
 import Settings.Commands exposing (..)
 import Settings.Model as Settings exposing (..)
 import Connection.Model as Connection exposing (Connection)
-import Connection.Update as Connection exposing (appendCreateNewConnection)
+import Connection.Update as Connection exposing (appendCreateNewConnection, updateCurrentConnection)
 import Settings.ControlCharacters.Update as ControlCharacters exposing (update)
 import Settings.ControlCharacters.Model as ControlCharacters exposing (encode)
 
@@ -65,19 +65,36 @@ addNewConnection model =
         connection =
             model.connection
 
+        settings =
+            model.settings
+
+        newIndividualConnection =
+            getNewConnection model
+
         newConnection =
-            { connection | savedConnections = appendConnectionToArray model model.connection.savedConnections }
+            { connection
+                | savedConnections = appendConnectionToArray model newIndividualConnection model.connection.savedConnections
+            }
+
+        newSettings =
+            { settings
+                | newConnectionName = ""
+            }
+
+        newModel =
+            { model
+                | connection = newConnection
+                , route = Root.RouteHome Home.RouteHome
+                , settings = newSettings
+            }
     in
-        { model
-            | connection = newConnection
-            , route = Root.RouteHome Home.RouteHome
-        }
+        updateCurrentConnection newModel newIndividualConnection
 
 
-appendConnectionToArray : Main.Model -> Array Connection -> Array Connection
-appendConnectionToArray model connections =
+appendConnectionToArray : Main.Model -> Connection -> Array Connection -> Array Connection
+appendConnectionToArray model newConnection connections =
     connections
-        |> Array.set ((Array.length connections) - 1) (getNewConnection model)
+        |> Array.set ((Array.length connections) - 1) newConnection
         |> appendCreateNewConnection
 
 
