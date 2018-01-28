@@ -91,35 +91,29 @@ update msg model =
                 _ ->
                     ( model, saveConnection ( model.connection.currentSavedConnectionName, model.connection.destinationIp, model.connection.destinationPort ) )
 
-        SavedConnection errorMessage ->
-            case errorMessage of
-                "" ->
-                    model
-                        |> updateSavedConnectionsWithCurrent
-                        |> routeHome
-                        |> logSavedConnection
+        SavedConnection "" ->
+            model
+                |> updateSavedConnectionsWithCurrent
+                |> routeHome
+                |> logSavedConnection
 
-                _ ->
-                    log "error" ("Failed to save message" ++ errorMessage) model
+        SavedNewConnection "" ->
+            model
+                |> addNewConnection
+                |> routeHome
+                |> logSavedConnection
+
+        InitialSavedConnections ( "", savedConnectionsJson ) ->
+            updateInitialSavedConnections model savedConnectionsJson
+
+        SavedConnection errorMessage ->
+            log "error" ("Failed to save message" ++ errorMessage) model
 
         SavedNewConnection errorMessage ->
-            case errorMessage of
-                "" ->
-                    model
-                        |> addNewConnection
-                        |> routeHome
-                        |> logSavedConnection
+            log "error" ("Failed to save message" ++ errorMessage) model
 
-                _ ->
-                    log "error" ("Failed to save message" ++ errorMessage) model
-
-        InitialSavedConnections ( error, savedConnectionsJson ) ->
-            case error of
-                "" ->
-                    updateInitialSavedConnections model savedConnectionsJson
-
-                errorMessage ->
-                    log "error" errorMessage model
+        InitialSavedConnections ( errorMessage, savedConnectionsJson ) ->
+            log "error" errorMessage model
 
 
 logSavedConnection : Main.Model -> ( Main.Model, Cmd Main.Msg )
