@@ -1,6 +1,5 @@
 port module Connection.Update exposing (..)
 
-import Char
 import Array exposing (Array, get, toList, push)
 import List exposing (head, filter)
 import Msg as Main exposing (..)
@@ -11,6 +10,7 @@ import Home.Router exposing (routeHome)
 import Connection.Model as Connection exposing (Model, Connection, toSavedConnectionsModels, getCreateNewConnection)
 import Connection.Msg as Connection exposing (..)
 import Connection.Validations exposing (..)
+import Connection.HL7 exposing (getWrappedHl7)
 import Settings.Router as Settings exposing (route)
 import Settings.Route as Settings exposing (Route)
 
@@ -241,25 +241,6 @@ port send : String -> Cmd msg
 
 
 port saveConnection : ( String, String, Int ) -> Cmd msg
-
-
-getWrappedHl7 : Main.Model -> String
-getWrappedHl7 model =
-    getCharStr model.settings.controlCharacters.startOfText
-        ++ getStrWithCarriageReturns (model.home.hl7)
-        ++ getCharStr model.settings.controlCharacters.endOfLine
-        ++ getCharStr model.settings.controlCharacters.endOfText
-
-
-getStrWithCarriageReturns : String -> String
-getStrWithCarriageReturns str =
-    String.split "\n" str
-        |> String.join "\x0D"
-
-
-getCharStr : Int -> String
-getCharStr i =
-    String.fromChar (Char.fromCode i)
 
 
 addNewConnection : Main.Model -> Main.Model
