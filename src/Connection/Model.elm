@@ -33,13 +33,15 @@ model =
     , sentCount = 0
     , savedConnections =
         Array.fromList
-            [ { name = "Default"
-              , destinationIp = "127.0.0.1"
-              , destinationPort = 1337
-              }
+            [ getDefaultConnection
             ]
     , currentSavedConnectionName = "Default"
     }
+
+
+getDefaultConnection : Connection
+getDefaultConnection =
+    Connection "Default" "127.0.0.1" 1337
 
 
 getCreateNewConnection : Connection
