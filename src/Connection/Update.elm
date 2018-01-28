@@ -1,4 +1,4 @@
-port module Connection.Update exposing (..)
+module Connection.Update exposing (..)
 
 import Array exposing (Array, get, toList, push)
 import List exposing (head, filter)
@@ -11,6 +11,7 @@ import Connection.Model as Connection exposing (Model, Connection, toSavedConnec
 import Connection.Msg as Connection exposing (..)
 import Connection.Validations exposing (..)
 import Connection.HL7 exposing (getWrappedHl7)
+import Connection.Ports exposing (..)
 import Settings.Router as Settings exposing (route)
 import Settings.Route as Settings exposing (Route)
 
@@ -229,18 +230,6 @@ updateSentCount model =
     { model
         | connection = Connection.updateSentCount model.connection
     }
-
-
-port connect : ( String, Int ) -> Cmd msg
-
-
-port disconnect : () -> Cmd msg
-
-
-port send : String -> Cmd msg
-
-
-port saveConnection : ( String, String, Int ) -> Cmd msg
 
 
 addNewConnection : Main.Model -> Main.Model
