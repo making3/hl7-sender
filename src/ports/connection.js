@@ -30,9 +30,13 @@ exports.watchForEvents = (app) => {
     });
 
     app.ports.saveConnection.subscribe(([ connectionName, ip, port ]) => {
-        saveConnection(connectionName, ip, port, (error) => {
+        saveConnection(connectionName, ip, port, (error, isNewConnection) => {
             const errorMessage = error ? error.toString() : '';
-            app.ports.savedConnection.send(errorMessage);
+            if (isNewConnection) {
+                app.ports.savedNewConnection.send(errorMessage);
+            } else {
+                app.ports.savedConnection.send(errorMessage);
+            }
         });
     });
 };
@@ -81,12 +85,28 @@ function saveConnection(connectionName, ip, port, callback) {
         if (error) {
             return callback(error);
         }
-        const connection = connections.find((c) => c.name === connectionName);
-        connection.destinationIp = ip;
-        connection.destinationPort = port;
 
-        saveConnections(connections, callback);
+        let isNewConnection = false;
+        let connection = connections.find((c) => c.name === connectionName);
+        if (connection) {
+            connection = getUpdatedConnection(connection, ip, port);
+        } else {
+            connection = getUpdatedConnection({}, ip, port);
+            connection.name = connectionName;
+            connections.push(connection);
+            isNewConnection = true;
+        }
+
+        saveConnections(connections, (error) =>
+            callback(error, isNewConnection)
+        );
     });
+}
+
+function getUpdatedConnection(connection, ip, port) {
+    connection.destinationIp = ip;
+    connection.destinationPort = port;
+    return connection;
 }
 
 function saveConnections(connections, callback) {

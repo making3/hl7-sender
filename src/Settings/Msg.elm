@@ -10,4 +10,3 @@ type Msg
     | SaveSettings
     | MsgForControlCharacters ControlCharacters.Msg
     | UpdateNewConnectionName String
-    | SaveConnection

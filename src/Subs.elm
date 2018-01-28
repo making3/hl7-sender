@@ -28,5 +28,6 @@ init model =
         , sent (MsgForConnection << always Sent)
         , version (MsgForHome << Version)
         , savedConnection (MsgForConnection << SavedConnection)
+        , savedNewConnection (MsgForConnection << SavedNewConnection)
         , initialSavedConnections (MsgForConnection << InitialSavedConnections)
         ]

@@ -117,7 +117,7 @@ connectionButtons model =
         [ text "Clear Log" ]
     , button
         [ class "save-connection btn btn-sm btn-block btn-secondary"
-        , onClick (MsgForConnection SaveConnection)
+        , onClick (MsgForConnection CreateNewConnection)
         ]
         [ text "Save" ]
     ]

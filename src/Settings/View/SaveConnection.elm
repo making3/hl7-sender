@@ -64,7 +64,7 @@ viewActionButtons model =
             [ text "Go Home" ]
         , button
             [ class "btn btn-primary"
-            , onClick (MsgForSettings (Settings.SaveConnection))
+            , onClick (MsgForConnection Connection.SaveConnection)
             , disabled (model.settings.newConnectionName == "")
             ]
             [ text "Save" ]

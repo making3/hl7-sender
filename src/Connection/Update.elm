@@ -5,6 +5,9 @@ import Array exposing (Array, get, toList, push)
 import List exposing (head, filter)
 import Msg as Main exposing (..)
 import Model as Main exposing (..)
+import Route.Model as Root exposing (..)
+import Home.Route as Home exposing (..)
+import Home.Router exposing (routeHome)
 import Connection.Model as Connection exposing (Model, Connection, toSavedConnectionsModels)
 import Connection.Msg as Connection exposing (..)
 import Connection.Validations exposing (..)
@@ -78,6 +81,9 @@ update msg model =
             ( updateConnectionFromSaved model savedConnectionName, Cmd.none )
 
         SaveConnection ->
+            ( model, saveConnection ( model.settings.newConnectionName, model.connection.destinationIp, model.connection.destinationPort ) )
+
+        CreateNewConnection ->
             case model.connection.currentSavedConnectionName of
                 "Create New" ->
                     ( Settings.route model Settings.RouteSaveConnection, Cmd.none )
@@ -88,7 +94,20 @@ update msg model =
         SavedConnection errorMessage ->
             case errorMessage of
                 "" ->
-                    log "info" "Saved Connection!" model
+                    model
+                        |> routeHome
+                        |> logSavedConnection
+
+                _ ->
+                    log "error" ("Failed to save message" ++ errorMessage) model
+
+        SavedNewConnection errorMessage ->
+            case errorMessage of
+                "" ->
+                    model
+                        |> addNewConnection
+                        |> routeHome
+                        |> logSavedConnection
 
                 _ ->
                     log "error" ("Failed to save message" ++ errorMessage) model
@@ -100,6 +119,11 @@ update msg model =
 
                 errorMessage ->
                     log "error" errorMessage model
+
+
+logSavedConnection : Main.Model -> ( Main.Model, Cmd Main.Msg )
+logSavedConnection model =
+    log "info" "Saved Connection!" model
 
 
 updateConnectionFromSaved : Main.Model -> String -> Main.Model
@@ -249,3 +273,50 @@ getStrWithCarriageReturns str =
 getCharStr : Int -> String
 getCharStr i =
     String.fromChar (Char.fromCode i)
+
+
+addNewConnection : Main.Model -> Main.Model
+addNewConnection model =
+    let
+        connection =
+            model.connection
+
+        settings =
+            model.settings
+
+        newIndividualConnection =
+            getNewConnection model
+
+        newConnection =
+            { connection
+                | savedConnections = appendConnectionToArray model newIndividualConnection model.connection.savedConnections
+            }
+
+        newSettings =
+            { settings
+                | newConnectionName = ""
+            }
+
+        newModel =
+            { model
+                | connection = newConnection
+                , route = Root.RouteHome Home.RouteHome
+                , settings = newSettings
+            }
+    in
+        updateCurrentConnection newModel newIndividualConnection
+
+
+appendConnectionToArray : Main.Model -> Connection -> Array Connection -> Array Connection
+appendConnectionToArray model newConnection connections =
+    connections
+        |> Array.set ((Array.length connections) - 1) newConnection
+        |> appendCreateNewConnection
+
+
+getNewConnection : Main.Model -> Connection
+getNewConnection model =
+    { name = model.settings.newConnectionName
+    , destinationIp = model.connection.destinationIp
+    , destinationPort = model.connection.destinationPort
+    }

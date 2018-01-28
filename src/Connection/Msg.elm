@@ -12,8 +12,10 @@ type Msg
     | ChangeDestinationIp String
     | ChangeDestinationPort String
     | ChangeSavedConnection String
+    | CreateNewConnection
     | SaveConnection
     | SavedConnection String
+    | SavedNewConnection String
     | InitialSavedConnections ( String, String )
 
 

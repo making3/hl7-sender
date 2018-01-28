@@ -9,7 +9,6 @@ import Settings.Msg as Settings exposing (..)
 import Settings.Commands exposing (..)
 import Settings.Model as Settings exposing (..)
 import Connection.Model as Connection exposing (Connection)
-import Connection.Update as Connection exposing (appendCreateNewConnection, updateCurrentConnection)
 import Settings.ControlCharacters.Update as ControlCharacters exposing (update)
 import Settings.ControlCharacters.Model as ControlCharacters exposing (encode)
 
@@ -54,53 +53,3 @@ update msg model =
                     { settings | newConnectionName = connectionName }
             in
                 ( { model | settings = newSettings }, Cmd.none )
-
-        SaveConnection ->
-            ( addNewConnection model, Cmd.none )
-
-
-addNewConnection : Main.Model -> Main.Model
-addNewConnection model =
-    let
-        connection =
-            model.connection
-
-        settings =
-            model.settings
-
-        newIndividualConnection =
-            getNewConnection model
-
-        newConnection =
-            { connection
-                | savedConnections = appendConnectionToArray model newIndividualConnection model.connection.savedConnections
-            }
-
-        newSettings =
-            { settings
-                | newConnectionName = ""
-            }
-
-        newModel =
-            { model
-                | connection = newConnection
-                , route = Root.RouteHome Home.RouteHome
-                , settings = newSettings
-            }
-    in
-        updateCurrentConnection newModel newIndividualConnection
-
-
-appendConnectionToArray : Main.Model -> Connection -> Array Connection -> Array Connection
-appendConnectionToArray model newConnection connections =
-    connections
-        |> Array.set ((Array.length connections) - 1) newConnection
-        |> appendCreateNewConnection
-
-
-getNewConnection : Main.Model -> Connection
-getNewConnection model =
-    { name = model.settings.newConnectionName
-    , destinationIp = model.connection.destinationIp
-    , destinationPort = model.connection.destinationPort
-    }
