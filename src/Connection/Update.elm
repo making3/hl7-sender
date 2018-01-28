@@ -78,7 +78,7 @@ update msg model =
                     )
 
         ChangeSavedConnection savedConnectionName ->
-            ( updateConnectionFromSaved model savedConnectionName, Cmd.none )
+            ( changeConnectionFromSaved model savedConnectionName, Cmd.none )
 
         SaveConnection ->
             ( model, saveConnection ( model.settings.newConnectionName, model.connection.destinationIp, model.connection.destinationPort ) )
@@ -126,8 +126,8 @@ logSavedConnection model =
     log "info" "Saved Connection!" model
 
 
-updateConnectionFromSaved : Main.Model -> String -> Main.Model
-updateConnectionFromSaved model connectionName =
+changeConnectionFromSaved : Main.Model -> String -> Main.Model
+changeConnectionFromSaved model connectionName =
     case findConnectionByName model connectionName of
         Nothing ->
             model
@@ -190,7 +190,7 @@ updateInitialSavedConnections model savedConnectionsJson =
                 defaultConnectionName =
                     getInitialConnectionName savedConnections
             in
-                ( updateConnectionFromSaved newModel defaultConnectionName, Cmd.none )
+                ( changeConnectionFromSaved newModel defaultConnectionName, Cmd.none )
 
         Err errorMessage ->
             log "error" errorMessage model
