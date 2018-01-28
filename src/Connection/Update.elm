@@ -8,7 +8,7 @@ import Model as Main exposing (..)
 import Route.Model as Root exposing (..)
 import Home.Route as Home exposing (..)
 import Home.Router exposing (routeHome)
-import Connection.Model as Connection exposing (Model, Connection, toSavedConnectionsModels)
+import Connection.Model as Connection exposing (Model, Connection, toSavedConnectionsModels, getCreateNewConnection)
 import Connection.Msg as Connection exposing (..)
 import Connection.Validations exposing (..)
 import Settings.Router as Settings exposing (route)
@@ -123,12 +123,17 @@ logSavedConnection model =
 
 changeConnectionFromSaved : Main.Model -> String -> Main.Model
 changeConnectionFromSaved model connectionName =
-    case findConnectionByName model connectionName of
-        Nothing ->
-            model
+    case connectionName of
+        "Create New" ->
+            updateCurrentConnection model getCreateNewConnection
 
-        Just newConnection ->
-            updateCurrentConnection model newConnection
+        _ ->
+            case findConnectionByName model connectionName of
+                Nothing ->
+                    model
+
+                Just newConnection ->
+                    updateCurrentConnection model newConnection
 
 
 findConnectionByName : Main.Model -> String -> Maybe Connection
@@ -177,7 +182,7 @@ updateInitialSavedConnections model savedConnectionsJson =
                     model.connection
 
                 newConnection =
-                    { connection | savedConnections = appendCreateNewConnection savedConnections }
+                    { connection | savedConnections = savedConnections }
 
                 newModel =
                     { model | connection = newConnection }
@@ -199,19 +204,6 @@ getInitialConnectionName connections =
 
         Nothing ->
             ""
-
-
-appendCreateNewConnection : Array Connection -> Array Connection
-appendCreateNewConnection connections =
-    Array.push getCreateNewConnection connections
-
-
-getCreateNewConnection : Connection
-getCreateNewConnection =
-    { name = "Create New"
-    , destinationIp = "127.0.0.1"
-    , destinationPort = 3000
-    }
 
 
 connected model =
@@ -304,9 +296,7 @@ addNewConnection model =
 
 appendConnectionToArray : Main.Model -> Connection -> Array Connection -> Array Connection
 appendConnectionToArray model newConnection connections =
-    connections
-        |> Array.set ((Array.length connections) - 1) newConnection
-        |> appendCreateNewConnection
+    Array.push newConnection connections
 
 
 getNewConnection : Main.Model -> Connection
@@ -332,37 +322,10 @@ updateSavedConnectionsWithCurrent model =
 
         newConnection =
             { connection | savedConnections = newSavedConnections }
-
-        --( model, saveConnection ( model.connection.currentSavedConnectionName, model.connection.destinationIp, model.connection.destinationPort ) )
     in
         { model | connection = newConnection }
 
 
 updateSavedConnectionsByIndex : Array Connection -> String -> String -> Int -> Array Connection
 updateSavedConnectionsByIndex connections connectionName destinationIp destinationPort =
-    case findConnectionIndexByName connections connectionName 0 of
-        Just index ->
-            Array.set index ({ name = connectionName, destinationIp = destinationIp, destinationPort = destinationPort }) connections
-
-        Nothing ->
-            connections
-
-
-findConnectionIndexByName : Array Connection -> String -> Int -> Maybe Int
-findConnectionIndexByName connections connectionName index =
-    if index > (Array.length connections) - 1 then
-        Nothing
-    else if (isConnection connections connectionName index) then
-        Just index
-    else
-        findConnectionIndexByName connections connectionName (index + 1)
-
-
-isConnection : Array Connection -> String -> Int -> Bool
-isConnection connections connectionName index =
-    case (Array.get index connections) of
-        Just connection ->
-            connection.name == connectionName
-
-        Nothing ->
-            False
+    Array.set ((Array.length connections) - 1) ({ name = connectionName, destinationIp = destinationIp, destinationPort = destinationPort }) connections

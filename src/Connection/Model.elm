@@ -42,6 +42,12 @@ model =
     }
 
 
+getCreateNewConnection : Connection
+getCreateNewConnection =
+    Connection "Create New" "127.0.0.1" 3000
+
+
+updateSentCount : Model -> Model
 updateSentCount model =
     { model | sentCount = model.sentCount + 1 }
 

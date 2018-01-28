@@ -8,7 +8,7 @@ import Connection.View.Log as Log exposing (view)
 import Msg as Main exposing (..)
 import Model as Main
 import Connection.Msg exposing (..)
-import Connection.Model as Connection exposing (Model, Connection)
+import Connection.Model as Connection exposing (Model, Connection, getCreateNewConnection)
 import Route.Msg as Route exposing (..)
 import Settings.Route as Settings exposing (Route)
 
@@ -81,7 +81,7 @@ inputSavedConnections connection =
             , onInput (MsgForConnection << ChangeSavedConnection)
             , disabled connection.isConnected
             ]
-            (Array.toList (Array.map toOptions connection.savedConnections))
+            (Array.toList (Array.map toOptions (Array.push getCreateNewConnection connection.savedConnections)))
         ]
 
 
