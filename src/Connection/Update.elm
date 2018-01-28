@@ -95,6 +95,7 @@ update msg model =
             case errorMessage of
                 "" ->
                     model
+                        |> updateSavedConnectionsWithCurrent
                         |> routeHome
                         |> logSavedConnection
 
@@ -320,3 +321,54 @@ getNewConnection model =
     , destinationIp = model.connection.destinationIp
     , destinationPort = model.connection.destinationPort
     }
+
+
+updateSavedConnectionsWithCurrent : Main.Model -> Main.Model
+updateSavedConnectionsWithCurrent model =
+    let
+        connection =
+            model.connection
+
+        newSavedConnections =
+            updateSavedConnectionsByIndex
+                connection.savedConnections
+                model.connection.currentSavedConnectionName
+                model.connection.destinationIp
+                model.connection.destinationPort
+
+        newConnection =
+            { connection | savedConnections = newSavedConnections }
+
+        --( model, saveConnection ( model.connection.currentSavedConnectionName, model.connection.destinationIp, model.connection.destinationPort ) )
+    in
+        { model | connection = newConnection }
+
+
+updateSavedConnectionsByIndex : Array Connection -> String -> String -> Int -> Array Connection
+updateSavedConnectionsByIndex connections connectionName destinationIp destinationPort =
+    case findConnectionIndexByName connections connectionName 0 of
+        Just index ->
+            Array.set index ({ name = connectionName, destinationIp = destinationIp, destinationPort = destinationPort }) connections
+
+        Nothing ->
+            connections
+
+
+findConnectionIndexByName : Array Connection -> String -> Int -> Maybe Int
+findConnectionIndexByName connections connectionName index =
+    if index > (Array.length connections) - 1 then
+        Nothing
+    else if (isConnection connections connectionName index) then
+        Just index
+    else
+        findConnectionIndexByName connections connectionName (index + 1)
+
+
+isConnection : Array Connection -> String -> Int -> Bool
+isConnection connections connectionName index =
+    case (Array.get index connections) of
+        Just connection ->
+            connection.name == connectionName
+
+        Nothing ->
+            False
