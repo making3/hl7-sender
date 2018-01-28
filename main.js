@@ -19,9 +19,7 @@ if (debug) {
         'index.html',
         'elm.js',
         './css/application.css',
-        './src/ports/watch.js',
-        './src/ports/settings.js',
-        './src/ports/connection.js'
+        './src/**/*.js'
     ];
 
     chokidar.watch(watchers).on('change', () => {

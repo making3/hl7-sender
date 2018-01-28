@@ -1,22 +1,25 @@
 port module Connection.Update exposing (..)
 
 import Char
+import Array exposing (Array, get, toList, push)
+import List exposing (head, filter)
 import Msg as Main exposing (..)
 import Model as Main exposing (..)
-import Connection.Model as Connection exposing (Model)
+import Route.Model as Root exposing (..)
+import Home.Route as Home exposing (..)
+import Home.Router exposing (routeHome)
+import Connection.Model as Connection exposing (Model, Connection, toSavedConnectionsModels, getCreateNewConnection)
 import Connection.Msg as Connection exposing (..)
 import Connection.Validations exposing (..)
+import Settings.Router as Settings exposing (route)
+import Settings.Route as Settings exposing (Route)
 
 
 update : Connection.Msg -> Main.Model -> ( Main.Model, Cmd Main.Msg )
 update msg model =
     case msg of
-        ChangeDestinationIp newIp ->
-            ( { model
-                | connection = updateIpAddress model.connection newIp
-              }
-            , Cmd.none
-            )
+        ChangeDestinationIp ipAddress ->
+            ( updateIpAddress model ipAddress, Cmd.none )
 
         ChangeDestinationPort newPort ->
             case validatePort newPort of
@@ -74,13 +77,133 @@ update msg model =
                     , disconnect ()
                     )
 
+        ChangeSavedConnection savedConnectionName ->
+            ( changeConnectionFromSaved model savedConnectionName, Cmd.none )
 
-updateIpAddress connection newIp =
-    { connection | destinationIp = newIp }
+        SaveConnection ->
+            ( model, saveConnection ( model.settings.newConnectionName, model.connection.destinationIp, model.connection.destinationPort ) )
+
+        CreateNewConnection ->
+            case model.connection.currentSavedConnectionName of
+                "Create New" ->
+                    ( Settings.route model Settings.RouteSaveConnection, Cmd.none )
+
+                _ ->
+                    ( model, saveConnection ( model.connection.currentSavedConnectionName, model.connection.destinationIp, model.connection.destinationPort ) )
+
+        SavedConnection "" ->
+            model
+                |> updateSavedConnectionsWithCurrent
+                |> routeHome
+                |> logSavedConnection
+
+        SavedNewConnection "" ->
+            model
+                |> addNewConnection
+                |> routeHome
+                |> logSavedConnection
+
+        InitialSavedConnections ( "", savedConnectionsJson ) ->
+            updateInitialSavedConnections model savedConnectionsJson
+
+        SavedConnection errorMessage ->
+            log "error" ("Failed to save message" ++ errorMessage) model
+
+        SavedNewConnection errorMessage ->
+            log "error" ("Failed to save message" ++ errorMessage) model
+
+        InitialSavedConnections ( errorMessage, savedConnectionsJson ) ->
+            log "error" errorMessage model
+
+
+logSavedConnection : Main.Model -> ( Main.Model, Cmd Main.Msg )
+logSavedConnection model =
+    log "info" "Saved Connection!" model
+
+
+changeConnectionFromSaved : Main.Model -> String -> Main.Model
+changeConnectionFromSaved model connectionName =
+    case connectionName of
+        "Create New" ->
+            updateCurrentConnection model getCreateNewConnection
+
+        _ ->
+            case findConnectionByName model connectionName of
+                Nothing ->
+                    model
+
+                Just newConnection ->
+                    updateCurrentConnection model newConnection
+
+
+findConnectionByName : Main.Model -> String -> Maybe Connection
+findConnectionByName model connectionName =
+    List.head (List.filter (\m -> m.name == connectionName) (Array.toList model.connection.savedConnections))
+
+
+updateCurrentConnection : Main.Model -> Connection -> Main.Model
+updateCurrentConnection model newConnection =
+    let
+        connection =
+            model.connection
+
+        replacedConnection =
+            { connection
+                | destinationIp = newConnection.destinationIp
+                , destinationPort = newConnection.destinationPort
+                , currentSavedConnectionName = newConnection.name
+            }
+    in
+        { model | connection = replacedConnection }
+
+
+updateIpAddress : Main.Model -> String -> Main.Model
+updateIpAddress model ipAddress =
+    let
+        connection =
+            model.connection
+
+        newConnection =
+            { connection | destinationIp = ipAddress }
+    in
+        { model | connection = newConnection }
 
 
 updatePort connection newPort =
     { connection | destinationPort = clamp 1 65535 newPort }
+
+
+updateInitialSavedConnections : Main.Model -> String -> ( Main.Model, Cmd Main.Msg )
+updateInitialSavedConnections model savedConnectionsJson =
+    case toSavedConnectionsModels savedConnectionsJson of
+        Ok savedConnections ->
+            let
+                connection =
+                    model.connection
+
+                newConnection =
+                    { connection | savedConnections = savedConnections }
+
+                newModel =
+                    { model | connection = newConnection }
+
+                defaultConnectionName =
+                    getInitialConnectionName savedConnections
+            in
+                ( changeConnectionFromSaved newModel defaultConnectionName, Cmd.none )
+
+        Err errorMessage ->
+            log "error" errorMessage model
+
+
+getInitialConnectionName : Array Connection -> String
+getInitialConnectionName connections =
+    case Array.get 0 connections of
+        Just connection ->
+            connection.name
+
+        Nothing ->
+            ""
 
 
 connected model =
@@ -117,6 +240,9 @@ port disconnect : () -> Cmd msg
 port send : String -> Cmd msg
 
 
+port saveConnection : ( String, String, Int ) -> Cmd msg
+
+
 getWrappedHl7 : Main.Model -> String
 getWrappedHl7 model =
     getCharStr model.settings.controlCharacters.startOfText
@@ -134,3 +260,72 @@ getStrWithCarriageReturns str =
 getCharStr : Int -> String
 getCharStr i =
     String.fromChar (Char.fromCode i)
+
+
+addNewConnection : Main.Model -> Main.Model
+addNewConnection model =
+    let
+        connection =
+            model.connection
+
+        settings =
+            model.settings
+
+        newIndividualConnection =
+            getNewConnection model
+
+        newConnection =
+            { connection
+                | savedConnections = appendConnectionToArray model newIndividualConnection model.connection.savedConnections
+            }
+
+        newSettings =
+            { settings
+                | newConnectionName = ""
+            }
+
+        newModel =
+            { model
+                | connection = newConnection
+                , route = Root.RouteHome Home.RouteHome
+                , settings = newSettings
+            }
+    in
+        updateCurrentConnection newModel newIndividualConnection
+
+
+appendConnectionToArray : Main.Model -> Connection -> Array Connection -> Array Connection
+appendConnectionToArray model newConnection connections =
+    Array.push newConnection connections
+
+
+getNewConnection : Main.Model -> Connection
+getNewConnection model =
+    { name = model.settings.newConnectionName
+    , destinationIp = model.connection.destinationIp
+    , destinationPort = model.connection.destinationPort
+    }
+
+
+updateSavedConnectionsWithCurrent : Main.Model -> Main.Model
+updateSavedConnectionsWithCurrent model =
+    let
+        connection =
+            model.connection
+
+        newSavedConnections =
+            updateSavedConnectionsByIndex
+                connection.savedConnections
+                model.connection.currentSavedConnectionName
+                model.connection.destinationIp
+                model.connection.destinationPort
+
+        newConnection =
+            { connection | savedConnections = newSavedConnections }
+    in
+        { model | connection = newConnection }
+
+
+updateSavedConnectionsByIndex : Array Connection -> String -> String -> Int -> Array Connection
+updateSavedConnectionsByIndex connections connectionName destinationIp destinationPort =
+    Array.set ((Array.length connections) - 1) ({ name = connectionName, destinationIp = destinationIp, destinationPort = destinationPort }) connections

@@ -1,10 +1,14 @@
 module Settings.Update exposing (..)
 
+import Array exposing (Array, push)
 import Msg as Main exposing (..)
 import Model as Main exposing (..)
+import Route.Model as Root exposing (..)
+import Home.Route as Home exposing (..)
 import Settings.Msg as Settings exposing (..)
 import Settings.Commands exposing (..)
 import Settings.Model as Settings exposing (..)
+import Connection.Model as Connection exposing (Connection)
 import Settings.ControlCharacters.Update as ControlCharacters exposing (update)
 import Settings.ControlCharacters.Model as ControlCharacters exposing (encode)
 
@@ -39,3 +43,13 @@ update msg model =
 
         SaveSettings ->
             ( model, save model.settings )
+
+        UpdateNewConnectionName connectionName ->
+            let
+                settings =
+                    model.settings
+
+                newSettings =
+                    { settings | newConnectionName = connectionName }
+            in
+                ( { model | settings = newSettings }, Cmd.none )

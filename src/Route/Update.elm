@@ -7,6 +7,8 @@ import Route.Msg as Route exposing (..)
 import Route.Menu exposing (..)
 import Home.Route as Home exposing (Route)
 import Home.Router as Home exposing (routeHome)
+import Settings.Route as Settings exposing (Route)
+import Settings.Router as Settings exposing (route)
 
 
 update : Route.Msg -> Main.Model -> ( Main.Model, Cmd Main.Msg )
@@ -17,3 +19,6 @@ update msg model =
 
         MenuClick menuItem ->
             ( menuClick model menuItem, Cmd.none )
+
+        RouteForSettings internalRoute ->
+            ( Settings.route model internalRoute, Cmd.none )

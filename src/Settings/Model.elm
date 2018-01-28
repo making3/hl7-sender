@@ -1,20 +1,22 @@
 module Settings.Model exposing (..)
 
 import Json.Encode exposing (encode, Value, object, int)
-import Json.Decode as Decode exposing (Decoder, decodeString, int)
-import Json.Decode.Pipeline exposing (decode, required)
+import Json.Decode as Decode exposing (Decoder, decodeString, int, string)
+import Json.Decode.Pipeline exposing (decode, required, optional)
 import Connection.Model as Connection
 import Settings.ControlCharacters.Model as ControlCharacters
 
 
 type alias Model =
     { controlCharacters : ControlCharacters.Model
+    , newConnectionName : String
     }
 
 
 model : Model
 model =
     { controlCharacters = ControlCharacters.model
+    , newConnectionName = ""
     }
 
 
@@ -32,12 +34,13 @@ encode settings =
         ]
 
 
+toModel : String -> Result String Model
+toModel json =
+    Decode.decodeString settingsDecoder json
+
+
 settingsDecoder : Decoder Model
 settingsDecoder =
     decode Model
         |> required "controlCharacters" ControlCharacters.decodeString
-
-
-toModel : String -> Result String Model
-toModel json =
-    Decode.decodeString settingsDecoder json
+        |> optional "newConnectionName" Decode.string ""

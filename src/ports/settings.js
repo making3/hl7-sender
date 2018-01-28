@@ -1,16 +1,10 @@
 'use strict';
-const fs          = require('fs');
-const path        = require('path');
-const electron    = require('electron');
+const userData = require('./user-data');
 const packageJson = require('../../package');
 
-let settingsFile;
-exports.watchForEvents = (app) => {
-    settingsFile = path.join(
-        (electron.app || electron.remote.app).getPath('userData'),
-        'settings.json'
-    );
+const userDataFileName = 'settings.json';
 
+exports.watchForEvents = (app) => {
     app.ports.settingsSave.subscribe((settingsJson) => {
         saveSettings(settingsJson, (error) => {
             app.ports.settingsSaved.send(error ? error.toString() : '');
@@ -18,7 +12,7 @@ exports.watchForEvents = (app) => {
     });
 
     app.ports.settingsGet.subscribe((defaultSettingsJson) => {
-        getSettingsJson(defaultSettingsJson, (error, settingsJson) => {
+        userData.getUserData(userDataFileName, defaultSettingsJson, (error, settingsJson) => {
             if (error) {
                 error = error.toString();
             }
@@ -34,35 +28,6 @@ exports.watchForEvents = (app) => {
     });
 };
 
-function getSettingsJson(defaultSettingsJson, callback) {
-    if (!fs.existsSync(settingsFile)) {
-        return saveDefaultSettings(defaultSettingsJson, callback);
-    }
-
-    fs.readFile(settingsFile, 'utf8', (error, settingsJson) => {
-        if (error) {
-            return callback(error);
-        }
-        if (!settingsJson) {
-            return saveDefaultSettings(defaultSettingsJson, callback);
-        }
-        callback(error, settingsJson);
-    });
-}
-
-function saveDefaultSettings(defaultSettingsJson, callback) {
-    saveSettings(defaultSettingsJson, (error) => {
-        callback(error, defaultSettingsJson);
-    });
-}
-
 function saveSettings(settingsJson, callback) {
-    // Pretty print the settings
-    const settingsFormatted = getFormattedSettings(settingsJson);
-
-    fs.writeFile(settingsFile, settingsFormatted, 'utf8', callback);
-}
-
-function getFormattedSettings(settingsJson) {
-    return JSON.stringify(JSON.parse(settingsJson), null, 4);
+    userData.saveUserDataObject(userDataFileName, settingsJson, callback);
 }

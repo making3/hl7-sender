@@ -60,8 +60,8 @@ body {
 .clear-log {
 }
 
-.save-connection {
-  display: none; /* Re-enable once this btuton is implemented */
+.connection-input-form {
+  margin-bottom: .5em !important;
 }
 
 .log {
@@ -156,4 +156,23 @@ body {
 
 .block {
     display: block;
+}
+
+.basic-form label {
+  width: 140px;
+}
+
+.basic-form input {
+  margin-right: 20px;
+  width: 220px;
+  display: inline-block;
+}
+
+.save-connection-buttons {
+    margin-left: 190px;
+    margin-top: 5px;
+}
+
+.basic-form button {
+    margin-left: 5px;
 }
