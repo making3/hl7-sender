@@ -3,7 +3,8 @@ TODO
 
 # Main Application
 - [x] Save control characters to user's hard drive.
-- [ ] Save IP / Port to user's hard drive, on button click (i.e. don't save if they don't want it).
+- [x] Save IP / Port to user's hard drive, on button click (i.e. don't save if they don't want it).
+- [ ] Delete IP / Port to user's hard drive, on button click.
 - [ ] Option to accept an ACK from receiving application.
 - [x] Notify the user that a message was sent
 - [ ] Notify if a message was successful / failed (i.e. rejected by the other system).
@@ -12,7 +13,7 @@ TODO
 - [x] When editing control characters, disable "Save to Disk" unless the settings are updated.
 - [x] Reverse the text log output & auto scroll for new messages.
 - [ ] Add escape functionality when viewing a "modal" screen.
-- [ ] Disable Saved Connections, Host, and Port buttons when the connection is active.
+- [x] Disable Saved Connections, Host, and Port buttons when the connection is active.
 - [ ] Add menu item to view existing connections (opens a new screen and shows a table list of Name | IP | Port).
 - [ ] After the above, add an Edit & Delete button to the existing connections (header will be Name | IP | Port | Actions).
 - [ ] Create a side-navigation menu. The future menu will include Basic, File, and Analyze. "Basic" is the current home page. File/Analyze are ideas for the future (see the future TODO list).
