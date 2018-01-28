@@ -6,7 +6,7 @@ Desktop GUI tool for pasting and sending an HL7 message to a port. Mostly useful
 # Preview
 
 This a work in progress, but here is a preview of the current state of the application.
-![preview](https://i.imgur.com/aEnjgbg.png)
+![preview](https://i.imgur.com/xvBMfMs.png)
 
 # Development
 
