@@ -4,11 +4,11 @@
   "description": "HL7 Sending utility for testing a downstream HL7 processing system.",
   "main": "index.js",
   "scripts": {
-    "elm": "elm make src/Main.elm --output elm.js || true",
-    "elm:watch": "./node_modules/.bin/chokidar '**/*.elm' -c 'npm run elm'",
+    "build": "elm make src/Main.elm --output elm.js --yes",
+    "watch": "npm run build && chokidar \"**/*.elm\" -c \"npm run build\"",
     "debug": "electron main.js --debug",
     "start": "electron main.js",
-    "watch": "npm run debug & npm run elm:watch"
+    "dev": "npm run watch & npm run debug"
   },
   "keywords": [
     "hl7",
@@ -26,6 +26,7 @@
     "bootstrap": "^4.0.0-alpha.6",
     "chokidar-cli": "^1.2.0",
     "electron": "^1.7.10",
-    "electron-context-menu": "^0.9.1"
+    "electron-context-menu": "^0.9.1",
+    "elm": "^0.18.0"
   }
 }

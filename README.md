@@ -14,43 +14,29 @@ HL7 Sender is an Electron and Elm learning project. Refer to the [TODO](TODO.md)
 
 # Installing
 
-Node.js. Use NVM.
+- Node.js v8+, v8 LTS is used for development.
+  - [NVM](https://github.com/creationix/nvm) is recommended on linux.
+  - Official installers are recommended on Windows, or [nvm-windows](https://github.com/coreybutler/nvm-windows)
 
 
-    // Elm & Electron
-    npm i -g elm electron-prebuilt
+    npm install
 
-    // Elm dependencies (not sure if required)
-    elm package install elm-lang/html
-
-    // Change detection / automatic reloading
-    npm i -g chokidar-cli
 
 ## Building
 
-    // Build Elm project
-    elm make Main.elm --output elm.js
+    // build elm views
+    npm run build
 
-    // or
-    npm run elm
-
-    // or build & watch for changes
-    npm run elm:watch
+    // build elm views & watch for changes
+    npm run watch
 
 
 ## Running
 
-    // Run electron
-    electron main.js
-
-    // or
     npm run start
 
-    // or debug it
+    // starts + shows dev tools
     npm run debug
-
-    // or build & watch for changes
-    npm run watch
 
 # Reference
 
