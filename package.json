@@ -25,7 +25,7 @@
   "devDependencies": {
     "bootstrap": "^4.0.0-alpha.6",
     "chokidar-cli": "^1.2.0",
-    "electron": "^1.7.10",
+    "electron": "^1.8.7",
     "electron-context-menu": "^0.9.1",
     "elm": "^0.18.0"
   }
