@@ -1,5 +1,6 @@
 module Main exposing (..)
 
+import About
 import Array exposing (Array, fromList)
 import Char
 import Dom.Scroll
@@ -27,6 +28,7 @@ type alias Model =
     -- , route : Route.Model
     , connection : ConnectionModel
     , settings : SettingsModel
+    , modal : Maybe (Html Msg)
     }
 
 
@@ -74,6 +76,7 @@ model =
     -- , route = Route.model
     , connection = initialConnectionModel
     , settings = initialSettings
+    , modal = Nothing
     }
 
 
@@ -124,6 +127,16 @@ initialControlCharacters =
 
 view : Model -> Html Msg
 view model =
+    case model.modal of
+        Just msgHtml ->
+            msgHtml
+
+        Nothing ->
+            viewPrimaryForm model
+
+
+viewPrimaryForm : Model -> Html Msg
+viewPrimaryForm model =
     div []
         [ viewHl7Form model
         , viewFooter model
@@ -364,6 +377,8 @@ type Msg
     | ClearLog
     | Send
     | Sent
+    | MenuClick String
+    | ExitModal
       -- | MsgForRoute Route.Msg
       -- | MsgForSettings Settings.Msg
       -- | MsgForConnection Connection.Msg
@@ -422,6 +437,12 @@ update msg model =
         Sent ->
             updateSentCount model
                 |> log "info" "Sent a message"
+
+        MenuClick menuItem ->
+            menuClickOption menuItem model
+
+        ExitModal ->
+            { model | modal = Nothing } ! []
 
 
 updateIpAddress : Model -> String -> Model
@@ -559,6 +580,16 @@ getCharStringFromDecimal decimalCode =
     String.fromChar (Char.fromCode decimalCode)
 
 
+menuClickOption : String -> Model -> ( Model, Cmd Msg )
+menuClickOption menuItem model =
+    case menuItem of
+        "about" ->
+            { model | modal = Just (About.view "2.3" ExitModal) } ! []
+
+        _ ->
+            model ! []
+
+
 
 -- SUBSCRIPTIONS
 
@@ -566,10 +597,11 @@ getCharStringFromDecimal decimalCode =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        -- [ menuClick (MsgForRoute << MenuClick)
+        [ Ports.menuClick MenuClick
+
         -- , settingsSaved (MsgForSettings << Saved)
         -- , settings (MsgForSettings << InitialSettings)
-        [ Ports.connected (always Connected)
+        , Ports.connected (always Connected)
         , Ports.disconnected (always Disconnected)
         , Ports.connectionError ConnectionError
         , Ports.sent (always Sent)
