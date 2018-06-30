@@ -1,9 +1,9 @@
 module Connection.View.Log exposing (..)
 
-import Html exposing (Html, div, textarea, text, label)
-import Html.Attributes exposing (id, readonly, class, rows)
-import Msg as Main exposing (..)
+import Html exposing (Html, div, label, text, textarea)
+import Html.Attributes exposing (class, id, readonly, rows)
 import Model as Main
+import Msg as Main exposing (..)
 
 
 view : Main.Model -> List (Html Main.Msg)

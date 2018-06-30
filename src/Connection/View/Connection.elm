@@ -1,19 +1,19 @@
 module Connection.View.Connection exposing (..)
 
 import Array exposing (Array, map, toList)
-import Html exposing (Html, Attribute, div, input, button, text, label, select, option)
-import Html.Attributes exposing (..)
-import Html.Events exposing (onInput, onClick)
-import Connection.View.Log as Log exposing (view)
-import Msg as Main exposing (..)
-import Model as Main
+import Connection.Model as Connection exposing (Connection, Model, getCreateNewConnection)
 import Connection.Msg exposing (..)
-import Connection.Model as Connection exposing (Model, Connection, getCreateNewConnection)
+import Connection.View.Log as Log exposing (view)
+import Html exposing (Attribute, Html, button, div, input, label, option, select, text)
+import Html.Attributes exposing (..)
+import Html.Events exposing (onClick, onInput)
+import Model as Main
+import Msg as Main exposing (..)
 import Route.Msg as Route exposing (..)
 import Settings.Route as Settings exposing (Route)
 
 
-view : Main.Model -> Html Main.Msg
+view : Main.Model -> Html Msg
 view model =
     div [ class "row" ]
         [ div [ class "col-8" ] (connectionFormControls model.connection)
