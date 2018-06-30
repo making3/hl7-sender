@@ -20,25 +20,25 @@ exports.watchForEvents = (app) => {
         });
     });
 
-    app.ports.getConnections.subscribe((defaultConnectionsJson) => {
-        userData.getUserData(userDataFileName, defaultConnectionsJson, (error, connectionsJson) => {
-            app.ports.initialSavedConnections.send([
-                error ? error.toString() : '',
-                connectionsJson
-            ]);
-        });
-    });
-
-    app.ports.saveConnection.subscribe(([ connectionName, ip, port ]) => {
-        saveConnection(connectionName, ip, port, (error, isNewConnection) => {
-            const errorMessage = error ? error.toString() : '';
-            if (isNewConnection) {
-                app.ports.savedNewConnection.send(errorMessage);
-            } else {
-                app.ports.savedConnection.send(errorMessage);
-            }
-        });
-    });
+    // app.ports.getConnections.subscribe((defaultConnectionsJson) => {
+    //     userData.getUserData(userDataFileName, defaultConnectionsJson, (error, connectionsJson) => {
+    //         app.ports.initialSavedConnections.send([
+    //             error ? error.toString() : '',
+    //             connectionsJson
+    //         ]);
+    //     });
+    // });
+    //
+    // app.ports.saveConnection.subscribe(([ connectionName, ip, port ]) => {
+    //     saveConnection(connectionName, ip, port, (error, isNewConnection) => {
+    //         const errorMessage = error ? error.toString() : '';
+    //         if (isNewConnection) {
+    //             app.ports.savedNewConnection.send(errorMessage);
+    //         } else {
+    //             app.ports.savedConnection.send(errorMessage);
+    //         }
+    //     });
+    // });
 };
 
 function connect(app, ip, port) {
@@ -60,7 +60,6 @@ function connect(app, ip, port) {
 
     client.on('data', (data) => {
         // TODO: Completely gather an ack here
-        console.log('data: ', data);
         app.ports.ack.send(data);
     });
 
@@ -68,6 +67,7 @@ function connect(app, ip, port) {
 }
 
 function send(hl7, callback) {
+  console.log('writing???');
     client.write(hl7);
 
     // TODO: Call back once an ack has been received.
@@ -76,7 +76,8 @@ function send(hl7, callback) {
 
 function disconnect() {
     if (client) {
-        client.end();
+        // or client.end? This was what used to be used..
+        client.destroy();
     }
 }
 

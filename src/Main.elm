@@ -1,11 +1,13 @@
 module Main exposing (..)
 
 import Array exposing (Array, fromList)
+import Char
 import Dom.Scroll
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Task
+import Ports
 
 
 init : ( Model, Cmd Msg )
@@ -24,8 +26,7 @@ type alias Model =
 
     -- , route : Route.Model
     , connection : ConnectionModel
-
-    -- , settings : Settings.Model
+    , settings : SettingsModel
     }
 
 
@@ -47,6 +48,23 @@ type alias Connection =
     }
 
 
+type alias SettingsModel =
+    { controlCharacters : ControlCharactersModel
+    , newConnectionName : String
+    }
+
+
+type alias ControlCharactersModel =
+    { startOfText : Int
+    , endOfText : Int
+    , endOfLine : Int
+    , pendingUpdate : Bool
+    , tempStartOfText : Int
+    , tempEndOfText : Int
+    , tempEndOfLine : Int
+    }
+
+
 model : Model
 model =
     { hl7 = ""
@@ -55,8 +73,7 @@ model =
 
     -- , route = Route.model
     , connection = initialConnectionModel
-
-    -- , settings = Settings.model
+    , settings = initialSettings
     }
 
 
@@ -80,6 +97,25 @@ getDefaultConnection =
 getLogId : String
 getLogId =
     "logs"
+
+
+initialSettings : SettingsModel
+initialSettings =
+    { controlCharacters = initialControlCharacters
+    , newConnectionName = ""
+    }
+
+
+initialControlCharacters : ControlCharactersModel
+initialControlCharacters =
+    { startOfText = 9
+    , endOfText = 45
+    , endOfLine = 35
+    , pendingUpdate = False
+    , tempStartOfText = 9
+    , tempEndOfText = 45
+    , tempEndOfLine = 35
+    }
 
 
 
@@ -118,8 +154,7 @@ simpleSenderButtons model =
             [ text "Validate" ]
         , button
             [ class "btn btn-sm btn-primary"
-
-            -- , onClick (MsgForConnection Send)
+            , onClick Send
             , disabled (model.connection.isConnected == False)
             ]
             [ text "Send" ]
@@ -260,7 +295,7 @@ inputSavedConnections connection =
             [ id getSavedConnectionsId
             , class "form-control form-control-sm"
 
-            -- , onInput (MsgForConnection << ChangeSavedConnection)
+            -- , onInput ChangeSavedConnection
             , disabled connection.isConnected
             ]
             (Array.toList (Array.map toOptions (Array.push getCreateNewConnection connection.savedConnections)))
@@ -286,20 +321,18 @@ connectionButtons : Model -> List (Html Msg)
 connectionButtons model =
     [ button
         [ class "btn btn-sm btn-block btn-primary"
-
-        -- , onClick (MsgForConnection ToggleConnection)
+        , onClick ToggleConnection
         ]
         [ text (getConnectButtonText model.connection.isConnected) ]
     , button
         [ class "clear-log btn btn-sm btn-block btn-secondary"
-
-        -- , onClick (MsgForConnection ClearLog)
+        , onClick ClearLog
         ]
         [ text "Clear Log" ]
     , button
         [ class "save-connection btn btn-sm btn-block btn-secondary"
 
-        -- , onClick (MsgForConnection CreateNewConnection)
+        -- , onClick CreateNewConnection
         ]
         [ text "Save" ]
     ]
@@ -324,6 +357,13 @@ type Msg
     | Version String
     | ChangeDestinationIp String
     | ChangeDestinationPort String
+    | ToggleConnection
+    | Connected
+    | Disconnected
+    | ConnectionError String
+    | ClearLog
+    | Send
+    | Sent
       -- | MsgForRoute Route.Msg
       -- | MsgForSettings Settings.Msg
       -- | MsgForConnection Connection.Msg
@@ -356,23 +396,32 @@ update msg model =
             ( updateIpAddress model ipAddress, Cmd.none )
 
         ChangeDestinationPort newPort ->
-            case validatePort newPort of
-                ValidPort validatedPort ->
-                    ( { model
-                        | connection = updatePort model.connection validatedPort
-                      }
-                    , Cmd.none
-                    )
+            ( changeDestinationPort model newPort, Cmd.none )
 
-                EmptyPort ->
-                    ( { model
-                        | connection = updatePort model.connection 0
-                      }
-                    , Cmd.none
-                    )
+        ToggleConnection ->
+            updateToggleConnection model
 
-                InvalidPort ->
-                    ( model, Cmd.none )
+        Connected ->
+            connected model
+                |> log "info" "Connected"
+
+        Disconnected ->
+            disconnected model
+                |> log "info" "Disconnected"
+
+        ConnectionError errorMsg ->
+            disconnected model
+                |> log "error" errorMsg
+
+        ClearLog ->
+            ( { model | logs = [] }, Cmd.none )
+
+        Send ->
+            ( model, Ports.send (getWrappedHl7 model) )
+
+        Sent ->
+            updateSentCount model
+                |> log "info" "Sent a message"
 
 
 updateIpAddress : Model -> String -> Model
@@ -387,8 +436,57 @@ updateIpAddress model ipAddress =
         { model | connection = newConnection }
 
 
+changeDestinationPort : Model -> String -> Model
+changeDestinationPort model newPort =
+    case validatePort newPort of
+        ValidPort validatedPort ->
+            { model | connection = updatePort model.connection validatedPort }
+
+        EmptyPort ->
+            { model | connection = updatePort model.connection 0 }
+
+        InvalidPort ->
+            model
+
+
 updatePort connection newPort =
     { connection | destinationPort = clamp 1 65535 newPort }
+
+
+updateToggleConnection : Model -> ( Model, Cmd Msg )
+updateToggleConnection model =
+    case model.connection.isConnected of
+        False ->
+            ( model
+            , Ports.connect
+                ( model.connection.destinationIp
+                , model.connection.destinationPort
+                )
+            )
+
+        True ->
+            ( model
+            , Ports.disconnect ()
+            )
+
+
+connected model =
+    { model
+        | connection = updateConnectionStatus model.connection True "Connected"
+    }
+
+
+disconnected model =
+    { model
+        | connection = updateConnectionStatus model.connection False "Disconnected"
+    }
+
+
+updateConnectionStatus connection isConnected message =
+    { connection
+        | isConnected = isConnected
+        , connectionMessage = message
+    }
 
 
 updateHl7 : Model -> String -> Model
@@ -429,6 +527,60 @@ validatePort portStr =
                 InvalidPort
 
 
+updateSentCount : Model -> Model
+updateSentCount model =
+    let
+        connection =
+            model.connection
+
+        newConnection =
+            { connection | sentCount = connection.sentCount + 1 }
+    in
+        { model | connection = newConnection }
+
+
+getWrappedHl7 : Model -> String
+getWrappedHl7 model =
+    getCharStringFromDecimal model.settings.controlCharacters.startOfText
+        ++ getStringWithCarriageReturns (model.hl7)
+        ++ getCharStringFromDecimal model.settings.controlCharacters.endOfLine
+        ++ getCharStringFromDecimal model.settings.controlCharacters.endOfText
+
+
+getStringWithCarriageReturns : String -> String
+getStringWithCarriageReturns str =
+    str
+        |> String.split "\n"
+        |> String.join "\x0D"
+
+
+getCharStringFromDecimal : Int -> String
+getCharStringFromDecimal decimalCode =
+    String.fromChar (Char.fromCode decimalCode)
+
+
+
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.batch
+        -- [ menuClick (MsgForRoute << MenuClick)
+        -- , settingsSaved (MsgForSettings << Saved)
+        -- , settings (MsgForSettings << InitialSettings)
+        [ Ports.connected (always Connected)
+        , Ports.disconnected (always Disconnected)
+        , Ports.connectionError ConnectionError
+        , Ports.sent (always Sent)
+
+        -- , version (MsgForHome << Version)
+        -- , savedConnection (MsgForConnection << SavedConnection)
+        -- , savedNewConnection (MsgForConnection << SavedNewConnection)
+        -- , initialSavedConnections (MsgForConnection << InitialSavedConnections)
+        ]
+
+
 
 -- MAIN
 
@@ -439,5 +591,5 @@ main =
         { init = init
         , view = view
         , update = update
-        , subscriptions = \_ -> Sub.none -- Subs.init
+        , subscriptions = subscriptions
         }
