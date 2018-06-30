@@ -1,6 +1,6 @@
 module Main exposing (..)
 
-import Connection
+import Array exposing (Array, fromList)
 import Dom.Scroll
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -14,7 +14,6 @@ init =
 
 
 
---, Commands.init initialModel )
 -- MODEL
 
 
@@ -24,9 +23,27 @@ type alias Model =
     , logs : List String
 
     -- , route : Route.Model
-    , connection : Connection.Model
+    , connection : ConnectionModel
 
     -- , settings : Settings.Model
+    }
+
+
+type alias ConnectionModel =
+    { destinationIp : String
+    , destinationPort : Int
+    , isConnected : Bool
+    , connectionMessage : String
+    , sentCount : Int
+    , savedConnections : Array Connection
+    , currentSavedConnectionName : String
+    }
+
+
+type alias Connection =
+    { name : String
+    , destinationIp : String
+    , destinationPort : Int
     }
 
 
@@ -37,10 +54,27 @@ model =
     , logs = []
 
     -- , route = Route.model
-    , connection = Connection.model
+    , connection = initialConnectionModel
 
     -- , settings = Settings.model
     }
+
+
+initialConnectionModel : ConnectionModel
+initialConnectionModel =
+    { destinationIp = "127.0.0.1"
+    , destinationPort = 1337
+    , isConnected = False
+    , connectionMessage = "Disconnected"
+    , sentCount = 0
+    , savedConnections = Array.fromList [ getDefaultConnection ]
+    , currentSavedConnectionName = "Default"
+    }
+
+
+getDefaultConnection : Connection
+getDefaultConnection =
+    Connection "Default" "127.0.0.1" 1337
 
 
 getLogId : String
@@ -96,8 +130,8 @@ viewFooter : Model -> Html Msg
 viewFooter model =
     footer
         [ class "footer" ]
-        [ --connectionForm model
-          separator
+        [ connectionForm model
+        , separator
         , viewStatus model
         ]
 
@@ -105,7 +139,7 @@ viewFooter model =
 connectionForm : Model -> Html Msg
 connectionForm model =
     div [ class "connection-row" ]
-        [ div [ class "connection" ] [] --Connection.view model ]
+        [ div [ class "connection" ] [ viewConnectionForm model ]
         , div [ class "log" ] (viewLogs model)
         ]
 
@@ -152,6 +186,135 @@ getLogs model =
         |> String.join "\n"
 
 
+viewConnectionForm : Model -> Html Msg
+viewConnectionForm model =
+    div [ class "row" ]
+        [ div [ class "col-8" ] (connectionFormControls model.connection)
+        , div [ class "col-4" ] (connectionButtons model)
+        ]
+
+
+connectionFormControls : ConnectionModel -> List (Html Msg)
+connectionFormControls connectionModel =
+    [ formInput connectionModel "Saved" inputSavedConnections
+    , formInput connectionModel "Host" inputIpAddress
+    , formInput connectionModel "Port" inputPort
+    ]
+
+
+inputIpAddress : ConnectionModel -> Html Msg
+inputIpAddress connectionModel =
+    inputControl
+        "Host"
+        connectionModel.destinationIp
+        connectionModel.isConnected
+        ChangeDestinationIp
+
+
+inputPort : ConnectionModel -> Html Msg
+inputPort connectionModel =
+    inputControl
+        "Port"
+        (getPortDisplay connectionModel.destinationPort)
+        connectionModel.isConnected
+        ChangeDestinationPort
+
+
+formInput : ConnectionModel -> String -> (ConnectionModel -> Html Msg) -> Html Msg
+formInput connectionModel name inputControl =
+    div
+        [ class "form-group row connection-input-form" ]
+        [ label
+            [ class "col-sm-3 col-form-label col-form-label-sm" ]
+            [ text name ]
+        , div
+            [ class "col-9" ]
+            [ inputControl connectionModel ]
+        ]
+
+
+inputControl : String -> String -> Bool -> (String -> Msg) -> Html Msg
+inputControl inputPlaceholder getValue isConnected msg =
+    input
+        [ class "form-control form-control-sm"
+        , placeholder inputPlaceholder
+        , readonly isConnected
+        , onInput msg
+        , value getValue
+        ]
+        []
+
+
+getPortDisplay : Int -> String
+getPortDisplay destinationPort =
+    if destinationPort == 0 then
+        ""
+    else
+        toString destinationPort
+
+
+inputSavedConnections : ConnectionModel -> Html Msg
+inputSavedConnections connection =
+    div []
+        [ select
+            [ id getSavedConnectionsId
+            , class "form-control form-control-sm"
+
+            -- , onInput (MsgForConnection << ChangeSavedConnection)
+            , disabled connection.isConnected
+            ]
+            (Array.toList (Array.map toOptions (Array.push getCreateNewConnection connection.savedConnections)))
+        ]
+
+
+getCreateNewConnection : Connection
+getCreateNewConnection =
+    Connection "Create New" "127.0.0.1" 3000
+
+
+getSavedConnectionsId : String
+getSavedConnectionsId =
+    "saved-connections"
+
+
+toOptions : Connection -> Html msg
+toOptions connection =
+    option [ value connection.name ] [ text connection.name ]
+
+
+connectionButtons : Model -> List (Html Msg)
+connectionButtons model =
+    [ button
+        [ class "btn btn-sm btn-block btn-primary"
+
+        -- , onClick (MsgForConnection ToggleConnection)
+        ]
+        [ text (getConnectButtonText model.connection.isConnected) ]
+    , button
+        [ class "clear-log btn btn-sm btn-block btn-secondary"
+
+        -- , onClick (MsgForConnection ClearLog)
+        ]
+        [ text "Clear Log" ]
+    , button
+        [ class "save-connection btn btn-sm btn-block btn-secondary"
+
+        -- , onClick (MsgForConnection CreateNewConnection)
+        ]
+        [ text "Save" ]
+    ]
+
+
+getConnectButtonText : Bool -> String
+getConnectButtonText isConnected =
+    case isConnected of
+        True ->
+            "Disconnect"
+
+        False ->
+            "Connect"
+
+
 
 -- UPDATE
 
@@ -159,10 +322,22 @@ getLogs model =
 type Msg
     = ChangeHl7 String
     | Version String
+    | ChangeDestinationIp String
+    | ChangeDestinationPort String
       -- | MsgForRoute Route.Msg
       -- | MsgForSettings Settings.Msg
       -- | MsgForConnection Connection.Msg
     | NoOp
+
+
+type PortValidation
+    = ValidPort Int
+    | EmptyPort
+    | InvalidPort
+
+
+type IpValidation
+    = ValidIp
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -176,6 +351,44 @@ update msg model =
 
         NoOp ->
             ( model, Cmd.none )
+
+        ChangeDestinationIp ipAddress ->
+            ( updateIpAddress model ipAddress, Cmd.none )
+
+        ChangeDestinationPort newPort ->
+            case validatePort newPort of
+                ValidPort validatedPort ->
+                    ( { model
+                        | connection = updatePort model.connection validatedPort
+                      }
+                    , Cmd.none
+                    )
+
+                EmptyPort ->
+                    ( { model
+                        | connection = updatePort model.connection 0
+                      }
+                    , Cmd.none
+                    )
+
+                InvalidPort ->
+                    ( model, Cmd.none )
+
+
+updateIpAddress : Model -> String -> Model
+updateIpAddress model ipAddress =
+    let
+        connection =
+            model.connection
+
+        newConnection =
+            { connection | destinationIp = ipAddress }
+    in
+        { model | connection = newConnection }
+
+
+updatePort connection newPort =
+    { connection | destinationPort = clamp 1 65535 newPort }
 
 
 updateHl7 : Model -> String -> Model
@@ -196,6 +409,24 @@ log level message model =
 scrollLogsToBottom : Cmd Msg
 scrollLogsToBottom =
     Task.attempt (always NoOp) <| Dom.Scroll.toBottom getLogId
+
+
+validateIp : String -> IpValidation
+validateIp ip =
+    ValidIp
+
+
+validatePort : String -> PortValidation
+validatePort portStr =
+    if portStr == "" then
+        EmptyPort
+    else
+        case String.toInt portStr of
+            Ok newPort ->
+                ValidPort newPort
+
+            Err _ ->
+                InvalidPort
 
 
 
