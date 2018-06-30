@@ -23,9 +23,9 @@ exports.watchForEvents = (app) => {
 //         });
 //     });
 //
-//     app.ports.versionGet.subscribe(() => {
-//         app.ports.version.send(packageJson.version);
-//     });
+    app.ports.versionGet.subscribe(() => {
+        app.ports.version.send(packageJson.version);
+    });
 };
 
 function saveSettings(settingsJson, callback) {

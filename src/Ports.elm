@@ -15,6 +15,14 @@ port send : String -> Cmd msg
 port saveConnection : ( String, String, Int ) -> Cmd msg
 
 
+port versionGet : () -> Cmd msg
+
+
+loadVersion : Cmd msg
+loadVersion =
+    versionGet ()
+
+
 
 -- SUBSCRIPTIONS
 
@@ -41,3 +49,6 @@ port initialSavedConnections : (( String, String ) -> msg) -> Sub msg
 
 
 port menuClick : (String -> msg) -> Sub msg
+
+
+port version : (String -> msg) -> Sub msg

@@ -13,7 +13,9 @@ import Ports
 
 init : ( Model, Cmd Msg )
 init =
-    model ! []
+    initialModel
+        ! [ Ports.loadVersion
+          ]
 
 
 
@@ -22,13 +24,13 @@ init =
 
 type alias Model =
     { hl7 : String
-    , version : String
     , logs : List String
 
     -- , route : Route.Model
     , connection : ConnectionModel
     , settings : SettingsModel
     , modal : Maybe (Html Msg)
+    , version : Maybe String
     }
 
 
@@ -67,16 +69,16 @@ type alias ControlCharactersModel =
     }
 
 
-model : Model
-model =
+initialModel : Model
+initialModel =
     { hl7 = ""
-    , version = "N/A"
     , logs = []
 
     -- , route = Route.model
     , connection = initialConnectionModel
     , settings = initialSettings
     , modal = Nothing
+    , version = Nothing
     }
 
 
@@ -517,7 +519,7 @@ updateHl7 model newHl7 =
 
 updateVersion : Model -> String -> Model
 updateVersion model version =
-    { model | version = version }
+    { model | version = Just version }
 
 
 log : String -> String -> Model -> ( Model, Cmd Msg )
@@ -584,7 +586,16 @@ menuClickOption : String -> Model -> ( Model, Cmd Msg )
 menuClickOption menuItem model =
     case menuItem of
         "about" ->
-            { model | modal = Just (About.view "2.3" ExitModal) } ! []
+            let
+                version =
+                    case model.version of
+                        Just v ->
+                            v
+
+                        Nothing ->
+                            "N / A"
+            in
+                { model | modal = Just (About.view version ExitModal) } ! []
 
         _ ->
             model ! []
@@ -605,8 +616,8 @@ subscriptions model =
         , Ports.disconnected (always Disconnected)
         , Ports.connectionError ConnectionError
         , Ports.sent (always Sent)
+        , Ports.version Version
 
-        -- , version (MsgForHome << Version)
         -- , savedConnection (MsgForConnection << SavedConnection)
         -- , savedNewConnection (MsgForConnection << SavedNewConnection)
         -- , initialSavedConnections (MsgForConnection << InitialSavedConnections)
