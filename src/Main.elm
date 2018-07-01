@@ -7,8 +7,9 @@ import Dom.Scroll
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Task
 import Ports
+import Settings
+import Task
 
 
 init : ( Model, Cmd Msg )
@@ -28,7 +29,7 @@ type alias Model =
 
     -- , route : Route.Model
     , connection : ConnectionModel
-    , settings : SettingsModel
+    , settings : Settings.Model
     , modal : Maybe (Html Msg)
     , version : Maybe String
     }
@@ -52,23 +53,6 @@ type alias Connection =
     }
 
 
-type alias SettingsModel =
-    { controlCharacters : ControlCharactersModel
-    , newConnectionName : String
-    }
-
-
-type alias ControlCharactersModel =
-    { startOfText : Int
-    , endOfText : Int
-    , endOfLine : Int
-    , pendingUpdate : Bool
-    , tempStartOfText : Int
-    , tempEndOfText : Int
-    , tempEndOfLine : Int
-    }
-
-
 initialModel : Model
 initialModel =
     { hl7 = ""
@@ -76,7 +60,7 @@ initialModel =
 
     -- , route = Route.model
     , connection = initialConnectionModel
-    , settings = initialSettings
+    , settings = Settings.model
     , modal = Nothing
     , version = Nothing
     }
@@ -102,25 +86,6 @@ getDefaultConnection =
 getLogId : String
 getLogId =
     "logs"
-
-
-initialSettings : SettingsModel
-initialSettings =
-    { controlCharacters = initialControlCharacters
-    , newConnectionName = ""
-    }
-
-
-initialControlCharacters : ControlCharactersModel
-initialControlCharacters =
-    { startOfText = 9
-    , endOfText = 45
-    , endOfLine = 35
-    , pendingUpdate = False
-    , tempStartOfText = 9
-    , tempEndOfText = 45
-    , tempEndOfLine = 35
-    }
 
 
 
@@ -385,6 +350,7 @@ type Msg
       -- | MsgForSettings Settings.Msg
       -- | MsgForConnection Connection.Msg
     | NoOp
+    | InitialSettings ( String, String )
 
 
 type PortValidation
@@ -446,6 +412,19 @@ update msg model =
         ExitModal ->
             { model | modal = Nothing } ! []
 
+        InitialSettings ( error, settingsJson ) ->
+            case error of
+                "" ->
+                    case Settings.toModel settingsJson of
+                        Ok newSettings ->
+                            ( { model | settings = newSettings }, Cmd.none )
+
+                        Err errorMessage ->
+                            log "error" errorMessage model
+
+                errorMessage ->
+                    log "error" errorMessage model
+
 
 updateIpAddress : Model -> String -> Model
 updateIpAddress model ipAddress =
@@ -456,7 +435,7 @@ updateIpAddress model ipAddress =
         newConnection =
             { connection | destinationIp = ipAddress }
     in
-        { model | connection = newConnection }
+    { model | connection = newConnection }
 
 
 changeDestinationPort : Model -> String -> Model
@@ -559,13 +538,13 @@ updateSentCount model =
         newConnection =
             { connection | sentCount = connection.sentCount + 1 }
     in
-        { model | connection = newConnection }
+    { model | connection = newConnection }
 
 
 getWrappedHl7 : Model -> String
 getWrappedHl7 model =
     getCharStringFromDecimal model.settings.controlCharacters.startOfText
-        ++ getStringWithCarriageReturns (model.hl7)
+        ++ getStringWithCarriageReturns model.hl7
         ++ getCharStringFromDecimal model.settings.controlCharacters.endOfLine
         ++ getCharStringFromDecimal model.settings.controlCharacters.endOfText
 
@@ -595,7 +574,7 @@ menuClickOption menuItem model =
                         Nothing ->
                             "N / A"
             in
-                { model | modal = Just (About.view version ExitModal) } ! []
+            { model | modal = Just (About.view version ExitModal) } ! []
 
         _ ->
             model ! []
@@ -609,6 +588,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Ports.menuClick MenuClick
+        , Ports.settings InitialSettings
 
         -- , settingsSaved (MsgForSettings << Saved)
         -- , settings (MsgForSettings << InitialSettings)

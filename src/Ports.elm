@@ -23,6 +23,12 @@ loadVersion =
     versionGet ()
 
 
+port settingsGet : String -> Cmd msg
+
+
+port settingsSave : String -> Cmd msg
+
+
 
 -- SUBSCRIPTIONS
 
@@ -52,3 +58,9 @@ port menuClick : (String -> msg) -> Sub msg
 
 
 port version : (String -> msg) -> Sub msg
+
+
+port settingsSaved : (String -> msg) -> Sub msg
+
+
+port settings : (( String, String ) -> msg) -> Sub msg
