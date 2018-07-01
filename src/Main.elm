@@ -346,11 +346,9 @@ type Msg
     | Sent
     | MenuClick String
     | ExitModal
-      -- | MsgForRoute Route.Msg
-      -- | MsgForSettings Settings.Msg
-      -- | MsgForConnection Connection.Msg
     | NoOp
     | InitialSettings ( String, String )
+    | Saved String
 
 
 type PortValidation
@@ -366,6 +364,12 @@ type IpValidation
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        Saved errorMessage ->
+            if errorMessage == "" then
+                log "info" "Saved settings" model
+            else
+                log "error" errorMessage model
+
         ChangeHl7 hl7 ->
             ( updateHl7 model hl7, Cmd.none )
 
@@ -589,9 +593,7 @@ subscriptions model =
     Sub.batch
         [ Ports.menuClick MenuClick
         , Ports.settings InitialSettings
-
-        -- , settingsSaved (MsgForSettings << Saved)
-        -- , settings (MsgForSettings << InitialSettings)
+        , Ports.settingsSaved Saved
         , Ports.connected (always Connected)
         , Ports.disconnected (always Disconnected)
         , Ports.connectionError ConnectionError
