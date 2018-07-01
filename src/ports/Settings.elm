@@ -1,28 +1,38 @@
 module Ports.Settings exposing (get, save)
 
-import Json.Encode exposing (Value, encode, int, object)
+import Json.Encode as Encode exposing (Value, encode, int, object)
+import Ports
 import Settings
 
 
 save : Settings.Model -> Cmd msg
-save model =
-    settingsSave (toJson model.settings)
+save settings =
+    Ports.settingsSave (toJson settings)
 
 
 get : Settings.Model -> Cmd msg
-get model =
-    settingsGet (toJson model.settings)
+get settings =
+    Ports.settingsGet (toJson settings)
 
 
 toJson : Settings.Model -> String
 toJson settings =
-    Json.Encode.encode 0 (encode settings)
+    Encode.encode 0 (encode settings)
 
 
 encode : Settings.Model -> Value
 encode settings =
     object
         [ ( "controlCharacters"
-          , ControlCharacters.encode settings.controlCharacters
+          , encodeControlCharacters settings.controlCharacters
           )
+        ]
+
+
+encodeControlCharacters : Settings.ControlCharactersModel -> Value
+encodeControlCharacters controlCharacters =
+    object
+        [ ( "startOfText", Encode.int controlCharacters.startOfText )
+        , ( "endOfText", Encode.int controlCharacters.endOfText )
+        , ( "endOfLine", Encode.int controlCharacters.endOfLine )
         ]

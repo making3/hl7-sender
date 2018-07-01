@@ -8,14 +8,20 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Ports
+import Ports.Settings
 import Settings
 import Task
 
 
 init : ( Model, Cmd Msg )
 init =
-    initialModel
+    let
+        model =
+            initialModel
+    in
+    model
         ! [ Ports.loadVersion
+          , Ports.Settings.get model.settings
           ]
 
 
