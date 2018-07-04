@@ -1,42 +1,23 @@
 module Settings exposing (..)
 
+import ControlCharacters
 import Json.Decode as Decode exposing (Decoder, decodeString, int, string)
 import Json.Decode.Pipeline exposing (decode, optional, required)
 
 
+-- MODEL
+
+
 type alias Model =
-    { controlCharacters : ControlCharactersModel
+    { controlCharacters : ControlCharacters.Model
     , newConnectionName : String
-    }
-
-
-type alias ControlCharactersModel =
-    { startOfText : Int
-    , endOfText : Int
-    , endOfLine : Int
-    , pendingUpdate : Bool
-    , tempStartOfText : Int
-    , tempEndOfText : Int
-    , tempEndOfLine : Int
     }
 
 
 model : Model
 model =
-    { controlCharacters = initialControlCharacters
+    { controlCharacters = ControlCharacters.initialModel
     , newConnectionName = ""
-    }
-
-
-initialControlCharacters : ControlCharactersModel
-initialControlCharacters =
-    { startOfText = 9
-    , endOfText = 45
-    , endOfLine = 35
-    , pendingUpdate = False
-    , tempStartOfText = 9
-    , tempEndOfText = 45
-    , tempEndOfLine = 35
     }
 
 
@@ -56,9 +37,9 @@ settingsDecoder =
         |> optional "newConnectionName" Decode.string ""
 
 
-decodeControlCharacters : Decoder ControlCharactersModel
+decodeControlCharacters : Decoder ControlCharacters.Model
 decodeControlCharacters =
-    decode ControlCharactersModel
+    decode ControlCharacters.Model
         |> required "startOfText" Decode.int
         |> required "endOfText" Decode.int
         |> required "endOfLine" Decode.int

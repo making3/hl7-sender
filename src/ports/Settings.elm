@@ -1,5 +1,6 @@
 module Ports.Settings exposing (get, save)
 
+import ControlCharacters
 import Json.Encode as Encode exposing (Value, encode, int, object)
 import Ports
 import Settings
@@ -29,7 +30,7 @@ encode settings =
         ]
 
 
-encodeControlCharacters : Settings.ControlCharactersModel -> Value
+encodeControlCharacters : ControlCharacters.Model -> Value
 encodeControlCharacters controlCharacters =
     object
         [ ( "startOfText", Encode.int controlCharacters.startOfText )

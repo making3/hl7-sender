@@ -8,6 +8,6 @@ import Route.Msg as Route exposing (..)
 import View.Layout.Modal as Layout exposing (view)
 
 
-view : String -> Html Main.Msg -> Html Main.Msg
+view : String -> Html Main.msg -> msg -> Html Main.msg
 view title content =
     Layout.view ("Settings - " ++ title) content

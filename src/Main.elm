@@ -3,6 +3,7 @@ module Main exposing (..)
 import About
 import Array exposing (Array, fromList)
 import Char
+import ControlCharacters exposing (Msg)
 import Dom.Scroll
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -355,6 +356,7 @@ type Msg
     | NoOp
     | InitialSettings ( String, String )
     | Saved String
+    | MsgForControlCharacters ControlCharacters.Msg
 
 
 type PortValidation
@@ -434,6 +436,35 @@ update msg model =
 
                 errorMessage ->
                     log "error" errorMessage model
+
+        MsgForControlCharacters ControlCharacters.Exit ->
+            { model | modal = Nothing } ! []
+
+        _ ->
+            updateModal msg model
+
+
+updateModal : Msg -> Model -> ( Model, Cmd Msg )
+updateModal msg model =
+    case msg of
+        MsgForControlCharacters subMsg ->
+            let
+                ( subModel, subCmd ) =
+                    ControlCharacters.update subMsg model.settings.controlCharacters
+
+                oldSettings =
+                    model.settings
+
+                newSettings =
+                    { oldSettings | controlCharacters = subModel }
+
+                newModel =
+                    { model | settings = newSettings }
+            in
+            ( newModel, Cmd.none )
+
+        _ ->
+            model ! []
 
 
 updateIpAddress : Model -> String -> Model
@@ -585,6 +616,15 @@ menuClickOption menuItem model =
                             "N / A"
             in
             { model | modal = Just (About.view version ExitModal) } ! []
+
+        "edit-control-characters" ->
+            let
+                modal =
+                    model.settings.controlCharacters
+                        |> ControlCharacters.view
+                        |> Html.map MsgForControlCharacters
+            in
+            { model | modal = Just modal } ! []
 
         _ ->
             model ! []
