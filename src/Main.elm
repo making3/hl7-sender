@@ -30,6 +30,12 @@ init =
 -- MODEL
 
 
+type Modal
+    = None
+    | ControlCharacters
+    | About
+
+
 type alias Model =
     { hl7 : String
     , logs : List String
@@ -37,7 +43,7 @@ type alias Model =
     -- , route : Route.Model
     , connection : ConnectionModel
     , settings : Settings.Model
-    , modal : Maybe (Html Msg)
+    , modal : Modal
     , version : Maybe String
     }
 
@@ -68,7 +74,7 @@ initialModel =
     -- , route = Route.model
     , connection = initialConnectionModel
     , settings = Settings.model
-    , modal = Nothing
+    , modal = None
     , version = Nothing
     }
 
@@ -102,10 +108,24 @@ getLogId =
 view : Model -> Html Msg
 view model =
     case model.modal of
-        Just msgHtml ->
-            msgHtml
+        ControlCharacters ->
+            model.settings.controlCharacters
+                |> ControlCharacters.view
+                |> Html.map MsgForControlCharacters
 
-        Nothing ->
+        About ->
+            let
+                version =
+                    case model.version of
+                        Just v ->
+                            v
+
+                        Nothing ->
+                            "N / A"
+            in
+            About.view version ExitModal
+
+        None ->
             viewPrimaryForm model
 
 
@@ -422,13 +442,20 @@ update msg model =
             menuClickOption menuItem model
 
         ExitModal ->
-            { model | modal = Nothing } ! []
+            { model | modal = None } ! []
 
         InitialSettings ( error, settingsJson ) ->
             case error of
                 "" ->
                     case Settings.toModel settingsJson of
-                        Ok newSettings ->
+                        Ok settings ->
+                            let
+                                newControlCharacters =
+                                    ControlCharacters.resetTempCharacters settings.controlCharacters
+
+                                newSettings =
+                                    { settings | controlCharacters = newControlCharacters }
+                            in
                             ( { model | settings = newSettings }, Cmd.none )
 
                         Err errorMessage ->
@@ -438,7 +465,7 @@ update msg model =
                     log "error" errorMessage model
 
         MsgForControlCharacters ControlCharacters.Exit ->
-            { model | modal = Nothing } ! []
+            { model | modal = None } ! []
 
         _ ->
             updateModal msg model
@@ -461,7 +488,12 @@ updateModal msg model =
                 newModel =
                     { model | settings = newSettings }
             in
-            ( newModel, Cmd.none )
+            case subMsg of
+                ControlCharacters.SaveControlCharacters ->
+                    ( newModel, Ports.Settings.save newModel.settings )
+
+                _ ->
+                    ( newModel, Cmd.none )
 
         _ ->
             model ! []
@@ -606,25 +638,10 @@ menuClickOption : String -> Model -> ( Model, Cmd Msg )
 menuClickOption menuItem model =
     case menuItem of
         "about" ->
-            let
-                version =
-                    case model.version of
-                        Just v ->
-                            v
-
-                        Nothing ->
-                            "N / A"
-            in
-            { model | modal = Just (About.view version ExitModal) } ! []
+            { model | modal = About } ! []
 
         "edit-control-characters" ->
-            let
-                modal =
-                    model.settings.controlCharacters
-                        |> ControlCharacters.view
-                        |> Html.map MsgForControlCharacters
-            in
-            { model | modal = Just modal } ! []
+            { model | modal = ControlCharacters } ! []
 
         _ ->
             model ! []

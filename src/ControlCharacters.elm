@@ -150,37 +150,23 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         SaveControlCharacters ->
-            model ! []
+            saveControlCharacters model ! []
 
-        -- let
-        --     updatedModel = { model | settings = saveControlCharacters model.settings }
-        -- in
-        --     ( updatedModel, Settings.save updatedModel.settings )
         ResetControlCharacters ->
-            -- resetTempCharacters msg model ! []
-            model ! []
+            resetTempCharacters model ! []
 
         _ ->
             updateForm msg model ! []
 
 
-
---
--- resetTempCharacters : Msg -> Model -> Model
--- resetTempCharacters msg model =
---     let
---         updateSettings settings =
---             { settings | controlCharacters = updateControlCharacters settings.controlCharacters }
---
---         updateControlCharacters controlCharacters =
---             { controlCharacters
---                 | tempStartOfText = controlCharacters.startOfText
---                 , tempEndOfText = controlCharacters.endOfText
---                 , tempEndOfLine = controlCharacters.endOfLine
---                 , pendingUpdate = False
---             }
---     in
---     { model | settings = updateSettings model.settings }
+resetTempCharacters : Model -> Model
+resetTempCharacters model =
+    { model
+        | tempStartOfText = model.startOfText
+        , tempEndOfText = model.endOfText
+        , tempEndOfLine = model.endOfLine
+        , pendingUpdate = False
+    }
 
 
 updateForm : Msg -> Model -> Model
@@ -200,29 +186,24 @@ updateForm msg model =
 
 
 isPending : Model -> Model
-isPending controlCharacters =
-    { controlCharacters
-        | pendingUpdate =
-            (controlCharacters.tempStartOfText /= controlCharacters.startOfText)
-                || (controlCharacters.tempEndOfText /= controlCharacters.endOfText)
-                || (controlCharacters.tempEndOfLine /= controlCharacters.endOfLine)
+isPending model =
+    let
+        isPendingUpdate =
+            (model.tempStartOfText /= model.startOfText)
+                || (model.tempEndOfText /= model.endOfText)
+                || (model.tempEndOfLine /= model.endOfLine)
+    in
+    { model | pendingUpdate = isPendingUpdate }
+
+
+saveControlCharacters : Model -> Model
+saveControlCharacters model =
+    { model
+        | startOfText = model.tempStartOfText
+        , endOfText = model.tempEndOfText
+        , endOfLine = model.tempEndOfLine
+        , pendingUpdate = False
     }
-
-
-
---
--- saveControlCharacters : Model -> Model
--- saveControlCharacters settings =
---     let
---         applyControlCharacters controlCharacters =
---             { controlCharacters
---                 | startOfText = controlCharacters.tempStartOfText
---                 , endOfText = controlCharacters.tempEndOfText
---                 , endOfLine = controlCharacters.tempEndOfLine
---                 , pendingUpdate = False
---             }
---     in
---         { settings | controlCharacters = applyControlCharacters settings.controlCharacters }
 
 
 getInt : String -> Int
