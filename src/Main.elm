@@ -18,6 +18,7 @@ import Ports.Connection
 import Ports.Settings
 import Settings
 import Task
+import TCP
 import Utilities
 
 
@@ -27,11 +28,11 @@ init =
         model =
             initialModel
     in
-    model
-        ! [ Ports.loadVersion
-          , Ports.Settings.get model.settings
-          , Ports.Connection.get model.connection
-          ]
+        model
+            ! [ Ports.loadVersion
+              , Ports.Settings.get model.settings
+              , Ports.Connection.get model.connection
+              ]
 
 
 
@@ -61,16 +62,17 @@ type alias ConnectionModel =
     , isConnected : Bool
     , connectionMessage : String
     , sentCount : Int
-    , savedConnections : Array Connection
+    , savedConnections : Array Connection.Connection
     , currentSavedConnectionName : String
     }
 
 
-type alias Connection =
-    { name : String
-    , destinationIp : String
-    , destinationPort : Int
-    }
+
+-- type alias Connection =
+--     { name : String
+--     , destinationIp : String
+--     , destinationPort : Int
+--     }
 
 
 initialModel : Model
@@ -96,9 +98,9 @@ initialConnectionModel =
     }
 
 
-getDefaultConnection : Connection
+getDefaultConnection : Connection.Connection
 getDefaultConnection =
-    Connection "Default" "127.0.0.1" 1337
+    Connection.Connection "Default" "127.0.0.1" 1337
 
 
 getLogId : String
@@ -128,7 +130,7 @@ view model =
                         Nothing ->
                             "N / A"
             in
-            About.view version ExitModal
+                About.view version ExitModal
 
         AddConnection model ->
             model
@@ -310,9 +312,9 @@ inputSavedConnections connection =
         ]
 
 
-getCreateNewConnection : Connection
+getCreateNewConnection : Connection.Connection
 getCreateNewConnection =
-    Connection "Create New" "127.0.0.1" 3000
+    Connection.Connection "Create New" "127.0.0.1" 3000
 
 
 getSavedConnectionsId : String
@@ -320,7 +322,7 @@ getSavedConnectionsId =
     "saved-connections"
 
 
-toOptions : Connection -> Html msg
+toOptions : Connection.Connection -> Html msg
 toOptions connection =
     option [ value connection.name ] [ text connection.name ]
 
@@ -383,16 +385,6 @@ type Msg
     | SavedNewConnection String
     | SaveConnection
     | SavedConnection String
-
-
-type PortValidation
-    = ValidPort Int
-    | EmptyPort
-    | InvalidPort
-
-
-type IpValidation
-    = ValidIp
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -462,7 +454,7 @@ update msg model =
                                 newSettings =
                                     { settings | controlCharacters = newControlCharacters }
                             in
-                            ( { model | settings = newSettings }, Cmd.none )
+                                ( { model | settings = newSettings }, Cmd.none )
 
                         Err errorMessage ->
                             log "error" errorMessage model
@@ -495,7 +487,7 @@ update msg model =
                     , destinationPort = model.connection.destinationPort
                     }
             in
-            ( model, Ports.Connection.saveConnection connection )
+                ( model, Ports.Connection.saveConnection connection )
 
         SavedConnection "" ->
             -- TODO: For some reason this reset all names to "Default"
@@ -539,15 +531,15 @@ addNewConnection model =
                 , modal = None
             }
     in
-    updateCurrentConnection newModel newIndividualConnection
+        updateCurrentConnection newModel newIndividualConnection
 
 
-appendConnectionToArray : Model -> Connection -> Array Connection -> Array Connection
+appendConnectionToArray : Model -> Connection.Connection -> Array Connection.Connection -> Array Connection.Connection
 appendConnectionToArray model newConnection connections =
     Array.push newConnection connections
 
 
-getNewConnection : Model -> Connection
+getNewConnection : Model -> Connection.Connection
 getNewConnection model =
     { name = model.settings.newConnectionName
     , destinationIp = model.connection.destinationIp
@@ -571,10 +563,10 @@ updateSavedConnectionsWithCurrent model =
         newConnection =
             { connection | savedConnections = newSavedConnections }
     in
-    { model | connection = newConnection }
+        { model | connection = newConnection }
 
 
-updateSavedConnectionsByIndex : Array Connection -> String -> String -> Int -> Array Connection
+updateSavedConnectionsByIndex : Array Connection.Connection -> String -> String -> Int -> Array Connection.Connection
 updateSavedConnectionsByIndex connections connectionName destinationIp destinationPort =
     Array.set (Array.length connections - 1) { name = connectionName, destinationIp = destinationIp, destinationPort = destinationPort } connections
 
@@ -601,7 +593,7 @@ updateInitialSavedConnections model savedConnectionsJson =
                 defaultConnectionName =
                     getInitialConnectionName savedConnections
             in
-            ( changeConnectionFromSaved newModel defaultConnectionName, Cmd.none )
+                ( changeConnectionFromSaved newModel defaultConnectionName, Cmd.none )
 
         Err errorMessage ->
             log "error" errorMessage model
@@ -622,12 +614,12 @@ changeConnectionFromSaved model connectionName =
                     updateCurrentConnection model newConnection
 
 
-findConnectionByName : Model -> String -> Maybe Connection
+findConnectionByName : Model -> String -> Maybe Connection.Connection
 findConnectionByName model connectionName =
     List.head (List.filter (\m -> m.name == connectionName) (Array.toList model.connection.savedConnections))
 
 
-getInitialConnectionName : Array Connection -> String
+getInitialConnectionName : Array Connection.Connection -> String
 getInitialConnectionName connections =
     case Array.get 0 connections of
         Just connection ->
@@ -637,7 +629,7 @@ getInitialConnectionName connections =
             ""
 
 
-updateCurrentConnection : Model -> Connection -> Model
+updateCurrentConnection : Model -> Connection.Connection -> Model
 updateCurrentConnection model newConnection =
     let
         connection =
@@ -650,7 +642,7 @@ updateCurrentConnection model newConnection =
                 , currentSavedConnectionName = newConnection.name
             }
     in
-    { model | connection = replacedConnection }
+        { model | connection = replacedConnection }
 
 
 updateModal : Msg -> Model -> ( Model, Cmd Msg )
@@ -670,15 +662,15 @@ updateModal msg model =
                 newModel =
                     { model | settings = newSettings }
             in
-            case subMsg of
-                ControlCharacters.SaveControlCharacters ->
-                    ( newModel, Ports.Settings.save newModel.settings )
+                case subMsg of
+                    ControlCharacters.SaveControlCharacters ->
+                        ( newModel, Ports.Settings.save newModel.settings )
 
-                ControlCharacters.Exit ->
-                    { newModel | modal = None } ! []
+                    ControlCharacters.Exit ->
+                        { newModel | modal = None } ! []
 
-                _ ->
-                    newModel ! []
+                    _ ->
+                        newModel ! []
 
         ( AddConnectionMsg subMsg, AddConnection subModel ) ->
             let
@@ -691,15 +683,15 @@ updateModal msg model =
                 newModel =
                     { model | modal = newModal }
             in
-            case subMsg of
-                AddConnection.Exit ->
-                    { model | modal = None } ! []
+                case subMsg of
+                    AddConnection.Exit ->
+                        { model | modal = None } ! []
 
-                AddConnection.SaveConnection ->
-                    ( newModel, Ports.Connection.saveConnection newSubModel )
+                    AddConnection.SaveConnection ->
+                        ( newModel, Ports.Connection.saveConnection newSubModel )
 
-                _ ->
-                    newModel ! []
+                    _ ->
+                        newModel ! []
 
         ( _, _ ) ->
             model ! []
@@ -714,19 +706,19 @@ updateIpAddress model ipAddress =
         newConnection =
             { connection | destinationIp = ipAddress }
     in
-    { model | connection = newConnection }
+        { model | connection = newConnection }
 
 
 changeDestinationPort : Model -> String -> Model
 changeDestinationPort model newPort =
-    case validatePort newPort of
-        ValidPort validatedPort ->
+    case TCP.validatePort newPort of
+        TCP.ValidPort validatedPort ->
             { model | connection = updatePort model.connection validatedPort }
 
-        EmptyPort ->
+        TCP.EmptyPort ->
             { model | connection = updatePort model.connection 0 }
 
-        InvalidPort ->
+        TCP.InvalidPort ->
             model
 
 
@@ -790,24 +782,6 @@ scrollLogsToBottom =
     Task.attempt (always NoOp) <| Dom.Scroll.toBottom getLogId
 
 
-validateIp : String -> IpValidation
-validateIp ip =
-    ValidIp
-
-
-validatePort : String -> PortValidation
-validatePort portStr =
-    if portStr == "" then
-        EmptyPort
-    else
-        case String.toInt portStr of
-            Ok newPort ->
-                ValidPort newPort
-
-            Err _ ->
-                InvalidPort
-
-
 updateSentCount : Model -> Model
 updateSentCount model =
     let
@@ -817,7 +791,7 @@ updateSentCount model =
         newConnection =
             { connection | sentCount = connection.sentCount + 1 }
     in
-    { model | connection = newConnection }
+        { model | connection = newConnection }
 
 
 menuClickOption : String -> Model -> ( Model, Cmd Msg )
@@ -858,14 +832,14 @@ subscriptions model =
 -- SERIALIZATION
 
 
-toSavedConnectionsModels : String -> Result String (Array Connection)
+toSavedConnectionsModels : String -> Result String (Array Connection.Connection)
 toSavedConnectionsModels json =
     Decode.decodeString (Decode.array decodeConnection) json
 
 
-decodeConnection : Decoder Connection
+decodeConnection : Decoder Connection.Connection
 decodeConnection =
-    decode Connection
+    decode Connection.Connection
         |> Json.Decode.Pipeline.required "name" Decode.string
         |> Json.Decode.Pipeline.required "destinationIp" Decode.string
         |> Json.Decode.Pipeline.required "destinationPort" Decode.int

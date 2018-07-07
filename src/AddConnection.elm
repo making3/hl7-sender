@@ -7,6 +7,7 @@ import Html.Events exposing (..)
 import Utilities
 import View.Controls.FormInput exposing (viewBasicInput)
 import View.Layout.Modal as Layout exposing (view)
+import TCP
 
 
 -- MODEL
@@ -94,12 +95,6 @@ type Msg
     | ChangeDestinationPort String
 
 
-type PortValidation
-    = ValidPort Int
-    | EmptyPort
-    | InvalidPort
-
-
 update : Msg -> Connection -> ( Connection, Cmd Msg )
 update msg model =
     case msg of
@@ -121,28 +116,15 @@ update msg model =
 
 changeDestinationPort : Connection -> String -> ( Connection, Cmd Msg )
 changeDestinationPort connection newPortStr =
-    case validatePort newPortStr of
-        ValidPort validatedPort ->
+    case TCP.validatePort newPortStr of
+        TCP.ValidPort validatedPort ->
             updatePort connection validatedPort ! []
 
-        EmptyPort ->
+        TCP.EmptyPort ->
             updatePort connection 0 ! []
 
-        InvalidPort ->
+        TCP.InvalidPort ->
             connection ! []
-
-
-validatePort : String -> PortValidation
-validatePort portStr =
-    if portStr == "" then
-        EmptyPort
-    else
-        case String.toInt portStr of
-            Ok newPort ->
-                ValidPort newPort
-
-            Err _ ->
-                InvalidPort
 
 
 updatePort connection newPort =
