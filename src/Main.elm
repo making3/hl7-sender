@@ -67,14 +67,6 @@ type alias ConnectionModel =
     }
 
 
-
--- type alias Connection =
---     { name : String
---     , destinationIp : String
---     , destinationPort : Int
---     }
-
-
 initialModel : Model
 initialModel =
     { hl7 = ""
