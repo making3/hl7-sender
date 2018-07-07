@@ -497,6 +497,7 @@ update msg model =
             ( model, Ports.Connection.saveConnection connection )
 
         SavedConnection "" ->
+            -- TODO: For some reason this reset all names to "Default"
             model
                 |> updateSavedConnectionsWithCurrent
                 |> logSavedConnection
