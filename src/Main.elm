@@ -7,6 +7,7 @@ import Char
 import Connection
 import ControlCharacters exposing (Msg)
 import Dom.Scroll
+import HL7
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -437,7 +438,7 @@ update msg model =
             ( { model | logs = [] }, Cmd.none )
 
         Send ->
-            ( model, Ports.send (getWrappedHl7 model) )
+            ( model, Ports.send (HL7.getWrappedHl7 model.settings.controlCharacters model.hl7) )
 
         Sent ->
             updateSentCount model
@@ -817,26 +818,6 @@ updateSentCount model =
             { connection | sentCount = connection.sentCount + 1 }
     in
     { model | connection = newConnection }
-
-
-getWrappedHl7 : Model -> String
-getWrappedHl7 model =
-    getCharStringFromDecimal model.settings.controlCharacters.startOfText
-        ++ getStringWithCarriageReturns model.hl7
-        ++ getCharStringFromDecimal model.settings.controlCharacters.endOfLine
-        ++ getCharStringFromDecimal model.settings.controlCharacters.endOfText
-
-
-getStringWithCarriageReturns : String -> String
-getStringWithCarriageReturns str =
-    str
-        |> String.split "\n"
-        |> String.join "\x0D"
-
-
-getCharStringFromDecimal : Int -> String
-getCharStringFromDecimal decimalCode =
-    String.fromChar (Char.fromCode decimalCode)
 
 
 menuClickOption : String -> Model -> ( Model, Cmd Msg )
