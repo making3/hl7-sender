@@ -1,27 +1,21 @@
 module AddConnection exposing (..)
 
+import Connection exposing (Connection)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Utilities
 import View.Controls.FormInput exposing (viewBasicInput)
 import View.Layout.Modal as Layout exposing (view)
-import Utilities
 
 
 -- MODEL
 
 
-type alias Model =
-    { connectionName : String
-    , destinationIp : String
-    , destinationPort : String
-    }
-
-
 init =
-    { connectionName = ""
+    { name = ""
     , destinationIp = ""
-    , destinationPort = "9000"
+    , destinationPort = 9000
     }
 
 
@@ -29,12 +23,12 @@ init =
 -- VIEW
 
 
-view : Model -> Html Msg
+view : Connection -> Html Msg
 view model =
     Layout.view "Settings - Save New Connection" (viewForm model) Exit
 
 
-viewForm : Model -> Html Msg
+viewForm : Connection -> Html Msg
 viewForm model =
     div [ class "basic-form" ]
         [ viewName model
@@ -44,16 +38,16 @@ viewForm model =
         ]
 
 
-viewName : Model -> Html Msg
+viewName : Connection -> Html Msg
 viewName model =
     viewBasicInput
         "Connection Name"
-        model.connectionName
+        model.name
         "Connection"
         UpdateNewConnectionName
 
 
-viewIpAddress : Model -> Html Msg
+viewIpAddress : Connection -> Html Msg
 viewIpAddress model =
     viewBasicInput
         "IP Address"
@@ -62,17 +56,16 @@ viewIpAddress model =
         ChangeDestinationIp
 
 
-viewPort : Model -> Html Msg
+viewPort : Connection -> Html Msg
 viewPort model =
     viewBasicInput
         "Port"
-        -- (Utilities.getPortDisplay model.destinationPort)
-        model.destinationPort
+        (Utilities.getPortDisplay model.destinationPort)
         "Port"
         ChangeDestinationPort
 
 
-viewActionButtons : Model -> Html Msg
+viewActionButtons : Connection -> Html Msg
 viewActionButtons model =
     div [ class "save-connection-buttons" ]
         [ button
@@ -83,7 +76,7 @@ viewActionButtons model =
         , button
             [ class "btn btn-primary"
             , onClick SaveConnection
-            , disabled (model.connectionName == "")
+            , disabled (model.name == "")
             ]
             [ text "Save" ]
         ]
@@ -101,20 +94,56 @@ type Msg
     | ChangeDestinationPort String
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+type PortValidation
+    = ValidPort Int
+    | EmptyPort
+    | InvalidPort
+
+
+update : Msg -> Connection -> ( Connection, Cmd Msg )
 update msg model =
     case msg of
         SaveConnection ->
             model ! []
 
         UpdateNewConnectionName name ->
-            { model | connectionName = name } ! []
+            { model | name = name } ! []
 
         ChangeDestinationIp ip ->
             { model | destinationIp = ip } ! []
 
-        ChangeDestinationPort newPort ->
-            { model | destinationPort = newPort } ! []
+        ChangeDestinationPort newPortStr ->
+            changeDestinationPort model newPortStr
 
         _ ->
             model ! []
+
+
+changeDestinationPort : Connection -> String -> ( Connection, Cmd Msg )
+changeDestinationPort connection newPortStr =
+    case validatePort newPortStr of
+        ValidPort validatedPort ->
+            updatePort connection validatedPort ! []
+
+        EmptyPort ->
+            updatePort connection 0 ! []
+
+        InvalidPort ->
+            connection ! []
+
+
+validatePort : String -> PortValidation
+validatePort portStr =
+    if portStr == "" then
+        EmptyPort
+    else
+        case String.toInt portStr of
+            Ok newPort ->
+                ValidPort newPort
+
+            Err _ ->
+                InvalidPort
+
+
+updatePort connection newPort =
+    { connection | destinationPort = clamp 1 65535 newPort }

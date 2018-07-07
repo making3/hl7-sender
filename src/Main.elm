@@ -4,12 +4,16 @@ import About
 import AddConnection
 import Array exposing (Array, fromList)
 import Char
+import Connection
 import ControlCharacters exposing (Msg)
 import Dom.Scroll
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Json.Decode as Decode exposing (Decoder, decodeString, int)
+import Json.Decode.Pipeline exposing (decode)
 import Ports
+import Ports.Connection
 import Ports.Settings
 import Settings
 import Task
@@ -22,10 +26,11 @@ init =
         model =
             initialModel
     in
-        model
-            ! [ Ports.loadVersion
-              , Ports.Settings.get model.settings
-              ]
+    model
+        ! [ Ports.loadVersion
+          , Ports.Settings.get model.settings
+          , Ports.Connection.get model.connection
+          ]
 
 
 
@@ -35,7 +40,7 @@ init =
 type Modal
     = None
     | ControlCharacters
-    | AddConnection AddConnection.Model
+    | AddConnection Connection.Connection
     | About
 
 
@@ -122,7 +127,7 @@ view model =
                         Nothing ->
                             "N / A"
             in
-                About.view version ExitModal
+            About.view version ExitModal
 
         AddConnection model ->
             model
@@ -374,6 +379,8 @@ type Msg
     | ChangeSavedConnection String
     | ControlCharactersMsg ControlCharacters.Msg
     | AddConnectionMsg AddConnection.Msg
+    | InitialSavedConnections ( String, String )
+    | SavedNewConnection String
 
 
 type PortValidation
@@ -453,7 +460,7 @@ update msg model =
                                 newSettings =
                                     { settings | controlCharacters = newControlCharacters }
                             in
-                                ( { model | settings = newSettings }, Cmd.none )
+                            ( { model | settings = newSettings }, Cmd.none )
 
                         Err errorMessage ->
                             log "error" errorMessage model
@@ -464,8 +471,95 @@ update msg model =
         ChangeSavedConnection connectionName ->
             changeConnectionFromSaved model connectionName ! []
 
+        InitialSavedConnections ( "", savedConnectionsJson ) ->
+            updateInitialSavedConnections model savedConnectionsJson
+
+        InitialSavedConnections ( errorMessage, savedConnectionsJson ) ->
+            log "error" errorMessage model
+
+        SavedNewConnection "" ->
+            model
+                |> addNewConnection
+                |> logSavedConnection
+
+        SavedNewConnection errorMessage ->
+            log "error" ("Failed to save message" ++ errorMessage) model
+
         _ ->
             updateModal msg model
+
+
+addNewConnection : Model -> Model
+addNewConnection model =
+    let
+        connection =
+            model.connection
+
+        settings =
+            model.settings
+
+        newIndividualConnection =
+            getNewConnection model
+
+        newConnection =
+            { connection
+                | savedConnections = appendConnectionToArray model newIndividualConnection model.connection.savedConnections
+            }
+
+        newSettings =
+            { settings
+                | newConnectionName = ""
+            }
+
+        newModel =
+            { model
+                | connection = newConnection
+                , settings = newSettings
+                , modal = None
+            }
+    in
+    updateCurrentConnection newModel newIndividualConnection
+
+
+appendConnectionToArray : Model -> Connection -> Array Connection -> Array Connection
+appendConnectionToArray model newConnection connections =
+    Array.push newConnection connections
+
+
+getNewConnection : Model -> Connection
+getNewConnection model =
+    { name = model.settings.newConnectionName
+    , destinationIp = model.connection.destinationIp
+    , destinationPort = model.connection.destinationPort
+    }
+
+
+logSavedConnection : Model -> ( Model, Cmd Msg )
+logSavedConnection model =
+    log "info" "Saved Connection!" model
+
+
+updateInitialSavedConnections : Model -> String -> ( Model, Cmd Msg )
+updateInitialSavedConnections model savedConnectionsJson =
+    case toSavedConnectionsModels savedConnectionsJson of
+        Ok savedConnections ->
+            let
+                connection =
+                    model.connection
+
+                newConnection =
+                    { connection | savedConnections = savedConnections }
+
+                newModel =
+                    { model | connection = newConnection }
+
+                defaultConnectionName =
+                    getInitialConnectionName savedConnections
+            in
+            ( changeConnectionFromSaved newModel defaultConnectionName, Cmd.none )
+
+        Err errorMessage ->
+            log "error" errorMessage model
 
 
 changeConnectionFromSaved : Model -> String -> Model
@@ -488,6 +582,16 @@ findConnectionByName model connectionName =
     List.head (List.filter (\m -> m.name == connectionName) (Array.toList model.connection.savedConnections))
 
 
+getInitialConnectionName : Array Connection -> String
+getInitialConnectionName connections =
+    case Array.get 0 connections of
+        Just connection ->
+            connection.name
+
+        Nothing ->
+            ""
+
+
 updateCurrentConnection : Model -> Connection -> Model
 updateCurrentConnection model newConnection =
     let
@@ -501,7 +605,7 @@ updateCurrentConnection model newConnection =
                 , currentSavedConnectionName = newConnection.name
             }
     in
-        { model | connection = replacedConnection }
+    { model | connection = replacedConnection }
 
 
 updateModal : Msg -> Model -> ( Model, Cmd Msg )
@@ -521,23 +625,36 @@ updateModal msg model =
                 newModel =
                     { model | settings = newSettings }
             in
-                case subMsg of
-                    ControlCharacters.SaveControlCharacters ->
-                        ( newModel, Ports.Settings.save newModel.settings )
+            case subMsg of
+                ControlCharacters.SaveControlCharacters ->
+                    ( newModel, Ports.Settings.save newModel.settings )
 
-                    ControlCharacters.Exit ->
-                        { model | modal = None } ! []
+                ControlCharacters.Exit ->
+                    { newModel | modal = None } ! []
 
-                    _ ->
-                        newModel ! []
+                _ ->
+                    newModel ! []
 
         ( AddConnectionMsg subMsg, AddConnection subModel ) ->
+            let
+                ( newSubModel, subCmd ) =
+                    AddConnection.update subMsg subModel
+
+                newModal =
+                    AddConnection newSubModel
+
+                newModel =
+                    { model | modal = newModal }
+            in
             case subMsg of
                 AddConnection.Exit ->
                     { model | modal = None } ! []
 
+                AddConnection.SaveConnection ->
+                    ( newModel, Ports.Connection.saveConnection newSubModel )
+
                 _ ->
-                    model ! []
+                    newModel ! []
 
         ( _, _ ) ->
             model ! []
@@ -552,7 +669,7 @@ updateIpAddress model ipAddress =
         newConnection =
             { connection | destinationIp = ipAddress }
     in
-        { model | connection = newConnection }
+    { model | connection = newConnection }
 
 
 changeDestinationPort : Model -> String -> Model
@@ -655,7 +772,7 @@ updateSentCount model =
         newConnection =
             { connection | sentCount = connection.sentCount + 1 }
     in
-        { model | connection = newConnection }
+    { model | connection = newConnection }
 
 
 getWrappedHl7 : Model -> String
@@ -707,10 +824,27 @@ subscriptions model =
         , Ports.sent (always Sent)
         , Ports.version Version
 
-        -- , savedConnection (AddConnectionMsg << SavedConnection)
-        -- , savedNewConnection (AddConnectionMsg << SavedNewConnection)
-        -- , initialSavedConnections (AddConnectionMsg << InitialSavedConnections)
+        -- , Ports.savedConnection SavedConnection
+        , Ports.savedNewConnection SavedNewConnection
+        , Ports.initialSavedConnections InitialSavedConnections
         ]
+
+
+
+-- SERIALIZATION
+
+
+toSavedConnectionsModels : String -> Result String (Array Connection)
+toSavedConnectionsModels json =
+    Decode.decodeString (Decode.array decodeConnection) json
+
+
+decodeConnection : Decoder Connection
+decodeConnection =
+    decode Connection
+        |> Json.Decode.Pipeline.required "name" Decode.string
+        |> Json.Decode.Pipeline.required "destinationIp" Decode.string
+        |> Json.Decode.Pipeline.required "destinationPort" Decode.int
 
 
 

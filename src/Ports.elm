@@ -12,7 +12,10 @@ port disconnect : () -> Cmd msg
 port send : String -> Cmd msg
 
 
-port saveConnection : ( String, String, Int ) -> Cmd msg
+port saveConnection : String -> Cmd msg
+
+
+port getConnections : String -> Cmd msg
 
 
 port versionGet : () -> Cmd msg
