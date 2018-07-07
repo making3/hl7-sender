@@ -338,8 +338,7 @@ connectionButtons model =
         [ text "Clear Log" ]
     , button
         [ class "save-connection btn btn-sm btn-block btn-secondary"
-
-        -- , onClick CreateNewConnection
+        , onClick SaveConnection
         ]
         [ text "Save" ]
     ]
@@ -381,6 +380,8 @@ type Msg
     | AddConnectionMsg AddConnection.Msg
     | InitialSavedConnections ( String, String )
     | SavedNewConnection String
+    | SaveConnection
+    | SavedConnection String
 
 
 type PortValidation
@@ -485,6 +486,24 @@ update msg model =
         SavedNewConnection errorMessage ->
             log "error" ("Failed to save message" ++ errorMessage) model
 
+        SaveConnection ->
+            let
+                connection =
+                    { name = model.connection.currentSavedConnectionName
+                    , destinationIp = model.connection.destinationIp
+                    , destinationPort = model.connection.destinationPort
+                    }
+            in
+            ( model, Ports.Connection.saveConnection connection )
+
+        SavedConnection "" ->
+            model
+                |> updateSavedConnectionsWithCurrent
+                |> logSavedConnection
+
+        SavedConnection errorMessage ->
+            log "error" ("Failed to save message" ++ errorMessage) model
+
         _ ->
             updateModal msg model
 
@@ -532,6 +551,30 @@ getNewConnection model =
     , destinationIp = model.connection.destinationIp
     , destinationPort = model.connection.destinationPort
     }
+
+
+updateSavedConnectionsWithCurrent : Model -> Model
+updateSavedConnectionsWithCurrent model =
+    let
+        connection =
+            model.connection
+
+        newSavedConnections =
+            updateSavedConnectionsByIndex
+                connection.savedConnections
+                model.connection.currentSavedConnectionName
+                model.connection.destinationIp
+                model.connection.destinationPort
+
+        newConnection =
+            { connection | savedConnections = newSavedConnections }
+    in
+    { model | connection = newConnection }
+
+
+updateSavedConnectionsByIndex : Array Connection -> String -> String -> Int -> Array Connection
+updateSavedConnectionsByIndex connections connectionName destinationIp destinationPort =
+    Array.set (Array.length connections - 1) { name = connectionName, destinationIp = destinationIp, destinationPort = destinationPort } connections
 
 
 logSavedConnection : Model -> ( Model, Cmd Msg )
@@ -823,8 +866,7 @@ subscriptions model =
         , Ports.connectionError ConnectionError
         , Ports.sent (always Sent)
         , Ports.version Version
-
-        -- , Ports.savedConnection SavedConnection
+        , Ports.savedConnection SavedConnection
         , Ports.savedNewConnection SavedNewConnection
         , Ports.initialSavedConnections InitialSavedConnections
         ]
