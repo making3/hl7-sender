@@ -1,6 +1,7 @@
 module Main exposing (..)
 
 import About
+import AddConnection
 import Array exposing (Array, fromList)
 import Char
 import ControlCharacters exposing (Msg)
@@ -12,6 +13,7 @@ import Ports
 import Ports.Settings
 import Settings
 import Task
+import Utilities
 
 
 init : ( Model, Cmd Msg )
@@ -20,10 +22,10 @@ init =
         model =
             initialModel
     in
-    model
-        ! [ Ports.loadVersion
-          , Ports.Settings.get model.settings
-          ]
+        model
+            ! [ Ports.loadVersion
+              , Ports.Settings.get model.settings
+              ]
 
 
 
@@ -33,14 +35,13 @@ init =
 type Modal
     = None
     | ControlCharacters
+    | AddConnection AddConnection.Model
     | About
 
 
 type alias Model =
     { hl7 : String
     , logs : List String
-
-    -- , route : Route.Model
     , connection : ConnectionModel
     , settings : Settings.Model
     , modal : Modal
@@ -70,8 +71,6 @@ initialModel : Model
 initialModel =
     { hl7 = ""
     , logs = []
-
-    -- , route = Route.model
     , connection = initialConnectionModel
     , settings = Settings.model
     , modal = None
@@ -111,7 +110,7 @@ view model =
         ControlCharacters ->
             model.settings.controlCharacters
                 |> ControlCharacters.view
-                |> Html.map MsgForControlCharacters
+                |> Html.map ControlCharactersMsg
 
         About ->
             let
@@ -123,7 +122,12 @@ view model =
                         Nothing ->
                             "N / A"
             in
-            About.view version ExitModal
+                About.view version ExitModal
+
+        AddConnection model ->
+            model
+                |> AddConnection.view
+                |> Html.map AddConnectionMsg
 
         None ->
             viewPrimaryForm model
@@ -257,7 +261,7 @@ inputPort : ConnectionModel -> Html Msg
 inputPort connectionModel =
     inputControl
         "Port"
-        (getPortDisplay connectionModel.destinationPort)
+        (Utilities.getPortDisplay connectionModel.destinationPort)
         connectionModel.isConnected
         ChangeDestinationPort
 
@@ -287,22 +291,13 @@ inputControl inputPlaceholder getValue isConnected msg =
         []
 
 
-getPortDisplay : Int -> String
-getPortDisplay destinationPort =
-    if destinationPort == 0 then
-        ""
-    else
-        toString destinationPort
-
-
 inputSavedConnections : ConnectionModel -> Html Msg
 inputSavedConnections connection =
     div []
         [ select
             [ id getSavedConnectionsId
             , class "form-control form-control-sm"
-
-            -- , onInput ChangeSavedConnection
+            , onInput ChangeSavedConnection
             , disabled connection.isConnected
             ]
             (Array.toList (Array.map toOptions (Array.push getCreateNewConnection connection.savedConnections)))
@@ -376,7 +371,9 @@ type Msg
     | NoOp
     | InitialSettings ( String, String )
     | Saved String
-    | MsgForControlCharacters ControlCharacters.Msg
+    | ChangeSavedConnection String
+    | ControlCharactersMsg ControlCharacters.Msg
+    | AddConnectionMsg AddConnection.Msg
 
 
 type PortValidation
@@ -456,7 +453,7 @@ update msg model =
                                 newSettings =
                                     { settings | controlCharacters = newControlCharacters }
                             in
-                            ( { model | settings = newSettings }, Cmd.none )
+                                ( { model | settings = newSettings }, Cmd.none )
 
                         Err errorMessage ->
                             log "error" errorMessage model
@@ -464,17 +461,53 @@ update msg model =
                 errorMessage ->
                     log "error" errorMessage model
 
-        MsgForControlCharacters ControlCharacters.Exit ->
-            { model | modal = None } ! []
+        ChangeSavedConnection connectionName ->
+            changeConnectionFromSaved model connectionName ! []
 
         _ ->
             updateModal msg model
 
 
+changeConnectionFromSaved : Model -> String -> Model
+changeConnectionFromSaved model connectionName =
+    case connectionName of
+        "Create New" ->
+            { model | modal = AddConnection AddConnection.init }
+
+        _ ->
+            case findConnectionByName model connectionName of
+                Nothing ->
+                    model
+
+                Just newConnection ->
+                    updateCurrentConnection model newConnection
+
+
+findConnectionByName : Model -> String -> Maybe Connection
+findConnectionByName model connectionName =
+    List.head (List.filter (\m -> m.name == connectionName) (Array.toList model.connection.savedConnections))
+
+
+updateCurrentConnection : Model -> Connection -> Model
+updateCurrentConnection model newConnection =
+    let
+        connection =
+            model.connection
+
+        replacedConnection =
+            { connection
+                | destinationIp = newConnection.destinationIp
+                , destinationPort = newConnection.destinationPort
+                , currentSavedConnectionName = newConnection.name
+            }
+    in
+        { model | connection = replacedConnection }
+
+
 updateModal : Msg -> Model -> ( Model, Cmd Msg )
 updateModal msg model =
-    case msg of
-        MsgForControlCharacters subMsg ->
+    case ( msg, model.modal ) of
+        ( ControlCharactersMsg subMsg, ControlCharacters ) ->
             let
                 ( subModel, subCmd ) =
                     ControlCharacters.update subMsg model.settings.controlCharacters
@@ -488,14 +521,25 @@ updateModal msg model =
                 newModel =
                     { model | settings = newSettings }
             in
+                case subMsg of
+                    ControlCharacters.SaveControlCharacters ->
+                        ( newModel, Ports.Settings.save newModel.settings )
+
+                    ControlCharacters.Exit ->
+                        { model | modal = None } ! []
+
+                    _ ->
+                        newModel ! []
+
+        ( AddConnectionMsg subMsg, AddConnection subModel ) ->
             case subMsg of
-                ControlCharacters.SaveControlCharacters ->
-                    ( newModel, Ports.Settings.save newModel.settings )
+                AddConnection.Exit ->
+                    { model | modal = None } ! []
 
                 _ ->
-                    ( newModel, Cmd.none )
+                    model ! []
 
-        _ ->
+        ( _, _ ) ->
             model ! []
 
 
@@ -508,7 +552,7 @@ updateIpAddress model ipAddress =
         newConnection =
             { connection | destinationIp = ipAddress }
     in
-    { model | connection = newConnection }
+        { model | connection = newConnection }
 
 
 changeDestinationPort : Model -> String -> Model
@@ -611,7 +655,7 @@ updateSentCount model =
         newConnection =
             { connection | sentCount = connection.sentCount + 1 }
     in
-    { model | connection = newConnection }
+        { model | connection = newConnection }
 
 
 getWrappedHl7 : Model -> String
@@ -663,9 +707,9 @@ subscriptions model =
         , Ports.sent (always Sent)
         , Ports.version Version
 
-        -- , savedConnection (MsgForConnection << SavedConnection)
-        -- , savedNewConnection (MsgForConnection << SavedNewConnection)
-        -- , initialSavedConnections (MsgForConnection << InitialSavedConnections)
+        -- , savedConnection (AddConnectionMsg << SavedConnection)
+        -- , savedNewConnection (AddConnectionMsg << SavedNewConnection)
+        -- , initialSavedConnections (AddConnectionMsg << InitialSavedConnections)
         ]
 
 
