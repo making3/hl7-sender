@@ -259,15 +259,22 @@ inputControl inputPlaceholder getValue isConnected msg =
 
 inputSavedConnections : Connection.Model -> Html Msg
 inputSavedConnections connection =
-    div []
-        [ select
-            [ id getSavedConnectionsId
-            , class "form-control form-control-sm"
-            , onInput ChangeSavedConnection
-            , disabled connection.isConnected
+    let
+        connections =
+            connection.savedConnections
+                |> Array.push getCreateNewConnection
+                |> Array.map toOptions
+                |> Array.toList
+    in
+        div []
+            [ select
+                [ id getSavedConnectionsId
+                , class "form-control form-control-sm"
+                , onInput ChangeSavedConnection
+                , disabled connection.isConnected
+                ]
+                connections
             ]
-            (Array.toList (Array.map toOptions (Array.push getCreateNewConnection connection.savedConnections)))
-        ]
 
 
 getCreateNewConnection : Connection.Connection
