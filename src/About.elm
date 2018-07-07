@@ -5,8 +5,8 @@ import Html exposing (Html, div, label, text, hr)
 import Html.Attributes exposing (class)
 
 
-view : String -> msg -> Html msg
-view version msg =
+view : msg -> String -> Html msg
+view msg version =
     Layout.view "HL7 Sender" (about version) msg
 
 

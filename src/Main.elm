@@ -8,6 +8,7 @@ import Connection
 import ControlCharacters exposing (Msg)
 import Dom.Scroll
 import HL7
+import Maybe exposing (withDefault)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -85,16 +86,9 @@ view model =
                 |> Html.map ControlCharactersMsg
 
         About ->
-            let
-                version =
-                    case model.version of
-                        Just v ->
-                            v
-
-                        Nothing ->
-                            "N / A"
-            in
-                About.view version ExitModal
+            model.version
+                |> withDefault "N / A"
+                |> About.view ExitModal
 
         AddConnection model ->
             model
