@@ -437,6 +437,7 @@ update msg model =
             log "error" errorMessage model
 
         SavedNewConnection "" ->
+            -- TODO: Adding a new connection adds a blank name to the list
             model
                 |> addNewConnection
                 |> logSavedConnection
