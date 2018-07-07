@@ -49,21 +49,10 @@ type Modal
 type alias Model =
     { hl7 : String
     , logs : List String
-    , connection : ConnectionModel
+    , connection : Connection.Model
     , settings : Settings.Model
     , modal : Modal
     , version : Maybe String
-    }
-
-
-type alias ConnectionModel =
-    { destinationIp : String
-    , destinationPort : Int
-    , isConnected : Bool
-    , connectionMessage : String
-    , sentCount : Int
-    , savedConnections : Array Connection.Connection
-    , currentSavedConnectionName : String
     }
 
 
@@ -71,28 +60,11 @@ initialModel : Model
 initialModel =
     { hl7 = ""
     , logs = []
-    , connection = initialConnectionModel
+    , connection = Connection.model
     , settings = Settings.model
     , modal = None
     , version = Nothing
     }
-
-
-initialConnectionModel : ConnectionModel
-initialConnectionModel =
-    { destinationIp = "127.0.0.1"
-    , destinationPort = 1337
-    , isConnected = False
-    , connectionMessage = "Disconnected"
-    , sentCount = 0
-    , savedConnections = Array.fromList [ getDefaultConnection ]
-    , currentSavedConnectionName = "Default"
-    }
-
-
-getDefaultConnection : Connection.Connection
-getDefaultConnection =
-    Connection.Connection "Default" "127.0.0.1" 1337
 
 
 getLogId : String
@@ -240,7 +212,7 @@ viewConnectionForm model =
         ]
 
 
-connectionFormControls : ConnectionModel -> List (Html Msg)
+connectionFormControls : Connection.Model -> List (Html Msg)
 connectionFormControls connectionModel =
     [ formInput connectionModel "Saved" inputSavedConnections
     , formInput connectionModel "Host" inputIpAddress
@@ -248,7 +220,7 @@ connectionFormControls connectionModel =
     ]
 
 
-inputIpAddress : ConnectionModel -> Html Msg
+inputIpAddress : Connection.Model -> Html Msg
 inputIpAddress connectionModel =
     inputControl
         "Host"
@@ -257,7 +229,7 @@ inputIpAddress connectionModel =
         ChangeDestinationIp
 
 
-inputPort : ConnectionModel -> Html Msg
+inputPort : Connection.Model -> Html Msg
 inputPort connectionModel =
     inputControl
         "Port"
@@ -266,7 +238,7 @@ inputPort connectionModel =
         ChangeDestinationPort
 
 
-formInput : ConnectionModel -> String -> (ConnectionModel -> Html Msg) -> Html Msg
+formInput : Connection.Model -> String -> (Connection.Model -> Html Msg) -> Html Msg
 formInput connectionModel name inputControl =
     div
         [ class "form-group row connection-input-form" ]
@@ -291,7 +263,7 @@ inputControl inputPlaceholder getValue isConnected msg =
         []
 
 
-inputSavedConnections : ConnectionModel -> Html Msg
+inputSavedConnections : Connection.Model -> Html Msg
 inputSavedConnections connection =
     div []
         [ select

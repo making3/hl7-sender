@@ -42,8 +42,3 @@ model =
 getDefaultConnection : Connection
 getDefaultConnection =
     Connection "Default" "127.0.0.1" 1337
-
-
-getCreateNewConnection : Connection
-getCreateNewConnection =
-    Connection "Create New" "127.0.0.1" 3000
