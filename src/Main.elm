@@ -186,14 +186,8 @@ viewLogs model =
         , rows 5
         , class "form-control"
         ]
-        [ text (getLogs model) ]
+        [ text (model.logs |> List.reverse |> String.join "\n") ]
     ]
-
-
-getLogs : Model -> String
-getLogs model =
-    List.reverse model.logs
-        |> String.join "\n"
 
 
 viewConnectionForm : Model -> Html Msg
