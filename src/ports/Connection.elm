@@ -6,12 +6,12 @@ import Json.Encode as Encode exposing (Value, encode, int, object)
 import Ports
 
 
-get : Connection.Model -> Cmd msg
+get : Array Connection.Model -> Cmd msg
 get connections =
     Ports.getConnections (toSavedConnectionsJson connections)
 
 
-saveConnection : Connection.Connection -> Cmd msg
+saveConnection : Connection.Model -> Cmd msg
 saveConnection model =
     model
         |> encodeConnection
@@ -19,15 +19,15 @@ saveConnection model =
         |> Ports.saveConnection
 
 
-toSavedConnectionsJson : Connection.Model -> String
-toSavedConnectionsJson connection =
-    connection.savedConnections
+toSavedConnectionsJson : Array Connection.Model -> String
+toSavedConnectionsJson connections =
+    connections
         |> Array.map encodeConnection
         |> Encode.array
         |> Encode.encode 0
 
 
-encodeConnection : Connection.Connection -> Value
+encodeConnection : Connection.Model -> Value
 encodeConnection connection =
     object
         [ ( "name", Encode.string connection.name )

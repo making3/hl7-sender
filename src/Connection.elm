@@ -10,17 +10,6 @@ import Json.Decode.Pipeline exposing (decode)
 
 
 type alias Model =
-    { destinationIp : String
-    , destinationPort : Int
-    , isConnected : Bool
-    , connectionMessage : String
-    , sentCount : Int
-    , savedConnections : Array Connection
-    , currentSavedConnectionName : String
-    }
-
-
-type alias Connection =
     { name : String
     , destinationIp : String
     , destinationPort : Int
@@ -29,29 +18,14 @@ type alias Connection =
 
 model : Model
 model =
-    { destinationIp = "127.0.0.1"
-    , destinationPort = 1337
-    , isConnected = False
-    , connectionMessage = "Disconnected"
-    , sentCount = 0
-    , savedConnections =
-        Array.fromList
-            [ getDefaultConnection
-            ]
-    , currentSavedConnectionName = "Default"
-    }
-
-
-getDefaultConnection : Connection
-getDefaultConnection =
-    Connection "Default" "127.0.0.1" 1337
+    Model "Default" "127.0.0.1" 1337
 
 
 
 -- UPDATE
 
 
-updateSavedConnections : Array Connection -> String -> String -> Int -> Array Connection
+updateSavedConnections : Array Model -> String -> String -> Int -> Array Model
 updateSavedConnections connections connectionName destinationIp destinationPort =
     let
         updatedConnection =
@@ -63,7 +37,7 @@ updateSavedConnections connections connectionName destinationIp destinationPort 
             |> Array.fromList
 
 
-getInitialConnectionName : Array Connection -> String
+getInitialConnectionName : Array Model -> String
 getInitialConnectionName connections =
     case Array.get 0 connections of
         Just connection ->
@@ -73,33 +47,25 @@ getInitialConnectionName connections =
             ""
 
 
-findConnectionByName : Model -> String -> Maybe Connection
-findConnectionByName model connectionName =
-    model.savedConnections
+findConnectionByName : Array Model -> String -> Maybe Model
+findConnectionByName savedConnections connectionName =
+    savedConnections
         |> Array.toList
         |> List.Extra.find (\c -> c.name == connectionName)
-
-
-updateConnectionStatus : Model -> Bool -> String -> Model
-updateConnectionStatus model isConnected message =
-    { model
-        | isConnected = isConnected
-        , connectionMessage = message
-    }
 
 
 
 -- SERIALIZATION
 
 
-toSavedConnectionsModels : String -> Result String (Array Connection)
+toSavedConnectionsModels : String -> Result String (Array Model)
 toSavedConnectionsModels json =
     Decode.decodeString (Decode.array decodeConnection) json
 
 
-decodeConnection : Decoder Connection
+decodeConnection : Decoder Model
 decodeConnection =
-    decode Connection
+    decode Model
         |> Json.Decode.Pipeline.required "name" Decode.string
         |> Json.Decode.Pipeline.required "destinationIp" Decode.string
         |> Json.Decode.Pipeline.required "destinationPort" Decode.int

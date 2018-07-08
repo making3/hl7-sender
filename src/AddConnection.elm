@@ -1,6 +1,6 @@
 module AddConnection exposing (..)
 
-import Connection exposing (Connection)
+import Connection exposing (Model)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -24,12 +24,12 @@ init =
 -- VIEW
 
 
-view : Connection -> Html Msg
+view : Model -> Html Msg
 view model =
     Layout.view "Settings - Save New Connection" (viewForm model) Exit
 
 
-viewForm : Connection -> Html Msg
+viewForm : Model -> Html Msg
 viewForm model =
     div [ class "basic-form" ]
         [ viewName model
@@ -39,7 +39,7 @@ viewForm model =
         ]
 
 
-viewName : Connection -> Html Msg
+viewName : Model -> Html Msg
 viewName model =
     viewBasicInput
         "Connection Name"
@@ -48,7 +48,7 @@ viewName model =
         UpdateNewConnectionName
 
 
-viewIpAddress : Connection -> Html Msg
+viewIpAddress : Model -> Html Msg
 viewIpAddress model =
     viewBasicInput
         "IP Address"
@@ -57,7 +57,7 @@ viewIpAddress model =
         ChangeDestinationIp
 
 
-viewPort : Connection -> Html Msg
+viewPort : Model -> Html Msg
 viewPort model =
     viewBasicInput
         "Port"
@@ -66,7 +66,7 @@ viewPort model =
         ChangeDestinationPort
 
 
-viewActionButtons : Connection -> Html Msg
+viewActionButtons : Model -> Html Msg
 viewActionButtons model =
     div [ class "save-connection-buttons" ]
         [ button
@@ -95,7 +95,7 @@ type Msg
     | ChangeDestinationPort String
 
 
-update : Msg -> Connection -> ( Connection, Cmd Msg )
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         SaveConnection ->
@@ -114,7 +114,7 @@ update msg model =
             model ! []
 
 
-changeDestinationPort : Connection -> String -> ( Connection, Cmd Msg )
+changeDestinationPort : Model -> String -> ( Model, Cmd Msg )
 changeDestinationPort connection newPortStr =
     case TCP.validatePort newPortStr of
         TCP.ValidPort validatedPort ->

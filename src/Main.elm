@@ -30,7 +30,7 @@ init =
         model
             ! [ Ports.loadVersion
               , Ports.Settings.get model.settings
-              , Ports.Connection.get model.connection
+              , Ports.Connection.get model.savedConnections
               ]
 
 
@@ -41,17 +41,20 @@ init =
 type Modal
     = None
     | ControlCharacters
-    | AddConnection Connection.Connection
+    | AddConnection Connection.Model
     | About
 
 
 type alias Model =
     { hl7 : String
     , logs : List String
-    , connection : Connection.Model
     , settings : Settings.Model
     , modal : Modal
+    , sentCount : Int
     , version : Maybe String
+    , connection : Connection.Model
+    , isConnected : Bool
+    , savedConnections : Array Connection.Model
     }
 
 
@@ -59,10 +62,13 @@ initialModel : Model
 initialModel =
     { hl7 = ""
     , logs = []
-    , connection = Connection.model
     , settings = Settings.model
     , modal = None
+    , sentCount = 0
     , version = Nothing
+    , connection = Connection.model
+    , isConnected = False
+    , savedConnections = Array.fromList [ Connection.model ]
     }
 
 
@@ -130,7 +136,7 @@ simpleSenderButtons model =
         , button
             [ class "btn btn-sm btn-primary"
             , onClick Send
-            , disabled (model.connection.isConnected == False)
+            , disabled (model.isConnected == False)
             ]
             [ text "Send" ]
         ]
@@ -161,13 +167,22 @@ separator =
 
 viewStatus : Model -> Html Msg
 viewStatus model =
-    div [ class "status-row" ]
-        [ label [ class "sent-count" ]
-            [ text ("Sent Count: " ++ toString model.connection.sentCount) ]
-        , label
-            [ class ("connection-status " ++ getConnectionColor model.connection.isConnected) ]
-            [ text model.connection.connectionMessage ]
-        ]
+    let
+        connectionMessage =
+            case model.isConnected of
+                True ->
+                    "Connected"
+
+                False ->
+                    "Disconnected"
+    in
+        div [ class "status-row" ]
+            [ label [ class "sent-count" ]
+                [ text ("Sent Count: " ++ toString model.sentCount) ]
+            , label
+                [ class ("connection-status " ++ getConnectionColor model.isConnected) ]
+                [ text connectionMessage ]
+            ]
 
 
 getConnectionColor : Bool -> String
@@ -193,39 +208,39 @@ viewLogs model =
 viewConnectionForm : Model -> Html Msg
 viewConnectionForm model =
     div [ class "row" ]
-        [ div [ class "col-8" ] (connectionFormControls model.connection)
+        [ div [ class "col-8" ] (connectionFormControls model)
         , div [ class "col-4" ] (connectionButtons model)
         ]
 
 
-connectionFormControls : Connection.Model -> List (Html Msg)
-connectionFormControls connectionModel =
-    [ formInput connectionModel "Saved" inputSavedConnections
-    , formInput connectionModel "Host" inputIpAddress
-    , formInput connectionModel "Port" inputPort
+connectionFormControls : Model -> List (Html Msg)
+connectionFormControls model =
+    [ formInput model "Saved" inputSavedConnections
+    , formInput model "Host" inputIpAddress
+    , formInput model "Port" inputPort
     ]
 
 
-inputIpAddress : Connection.Model -> Html Msg
-inputIpAddress connectionModel =
+inputIpAddress : Model -> Html Msg
+inputIpAddress model =
     inputControl
         "Host"
-        connectionModel.destinationIp
-        connectionModel.isConnected
+        model.connection.destinationIp
+        model.isConnected
         ChangeDestinationIp
 
 
-inputPort : Connection.Model -> Html Msg
-inputPort connectionModel =
+inputPort : Model -> Html Msg
+inputPort model =
     inputControl
         "Port"
-        (Utilities.getPortDisplay connectionModel.destinationPort)
-        connectionModel.isConnected
+        (Utilities.getPortDisplay model.connection.destinationPort)
+        model.isConnected
         ChangeDestinationPort
 
 
-formInput : Connection.Model -> String -> (Connection.Model -> Html Msg) -> Html Msg
-formInput connectionModel name inputControl =
+formInput : Model -> String -> (Model -> Html Msg) -> Html Msg
+formInput model name inputControl =
     div
         [ class "form-group row connection-input-form" ]
         [ label
@@ -233,7 +248,7 @@ formInput connectionModel name inputControl =
             [ text name ]
         , div
             [ class "col-9" ]
-            [ inputControl connectionModel ]
+            [ inputControl model ]
         ]
 
 
@@ -249,13 +264,13 @@ inputControl inputPlaceholder getValue isConnected msg =
         []
 
 
-inputSavedConnections : Connection.Model -> Html Msg
-inputSavedConnections connection =
+inputSavedConnections : Model -> Html Msg
+inputSavedConnections model =
     let
         connections =
-            connection.savedConnections
+            model.savedConnections
                 |> Array.push getCreateNewConnection
-                |> Array.map (toConnectionOptions connection.currentSavedConnectionName)
+                |> Array.map (toConnectionOptions model.connection.name)
                 |> Array.toList
     in
         div []
@@ -263,15 +278,15 @@ inputSavedConnections connection =
                 [ id getSavedConnectionsId
                 , class "form-control form-control-sm"
                 , onInput ChangeSavedConnection
-                , disabled connection.isConnected
+                , disabled model.isConnected
                 ]
                 connections
             ]
 
 
-getCreateNewConnection : Connection.Connection
+getCreateNewConnection : Connection.Model
 getCreateNewConnection =
-    Connection.Connection "Create New" "127.0.0.1" 3000
+    Connection.Model "Create New" "127.0.0.1" 3000
 
 
 getSavedConnectionsId : String
@@ -279,7 +294,7 @@ getSavedConnectionsId =
     "saved-connections"
 
 
-toConnectionOptions : String -> Connection.Connection -> Html msg
+toConnectionOptions : String -> Connection.Model -> Html msg
 toConnectionOptions currentSavedConnectionName connection =
     let
         isSelected =
@@ -294,7 +309,7 @@ connectionButtons model =
         [ class "btn btn-sm btn-block btn-primary"
         , onClick ToggleConnection
         ]
-        [ text (getConnectButtonText model.connection.isConnected) ]
+        [ text (getConnectButtonText model.isConnected) ]
     , button
         [ class "clear-log btn btn-sm btn-block btn-secondary"
         , onClick ClearLog
@@ -376,15 +391,15 @@ update msg model =
             updateToggleConnection model
 
         Connected ->
-            connected model
+            { model | isConnected = True }
                 |> log "info" "Connected"
 
         Disconnected ->
-            disconnected model
+            { model | isConnected = False }
                 |> log "info" "Disconnected"
 
         ConnectionError errorMsg ->
-            disconnected model
+            { model | isConnected = False }
                 |> log "error" errorMsg
 
         ClearLog ->
@@ -448,7 +463,7 @@ update msg model =
         SaveConnection ->
             let
                 connection =
-                    { name = model.connection.currentSavedConnectionName
+                    { name = model.connection.name
                     , destinationIp = model.connection.destinationIp
                     , destinationPort = model.connection.destinationPort
                     }
@@ -467,22 +482,16 @@ update msg model =
             updateModal msg model
 
 
-addNewConnection : Connection.Connection -> Model -> Model
+addNewConnection : Connection.Model -> Model -> Model
 addNewConnection newConnectionModel model =
     let
-        connection =
-            model.connection
-
         newSavedConnections =
-            model.connection.savedConnections
+            model.savedConnections
                 |> Array.push newConnectionModel
-
-        newConnection =
-            { connection | savedConnections = newSavedConnections }
 
         newModel =
             { model
-                | connection = newConnection
+                | savedConnections = newSavedConnections
                 , modal = None
             }
     in
@@ -494,20 +503,14 @@ addNewConnection newConnectionModel model =
 updateSavedConnectionsWithCurrent : Model -> Model
 updateSavedConnectionsWithCurrent model =
     let
-        connection =
-            model.connection
-
         newSavedConnections =
             Connection.updateSavedConnections
-                connection.savedConnections
-                model.connection.currentSavedConnectionName
+                model.savedConnections
+                model.connection.name
                 model.connection.destinationIp
                 model.connection.destinationPort
-
-        newConnection =
-            { connection | savedConnections = newSavedConnections }
     in
-        { model | connection = newConnection }
+        { model | savedConnections = newSavedConnections }
 
 
 logSavedConnection : Model -> ( Model, Cmd Msg )
@@ -520,17 +523,11 @@ updateInitialSavedConnections model savedConnectionsJson =
     case Connection.toSavedConnectionsModels savedConnectionsJson of
         Ok savedConnections ->
             let
-                connection =
-                    model.connection
-
-                newConnection =
-                    { connection | savedConnections = savedConnections }
-
                 newModel =
-                    { model | connection = newConnection }
+                    { model | savedConnections = savedConnections }
 
                 defaultConnectionName =
-                    Connection.getInitialConnectionName savedConnections
+                    Connection.getInitialConnectionName newModel.savedConnections
             in
                 ( changeConnectionFromSaved defaultConnectionName newModel, Cmd.none )
 
@@ -545,7 +542,7 @@ changeConnectionFromSaved connectionName model =
             { model | modal = AddConnection AddConnection.init }
 
         _ ->
-            case Connection.findConnectionByName model.connection connectionName of
+            case Connection.findConnectionByName model.savedConnections connectionName of
                 Nothing ->
                     model
 
@@ -553,20 +550,9 @@ changeConnectionFromSaved connectionName model =
                     updateCurrentConnection model newConnection
 
 
-updateCurrentConnection : Model -> Connection.Connection -> Model
+updateCurrentConnection : Model -> Connection.Model -> Model
 updateCurrentConnection model newConnection =
-    let
-        connection =
-            model.connection
-
-        replacedConnection =
-            { connection
-                | destinationIp = newConnection.destinationIp
-                , destinationPort = newConnection.destinationPort
-                , currentSavedConnectionName = newConnection.name
-            }
-    in
-        { model | connection = replacedConnection }
+    { model | connection = newConnection }
 
 
 updateModal : Msg -> Model -> ( Model, Cmd Msg )
@@ -652,7 +638,7 @@ updatePort connection newPort =
 
 updateToggleConnection : Model -> ( Model, Cmd Msg )
 updateToggleConnection model =
-    case model.connection.isConnected of
+    case model.isConnected of
         False ->
             ( model
             , Ports.connect
@@ -665,20 +651,6 @@ updateToggleConnection model =
             ( model
             , Ports.disconnect ()
             )
-
-
-connected : Model -> Model
-connected model =
-    { model
-        | connection = Connection.updateConnectionStatus model.connection True "Connected"
-    }
-
-
-disconnected : Model -> Model
-disconnected model =
-    { model
-        | connection = Connection.updateConnectionStatus model.connection False "Disconnected"
-    }
 
 
 updateHl7 : Model -> String -> Model
@@ -703,14 +675,7 @@ scrollLogsToBottom =
 
 updateSentCount : Model -> Model
 updateSentCount model =
-    let
-        connection =
-            model.connection
-
-        newConnection =
-            { connection | sentCount = connection.sentCount + 1 }
-    in
-        { model | connection = newConnection }
+    { model | sentCount = model.sentCount + 1 }
 
 
 menuClickOption : String -> Model -> ( Model, Cmd Msg )
