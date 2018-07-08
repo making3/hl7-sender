@@ -506,9 +506,7 @@ updateSavedConnectionsWithCurrent model =
         newSavedConnections =
             Connection.updateSavedConnections
                 model.savedConnections
-                model.connection.name
-                model.connection.destinationIp
-                model.connection.destinationPort
+                model.connection
     in
         { model | savedConnections = newSavedConnections }
 

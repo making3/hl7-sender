@@ -25,16 +25,12 @@ model =
 -- UPDATE
 
 
-updateSavedConnections : Array Model -> String -> String -> Int -> Array Model
-updateSavedConnections connections connectionName destinationIp destinationPort =
-    let
-        updatedConnection =
-            { name = connectionName, destinationIp = destinationIp, destinationPort = destinationPort }
-    in
-        connections
-            |> Array.toList
-            |> updateIf (\c -> c.name == connectionName) (\c -> updatedConnection)
-            |> Array.fromList
+updateSavedConnections : Array Model -> Model -> Array Model
+updateSavedConnections connections updatedConnection =
+    connections
+        |> Array.toList
+        |> updateIf (\c -> c.name == updatedConnection.name) (\c -> updatedConnection)
+        |> Array.fromList
 
 
 getInitialConnectionName : Array Model -> String
