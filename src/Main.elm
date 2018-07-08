@@ -12,9 +12,6 @@ import Maybe exposing (withDefault)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import List.Extra exposing (updateIf)
-import Json.Decode as Decode exposing (Decoder, decodeString, int)
-import Json.Decode.Pipeline exposing (decode)
 import Ports
 import Ports.Connection
 import Ports.Settings
@@ -507,7 +504,7 @@ updateSavedConnectionsWithCurrent model =
             model.connection
 
         newSavedConnections =
-            updateSavedConnections
+            Connection.updateSavedConnections
                 connection.savedConnections
                 model.connection.currentSavedConnectionName
                 model.connection.destinationIp
@@ -519,18 +516,6 @@ updateSavedConnectionsWithCurrent model =
         { model | connection = newConnection }
 
 
-updateSavedConnections : Array Connection.Connection -> String -> String -> Int -> Array Connection.Connection
-updateSavedConnections connections connectionName destinationIp destinationPort =
-    let
-        updatedConnection =
-            { name = connectionName, destinationIp = destinationIp, destinationPort = destinationPort }
-    in
-        connections
-            |> Array.toList
-            |> updateIf (\c -> c.name == connectionName) (\c -> updatedConnection)
-            |> Array.fromList
-
-
 logSavedConnection : Model -> ( Model, Cmd Msg )
 logSavedConnection model =
     log "info" "Saved Connection!" model
@@ -538,7 +523,7 @@ logSavedConnection model =
 
 updateInitialSavedConnections : Model -> String -> ( Model, Cmd Msg )
 updateInitialSavedConnections model savedConnectionsJson =
-    case toSavedConnectionsModels savedConnectionsJson of
+    case Connection.toSavedConnectionsModels savedConnectionsJson of
         Ok savedConnections ->
             let
                 connection =
@@ -551,7 +536,7 @@ updateInitialSavedConnections model savedConnectionsJson =
                     { model | connection = newConnection }
 
                 defaultConnectionName =
-                    getInitialConnectionName savedConnections
+                    Connection.getInitialConnectionName savedConnections
             in
                 ( changeConnectionFromSaved defaultConnectionName newModel, Cmd.none )
 
@@ -566,29 +551,12 @@ changeConnectionFromSaved connectionName model =
             { model | modal = AddConnection AddConnection.init }
 
         _ ->
-            case findConnectionByName model connectionName of
+            case Connection.findConnectionByName model.connection connectionName of
                 Nothing ->
                     model
 
                 Just newConnection ->
                     updateCurrentConnection model newConnection
-
-
-findConnectionByName : Model -> String -> Maybe Connection.Connection
-findConnectionByName model connectionName =
-    model.connection.savedConnections
-        |> Array.toList
-        |> List.Extra.find (\c -> c.name == connectionName)
-
-
-getInitialConnectionName : Array Connection.Connection -> String
-getInitialConnectionName connections =
-    case Array.get 0 connections of
-        Just connection ->
-            connection.name
-
-        Nothing ->
-            ""
 
 
 updateCurrentConnection : Model -> Connection.Connection -> Model
@@ -705,22 +673,17 @@ updateToggleConnection model =
             )
 
 
+connected : Model -> Model
 connected model =
     { model
-        | connection = updateConnectionStatus model.connection True "Connected"
+        | connection = Connection.updateConnectionStatus model.connection True "Connected"
     }
 
 
+disconnected : Model -> Model
 disconnected model =
     { model
-        | connection = updateConnectionStatus model.connection False "Disconnected"
-    }
-
-
-updateConnectionStatus connection isConnected message =
-    { connection
-        | isConnected = isConnected
-        , connectionMessage = message
+        | connection = Connection.updateConnectionStatus model.connection False "Disconnected"
     }
 
 
@@ -788,23 +751,6 @@ subscriptions model =
         , Ports.savedNewConnection SavedNewConnection
         , Ports.initialSavedConnections InitialSavedConnections
         ]
-
-
-
--- SERIALIZATION
-
-
-toSavedConnectionsModels : String -> Result String (Array Connection.Connection)
-toSavedConnectionsModels json =
-    Decode.decodeString (Decode.array decodeConnection) json
-
-
-decodeConnection : Decoder Connection.Connection
-decodeConnection =
-    decode Connection.Connection
-        |> Json.Decode.Pipeline.required "name" Decode.string
-        |> Json.Decode.Pipeline.required "destinationIp" Decode.string
-        |> Json.Decode.Pipeline.required "destinationPort" Decode.int
 
 
 
