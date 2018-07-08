@@ -576,7 +576,9 @@ changeConnectionFromSaved connectionName model =
 
 findConnectionByName : Model -> String -> Maybe Connection.Connection
 findConnectionByName model connectionName =
-    List.head (List.filter (\m -> m.name == connectionName) (Array.toList model.connection.savedConnections))
+    model.connection.savedConnections
+        |> Array.toList
+        |> List.Extra.find (\c -> c.name == connectionName)
 
 
 getInitialConnectionName : Array Connection.Connection -> String
