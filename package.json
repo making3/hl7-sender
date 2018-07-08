@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "elm-make src/Main.elm --output elm.js --yes",
-    "watch": "npm run build && chokidar \"**/*.elm\" -c \"npm run build\"",
+    "watch": "chokidar \"**/*.elm\" --initial -c \"npm run build\"",
     "debug": "electron main.js --debug",
     "start": "electron main.js",
     "dev": "npm run watch & npm run debug"

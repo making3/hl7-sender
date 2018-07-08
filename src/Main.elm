@@ -1,8 +1,5 @@
 module Main exposing (..)
 
--- TODO: npm run watch fails if the first build fails
--- TODO: npm run watch does not auto-install elm packages
-
 import About
 import AddConnection
 import Array exposing (Array, fromList)
