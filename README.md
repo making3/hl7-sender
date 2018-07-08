@@ -3,6 +3,10 @@ HL7 Sender
 
 Desktop GUI tool for pasting and sending an HL7 message to a port. Mostly useful testing in-house systems or re-running individual messages.
 
+# Project Board & Updates
+
+For tracking future updates, view the [Trello board](https://trello.com/b/b3dkZJiG).
+
 # Preview
 
 This a work in progress, but here is a preview of the current state of the application.
@@ -16,8 +20,11 @@ HL7 Sender is an Electron and Elm learning project. Refer to the [TODO](TODO.md)
 
 - Node.js v8+, v8 LTS is used for development.
   - [NVM](https://github.com/creationix/nvm) is recommended on linux.
-  - Official installers are recommended on Windows, or [nvm-windows](https://github.com/coreybutler/nvm-windows)
+  - [Official installers](https://nodejs.org/en/) are recommended on Windows
+    - Or [nvm-windows](https://github.com/coreybutler/nvm-windows)
 
+
+After NodeJS is installed:
 
     npm install
 
