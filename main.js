@@ -1,6 +1,6 @@
 'use strict';
-const electron    = require('electron');
-const chokidar    = require('chokidar');
+const electron = require('electron');
+const chokidar = require('chokidar');
 const contextMenu = require('electron-context-menu');
 
 const app = electron.app;

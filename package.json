@@ -1,6 +1,6 @@
 {
   "name": "hl7-sender",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "HL7 Sending utility for testing a downstream HL7 processing system.",
   "main": "index.js",
   "scripts": {

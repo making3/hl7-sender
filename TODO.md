@@ -20,6 +20,8 @@ TODO
 
 # JavaScript Ports
 - [ ] Add basic eslint for port related code
+- [ ] Potentially convert ports to TypeScript for more types.
+- [ ] Update to 2 space instead of 4.
 - [ ] Implement async/await for ports instead of callbacks.
 
 # Future
