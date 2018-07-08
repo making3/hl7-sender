@@ -1,9 +1,9 @@
 module Connection exposing (..)
 
 import Array exposing (Array, fromList)
-import List.Extra exposing (updateIf)
 import Json.Decode as Decode exposing (Decoder, decodeString, int)
 import Json.Decode.Pipeline exposing (decode)
+import List.Extra exposing (updateIf)
 
 
 -- MODEL
@@ -16,8 +16,8 @@ type alias Model =
     }
 
 
-model : Model
-model =
+init : Model
+init =
     Model "Default" "127.0.0.1" 1337
 
 

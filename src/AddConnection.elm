@@ -4,20 +4,17 @@ import Connection exposing (Model)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import TCP
 import Utilities
 import View.Controls.FormInput exposing (viewBasicInput)
 import View.Layout.Modal as Layout exposing (view)
-import TCP
 
 
 -- MODEL
 
 
 init =
-    { name = ""
-    , destinationIp = ""
-    , destinationPort = 9000
-    }
+    Connection.init
 
 
 

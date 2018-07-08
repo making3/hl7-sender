@@ -13,8 +13,8 @@ type alias Model =
     }
 
 
-model : Model
-model =
+init : Model
+init =
     { controlCharacters = ControlCharacters.init
     }
 

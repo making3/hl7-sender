@@ -62,13 +62,13 @@ initialModel : Model
 initialModel =
     { hl7 = ""
     , logs = []
-    , settings = Settings.model
+    , settings = Settings.init
     , modal = None
     , sentCount = 0
     , version = Nothing
-    , connection = Connection.model
+    , connection = Connection.init
     , isConnected = False
-    , savedConnections = Array.fromList [ Connection.model ]
+    , savedConnections = Array.fromList [ Connection.init ]
     }
 
 
