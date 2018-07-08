@@ -263,7 +263,7 @@ inputSavedConnections connection =
         connections =
             connection.savedConnections
                 |> Array.push getCreateNewConnection
-                |> Array.map toOptions
+                |> Array.map (toConnectionOptions connection.currentSavedConnectionName)
                 |> Array.toList
     in
         div []
@@ -287,9 +287,13 @@ getSavedConnectionsId =
     "saved-connections"
 
 
-toOptions : Connection.Connection -> Html msg
-toOptions connection =
-    option [ value connection.name ] [ text connection.name ]
+toConnectionOptions : String -> Connection.Connection -> Html msg
+toConnectionOptions currentSavedConnectionName connection =
+    let
+        isSelected =
+            currentSavedConnectionName == connection.name
+    in
+        option [ selected isSelected, value connection.name ] [ text connection.name ]
 
 
 connectionButtons : Model -> List (Html Msg)
@@ -428,7 +432,7 @@ update msg model =
                     log "error" errorMessage model
 
         ChangeSavedConnection connectionName ->
-            changeConnectionFromSaved model connectionName ! []
+            changeConnectionFromSaved connectionName model ! []
 
         InitialSavedConnections ( "", savedConnectionsJson ) ->
             updateInitialSavedConnections model savedConnectionsJson
@@ -437,10 +441,15 @@ update msg model =
             log "error" errorMessage model
 
         SavedNewConnection "" ->
-            -- TODO: Adding a new connection adds a blank name to the list
-            model
-                |> addNewConnection
-                |> logSavedConnection
+            case model.modal of
+                AddConnection subModel ->
+                    -- TODO: Adding a new connection adds a blank name to the list
+                    model
+                        |> addNewConnection subModel
+                        |> logSavedConnection
+
+                _ ->
+                    model ! []
 
         SavedNewConnection errorMessage ->
             log "error" ("Failed to save message" ++ errorMessage) model
@@ -468,49 +477,28 @@ update msg model =
             updateModal msg model
 
 
-addNewConnection : Model -> Model
-addNewConnection model =
+addNewConnection : Connection.Connection -> Model -> Model
+addNewConnection newConnectionModel model =
     let
         connection =
             model.connection
 
-        settings =
-            model.settings
-
-        newIndividualConnection =
-            getNewConnection model
+        newSavedConnections =
+            model.connection.savedConnections
+                |> Array.push newConnectionModel
 
         newConnection =
-            { connection
-                | savedConnections = appendConnectionToArray model newIndividualConnection model.connection.savedConnections
-            }
-
-        newSettings =
-            { settings
-                | newConnectionName = ""
-            }
+            { connection | savedConnections = newSavedConnections }
 
         newModel =
             { model
                 | connection = newConnection
-                , settings = newSettings
                 , modal = None
             }
     in
-        updateCurrentConnection newModel newIndividualConnection
-
-
-appendConnectionToArray : Model -> Connection.Connection -> Array Connection.Connection -> Array Connection.Connection
-appendConnectionToArray model newConnection connections =
-    Array.push newConnection connections
-
-
-getNewConnection : Model -> Connection.Connection
-getNewConnection model =
-    { name = model.settings.newConnectionName
-    , destinationIp = model.connection.destinationIp
-    , destinationPort = model.connection.destinationPort
-    }
+        newConnectionModel
+            |> updateCurrentConnection newModel
+            |> changeConnectionFromSaved newConnectionModel.name
 
 
 updateSavedConnectionsWithCurrent : Model -> Model
@@ -559,14 +547,14 @@ updateInitialSavedConnections model savedConnectionsJson =
                 defaultConnectionName =
                     getInitialConnectionName savedConnections
             in
-                ( changeConnectionFromSaved newModel defaultConnectionName, Cmd.none )
+                ( changeConnectionFromSaved defaultConnectionName newModel, Cmd.none )
 
         Err errorMessage ->
             log "error" errorMessage model
 
 
-changeConnectionFromSaved : Model -> String -> Model
-changeConnectionFromSaved model connectionName =
+changeConnectionFromSaved : String -> Model -> Model
+changeConnectionFromSaved connectionName model =
     case connectionName of
         "Create New" ->
             { model | modal = AddConnection AddConnection.init }

@@ -10,14 +10,12 @@ import Json.Decode.Pipeline exposing (decode, optional, required)
 
 type alias Model =
     { controlCharacters : ControlCharacters.Model
-    , newConnectionName : String
     }
 
 
 model : Model
 model =
     { controlCharacters = ControlCharacters.initialModel
-    , newConnectionName = ""
     }
 
 
@@ -34,7 +32,6 @@ settingsDecoder : Decoder Model
 settingsDecoder =
     decode Model
         |> required "controlCharacters" decodeControlCharacters
-        |> optional "newConnectionName" Decode.string ""
 
 
 decodeControlCharacters : Decoder ControlCharacters.Model
