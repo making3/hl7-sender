@@ -12,6 +12,7 @@ import Maybe exposing (withDefault)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import List.Extra exposing (updateIf)
 import Json.Decode as Decode exposing (Decoder, decodeString, int)
 import Json.Decode.Pipeline exposing (decode)
 import Ports
@@ -443,7 +444,6 @@ update msg model =
         SavedNewConnection "" ->
             case model.modal of
                 AddConnection subModel ->
-                    -- TODO: Adding a new connection adds a blank name to the list
                     model
                         |> addNewConnection subModel
                         |> logSavedConnection
@@ -465,7 +465,6 @@ update msg model =
                 ( model, Ports.Connection.saveConnection connection )
 
         SavedConnection "" ->
-            -- TODO: For some reason this reset all names to "Default"
             model
                 |> updateSavedConnectionsWithCurrent
                 |> logSavedConnection
@@ -508,7 +507,7 @@ updateSavedConnectionsWithCurrent model =
             model.connection
 
         newSavedConnections =
-            updateSavedConnectionsByIndex
+            updateSavedConnections
                 connection.savedConnections
                 model.connection.currentSavedConnectionName
                 model.connection.destinationIp
@@ -520,9 +519,16 @@ updateSavedConnectionsWithCurrent model =
         { model | connection = newConnection }
 
 
-updateSavedConnectionsByIndex : Array Connection.Connection -> String -> String -> Int -> Array Connection.Connection
-updateSavedConnectionsByIndex connections connectionName destinationIp destinationPort =
-    Array.set (Array.length connections - 1) { name = connectionName, destinationIp = destinationIp, destinationPort = destinationPort } connections
+updateSavedConnections : Array Connection.Connection -> String -> String -> Int -> Array Connection.Connection
+updateSavedConnections connections connectionName destinationIp destinationPort =
+    let
+        updatedConnection =
+            { name = connectionName, destinationIp = destinationIp, destinationPort = destinationPort }
+    in
+        connections
+            |> Array.toList
+            |> updateIf (\c -> c.name == connectionName) (\c -> updatedConnection)
+            |> Array.fromList
 
 
 logSavedConnection : Model -> ( Model, Cmd Msg )
