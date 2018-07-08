@@ -15,22 +15,14 @@ type alias Model =
     { startOfText : Int
     , endOfText : Int
     , endOfLine : Int
-    , pendingUpdate : Bool
-    , tempStartOfText : Int
-    , tempEndOfText : Int
-    , tempEndOfLine : Int
     }
 
 
-initialModel : Model
-initialModel =
+init : Model
+init =
     { startOfText = 9
     , endOfText = 45
     , endOfLine = 35
-    , pendingUpdate = False
-    , tempStartOfText = 9
-    , tempEndOfText = 45
-    , tempEndOfLine = 35
     }
 
 
@@ -38,16 +30,16 @@ initialModel =
 -- VIEW
 
 
-view : Model -> Html Msg
-view model =
-    Layout.view "Settings - Control Characters" (viewForm model) Exit
+view : Model -> Model -> Html Msg
+view model existingModel =
+    Layout.view "Settings - Control Characters" (viewForm model existingModel) Exit
 
 
-viewForm : Model -> Html Msg
-viewForm model =
+viewForm : Model -> Model -> Html Msg
+viewForm model existingModel =
     div []
         [ viewHeading
-        , viewCharacters model
+        , viewCharacters model existingModel
         ]
 
 
@@ -61,33 +53,37 @@ viewHeading =
         ]
 
 
-viewCharacters : Model -> Html Msg
-viewCharacters model =
+viewCharacters : Model -> Model -> Html Msg
+viewCharacters model existingModel =
+    let
+        pendingUpdate =
+            isPending model existingModel
+    in
     div
         [ class "form" ]
         [ viewInput
-            model.tempStartOfText
+            model.startOfText
             "Start of HL7"
             UpdateStartOfText
         , viewInput
-            model.tempEndOfText
+            model.endOfText
             "End of HL7"
             UpdateEndOfText
         , viewInput
-            model.tempEndOfLine
+            model.endOfLine
             "End of Segment"
             UpdateEndOfLine
         , div [ class "settings-buttons" ]
             [ button
                 [ class "btn btn-primary"
                 , onClick SaveControlCharacters
-                , disabled (model.pendingUpdate == False)
+                , disabled (pendingUpdate == False)
                 ]
                 [ text "Save" ]
             , button
                 [ class "btn btn-primary"
                 , onClick ResetControlCharacters
-                , disabled (model.pendingUpdate == False)
+                , disabled (pendingUpdate == False)
                 ]
                 [ text "Reset" ]
             ]
@@ -149,61 +145,34 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        SaveControlCharacters ->
-            saveControlCharacters model ! []
-
         ResetControlCharacters ->
-            resetTempCharacters model ! []
+            init ! []
 
         _ ->
             updateForm msg model ! []
-
-
-resetTempCharacters : Model -> Model
-resetTempCharacters model =
-    { model
-        | tempStartOfText = model.startOfText
-        , tempEndOfText = model.endOfText
-        , tempEndOfLine = model.endOfLine
-        , pendingUpdate = False
-    }
 
 
 updateForm : Msg -> Model -> Model
 updateForm msg model =
     case msg of
         UpdateStartOfText newSot ->
-            { model | tempStartOfText = getInt newSot } |> isPending
+            { model | startOfText = getInt newSot }
 
         UpdateEndOfText newEot ->
-            { model | tempEndOfText = getInt newEot } |> isPending
+            { model | endOfText = getInt newEot }
 
         UpdateEndOfLine newEol ->
-            { model | tempEndOfLine = getInt newEol } |> isPending
+            { model | endOfLine = getInt newEol }
 
         _ ->
             model
 
 
-isPending : Model -> Model
-isPending model =
-    let
-        isPendingUpdate =
-            (model.tempStartOfText /= model.startOfText)
-                || (model.tempEndOfText /= model.endOfText)
-                || (model.tempEndOfLine /= model.endOfLine)
-    in
-    { model | pendingUpdate = isPendingUpdate }
-
-
-saveControlCharacters : Model -> Model
-saveControlCharacters model =
-    { model
-        | startOfText = model.tempStartOfText
-        , endOfText = model.tempEndOfText
-        , endOfLine = model.tempEndOfLine
-        , pendingUpdate = False
-    }
+isPending : Model -> Model -> Bool
+isPending model existingModel =
+    (model.startOfText /= existingModel.startOfText)
+        || (model.endOfText /= existingModel.endOfText)
+        || (model.endOfLine /= existingModel.endOfLine)
 
 
 getInt : String -> Int

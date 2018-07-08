@@ -15,7 +15,7 @@ type alias Model =
 
 model : Model
 model =
-    { controlCharacters = ControlCharacters.initialModel
+    { controlCharacters = ControlCharacters.init
     }
 
 
@@ -40,7 +40,3 @@ decodeControlCharacters =
         |> required "startOfText" Decode.int
         |> required "endOfText" Decode.int
         |> required "endOfLine" Decode.int
-        |> optional "pendingUpdate" Decode.bool False
-        |> optional "tempStartOfText" Decode.int 9
-        |> optional "tempEndOfText" Decode.int 45
-        |> optional "tempEndOfLine" Decode.int 35

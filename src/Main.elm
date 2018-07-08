@@ -1,5 +1,8 @@
 module Main exposing (..)
 
+-- TODO: npm run watch fails if the first build fails
+-- TODO: npm run watch does not auto-install elm packages
+
 import About
 import AddConnection
 import Array exposing (Array, fromList)
@@ -8,16 +11,16 @@ import Connection
 import ControlCharacters exposing (Msg)
 import Dom.Scroll
 import HL7
-import Maybe exposing (withDefault)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Maybe exposing (withDefault)
 import Ports
 import Ports.Connection
 import Ports.Settings
 import Settings
-import Task
 import TCP
+import Task
 import Utilities
 
 
@@ -27,11 +30,11 @@ init =
         model =
             initialModel
     in
-        model
-            ! [ Ports.loadVersion
-              , Ports.Settings.get model.settings
-              , Ports.Connection.get model.savedConnections
-              ]
+    model
+        ! [ Ports.loadVersion
+          , Ports.Settings.get model.settings
+          , Ports.Connection.get model.savedConnections
+          ]
 
 
 
@@ -40,7 +43,7 @@ init =
 
 type Modal
     = None
-    | ControlCharacters
+    | ControlCharacters ControlCharacters.Model
     | AddConnection Connection.Model
     | About
 
@@ -84,9 +87,9 @@ getLogId =
 view : Model -> Html Msg
 view model =
     case model.modal of
-        ControlCharacters ->
+        ControlCharacters subModel ->
             model.settings.controlCharacters
-                |> ControlCharacters.view
+                |> ControlCharacters.view subModel
                 |> Html.map ControlCharactersMsg
 
         About ->
@@ -176,13 +179,13 @@ viewStatus model =
                 False ->
                     "Disconnected"
     in
-        div [ class "status-row" ]
-            [ label [ class "sent-count" ]
-                [ text ("Sent Count: " ++ toString model.sentCount) ]
-            , label
-                [ class ("connection-status " ++ getConnectionColor model.isConnected) ]
-                [ text connectionMessage ]
-            ]
+    div [ class "status-row" ]
+        [ label [ class "sent-count" ]
+            [ text ("Sent Count: " ++ toString model.sentCount) ]
+        , label
+            [ class ("connection-status " ++ getConnectionColor model.isConnected) ]
+            [ text connectionMessage ]
+        ]
 
 
 getConnectionColor : Bool -> String
@@ -273,15 +276,15 @@ inputSavedConnections model =
                 |> Array.map (toConnectionOptions model.connection.name)
                 |> Array.toList
     in
-        div []
-            [ select
-                [ id getSavedConnectionsId
-                , class "form-control form-control-sm"
-                , onInput ChangeSavedConnection
-                , disabled model.isConnected
-                ]
-                connections
+    div []
+        [ select
+            [ id getSavedConnectionsId
+            , class "form-control form-control-sm"
+            , onInput ChangeSavedConnection
+            , disabled model.isConnected
             ]
+            connections
+        ]
 
 
 getCreateNewConnection : Connection.Model
@@ -300,7 +303,7 @@ toConnectionOptions currentSavedConnectionName connection =
         isSelected =
             currentSavedConnectionName == connection.name
     in
-        option [ selected isSelected, value connection.name ] [ text connection.name ]
+    option [ selected isSelected, value connection.name ] [ text connection.name ]
 
 
 connectionButtons : Model -> List (Html Msg)
@@ -353,7 +356,7 @@ type Msg
     | ExitModal
     | NoOp
     | InitialSettings ( String, String )
-    | Saved String
+    | SettingsSaved String
     | ChangeSavedConnection String
     | ControlCharactersMsg ControlCharacters.Msg
     | AddConnectionMsg AddConnection.Msg
@@ -366,7 +369,7 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Saved errorMessage ->
+        SettingsSaved errorMessage ->
             if errorMessage == "" then
                 log "info" "Saved settings" model
             else
@@ -423,14 +426,7 @@ update msg model =
                 "" ->
                     case Settings.toModel settingsJson of
                         Ok settings ->
-                            let
-                                newControlCharacters =
-                                    ControlCharacters.resetTempCharacters settings.controlCharacters
-
-                                newSettings =
-                                    { settings | controlCharacters = newControlCharacters }
-                            in
-                                ( { model | settings = newSettings }, Cmd.none )
+                            { model | settings = settings } ! []
 
                         Err errorMessage ->
                             log "error" errorMessage model
@@ -468,7 +464,7 @@ update msg model =
                     , destinationPort = model.connection.destinationPort
                     }
             in
-                ( model, Ports.Connection.saveConnection connection )
+            ( model, Ports.Connection.saveConnection connection )
 
         SavedConnection "" ->
             model
@@ -495,9 +491,9 @@ addNewConnection newConnectionModel model =
                 , modal = None
             }
     in
-        newConnectionModel
-            |> updateCurrentConnection newModel
-            |> changeConnectionFromSaved newConnectionModel.name
+    newConnectionModel
+        |> updateCurrentConnection newModel
+        |> changeConnectionFromSaved newConnectionModel.name
 
 
 updateSavedConnectionsWithCurrent : Model -> Model
@@ -508,7 +504,7 @@ updateSavedConnectionsWithCurrent model =
                 model.savedConnections
                 model.connection
     in
-        { model | savedConnections = newSavedConnections }
+    { model | savedConnections = newSavedConnections }
 
 
 logSavedConnection : Model -> ( Model, Cmd Msg )
@@ -527,7 +523,7 @@ updateInitialSavedConnections model savedConnectionsJson =
                 defaultConnectionName =
                     Connection.getInitialConnectionName newModel.savedConnections
             in
-                ( changeConnectionFromSaved defaultConnectionName newModel, Cmd.none )
+            ( changeConnectionFromSaved defaultConnectionName newModel, Cmd.none )
 
         Err errorMessage ->
             log "error" errorMessage model
@@ -556,29 +552,33 @@ updateCurrentConnection model newConnection =
 updateModal : Msg -> Model -> ( Model, Cmd Msg )
 updateModal msg model =
     case ( msg, model.modal ) of
-        ( ControlCharactersMsg subMsg, ControlCharacters ) ->
+        ( ControlCharactersMsg subMsg, ControlCharacters subModel ) ->
             let
-                ( subModel, subCmd ) =
-                    ControlCharacters.update subMsg model.settings.controlCharacters
-
-                oldSettings =
-                    model.settings
-
-                newSettings =
-                    { oldSettings | controlCharacters = subModel }
+                ( newSubModel, subCmd ) =
+                    ControlCharacters.update subMsg subModel
 
                 newModel =
-                    { model | settings = newSettings }
+                    { model | modal = ControlCharacters newSubModel }
             in
-                case subMsg of
-                    ControlCharacters.SaveControlCharacters ->
-                        ( newModel, Ports.Settings.save newModel.settings )
+            case subMsg of
+                ControlCharacters.SaveControlCharacters ->
+                    let
+                        oldSettings =
+                            model.settings
 
-                    ControlCharacters.Exit ->
-                        { newModel | modal = None } ! []
+                        newSettings =
+                            { oldSettings | controlCharacters = newSubModel }
 
-                    _ ->
-                        newModel ! []
+                        newSavedModel =
+                            { model | settings = newSettings }
+                    in
+                    ( newSavedModel, Ports.Settings.save newSettings )
+
+                ControlCharacters.Exit ->
+                    { newModel | modal = None } ! []
+
+                _ ->
+                    newModel ! []
 
         ( AddConnectionMsg subMsg, AddConnection subModel ) ->
             let
@@ -591,15 +591,15 @@ updateModal msg model =
                 newModel =
                     { model | modal = newModal }
             in
-                case subMsg of
-                    AddConnection.Exit ->
-                        { model | modal = None } ! []
+            case subMsg of
+                AddConnection.Exit ->
+                    { model | modal = None } ! []
 
-                    AddConnection.SaveConnection ->
-                        ( newModel, Ports.Connection.saveConnection newSubModel )
+                AddConnection.SaveConnection ->
+                    ( newModel, Ports.Connection.saveConnection newSubModel )
 
-                    _ ->
-                        newModel ! []
+                _ ->
+                    newModel ! []
 
         ( _, _ ) ->
             model ! []
@@ -614,7 +614,7 @@ updateIpAddress model ipAddress =
         newConnection =
             { connection | destinationIp = ipAddress }
     in
-        { model | connection = newConnection }
+    { model | connection = newConnection }
 
 
 changeDestinationPort : Model -> String -> Model
@@ -683,7 +683,7 @@ menuClickOption menuItem model =
             { model | modal = About } ! []
 
         "edit-control-characters" ->
-            { model | modal = ControlCharacters } ! []
+            { model | modal = ControlCharacters model.settings.controlCharacters } ! []
 
         _ ->
             model ! []
@@ -698,7 +698,7 @@ subscriptions model =
     Sub.batch
         [ Ports.menuClick MenuClick
         , Ports.settings InitialSettings
-        , Ports.settingsSaved Saved
+        , Ports.settingsSaved SettingsSaved
         , Ports.connected (always Connected)
         , Ports.disconnected (always Disconnected)
         , Ports.connectionError ConnectionError
