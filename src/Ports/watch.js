@@ -1,8 +1,8 @@
 'use strict';
 /* global document */
 const Elm = require('./elm.js');
-const settings = require('./src/ports/settings');
-const connection = require('./src/ports/connection');
+const settings = require('./src/Ports/settings');
+const connection = require('./src/Ports/connection');
 const ipc = require('electron').ipcRenderer;
 
 const container = document.getElementById('container');
