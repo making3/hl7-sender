@@ -29,8 +29,9 @@ exports.watchForEvents = (app) => {
         });
     });
 
-    app.ports.saveConnection.subscribe(([ connectionName, ip, port ]) => {
-        saveConnection(connectionName, ip, port, (error, isNewConnection) => {
+    app.ports.saveConnection.subscribe((newConnectionJson) => {
+      const newConnection = JSON.parse(newConnectionJson);
+        saveConnection(newConnection.name, newConnection.destinationIp, newConnection.destinationPort, (error, isNewConnection) => {
             const errorMessage = error ? error.toString() : '';
             if (isNewConnection) {
                 app.ports.savedNewConnection.send(errorMessage);
@@ -60,7 +61,6 @@ function connect(app, ip, port) {
 
     client.on('data', (data) => {
         // TODO: Completely gather an ack here
-        console.log('data: ', data);
         app.ports.ack.send(data);
     });
 
@@ -76,7 +76,8 @@ function send(hl7, callback) {
 
 function disconnect() {
     if (client) {
-        client.end();
+        // or client.end? This was what used to be used..
+        client.destroy();
     }
 }
 

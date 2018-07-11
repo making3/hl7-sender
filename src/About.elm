@@ -1,24 +1,20 @@
-module Home.View.About exposing (..)
+module About exposing (..)
 
-import Msg exposing (..)
-import Model exposing (Model)
 import View.Layout.Modal as Layout exposing (view)
 import Html exposing (Html, div, label, text, hr)
 import Html.Attributes exposing (class)
 
 
-view : Model -> Html Msg
-view model =
-    Layout.view
-        "HL7 Sender"
-        (about model)
+view : msg -> String -> Html msg
+view msg version =
+    Layout.view "HL7 Sender" (about version) msg
 
 
-about : Model -> Html Msg
-about model =
+about : String -> Html msg
+about version =
     div []
         [ label [ class "block" ] [ text aboutText ]
-        , label [ class "block" ] [ text ("Version " ++ model.home.version) ]
+        , label [ class "block" ] [ text ("Version " ++ version) ]
         ]
 
 

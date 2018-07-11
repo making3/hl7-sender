@@ -1,14 +1,14 @@
-module Connection.Validations exposing (..)
-
-import Connection.Msg exposing (..)
+module TCP exposing (..)
 
 
--- TODO: Validate port range (1-65535)
+type PortValidation
+    = ValidPort Int
+    | EmptyPort
+    | InvalidPort
 
 
-validateIp : String -> IpValidation
-validateIp ip =
-    ValidIp
+type IpValidation
+    = ValidIp
 
 
 validatePort : String -> PortValidation
@@ -22,3 +22,8 @@ validatePort portStr =
 
             Err _ ->
                 InvalidPort
+
+
+validateIp : String -> IpValidation
+validateIp ip =
+    ValidIp
