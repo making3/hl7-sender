@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "module": "none",
+    "target": "es6",
+    "outDir": "dist",
+    "moduleResolution": "node"
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/Ports"
+  ]
+}
