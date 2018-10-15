@@ -1,10 +1,11 @@
 import { Socket } from 'net';
 import { getUserData, getUserDataObject, saveUserDataObject } from './user-data';
+import { App } from './types';
 
 let client;
 const userDataFileName = 'connections.json';
 
-export function watchForEvents(app) {
+export function watchForEvents(app: App): void {
   app.ports.connect.subscribe(([ ip, port ]) => {
     client = connect(app, ip, port);
   });
@@ -13,7 +14,7 @@ export function watchForEvents(app) {
     disconnect();
   });
 
-  app.ports.send.subscribe((hl7) => {
+  app.ports.send.subscribe((hl7: string) => {
     send(hl7, () => {
       app.ports.sent.send(null);
     });
@@ -41,7 +42,7 @@ export function watchForEvents(app) {
   });
 };
 
-function connect(app, ip, port) {
+function connect(app: App, ip, port) {
   client = new Socket();
 
   client.connect(port, ip, () => {

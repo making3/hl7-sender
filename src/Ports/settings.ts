@@ -1,9 +1,10 @@
 import { saveUserDataObject, getUserData,  } from './user-data';
 import * as packageJson from '../../package.json';
+import { App } from './types';
 
 const userDataFileName = 'settings.json';
 
-export function watchForEvents(app) {
+export function watchForEvents(app: App) {
   app.ports.settingsSave.subscribe((settingsJson) => {
     saveSettings(settingsJson, (error) => {
       app.ports.settingsSaved.send(error ? error.toString() : '');
