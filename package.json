@@ -2,14 +2,14 @@
   "name": "hl7-sender",
   "version": "0.2.0",
   "description": "HL7 Sending utility for testing a downstream HL7 processing system.",
-  "main": "index.js",
+  "main": "dist/main.js",
   "scripts": {
     "build": "tsc && elm-make src/Main.elm --output dist/elm.js --yes && webpack",
     "watch": "chokidar \"**/*.elm\" --initial -c \"npm run build\"",
-    "debug": "electron main.js --debug",
-    "start": "electron main.js",
+    "debug": "electron dist/main.js --debug",
+    "start": "electron dist/main.js",
     "dev": "npm run watch & npm run debug",
-    "server": "node dist/server.js"
+    "server": "node dist/test/server.js"
   },
   "keywords": [
     "hl7",
@@ -24,6 +24,7 @@
   "author": "Matthew King <making3dev@gmail.com> (https://making3.github.io/)",
   "license": "MIT",
   "devDependencies": {
+    "@types/chokidar": "^1.7.5",
     "bootstrap": "^4.0.0-alpha.6",
     "chokidar-cli": "^1.2.0",
     "electron": "^2.0.5",
