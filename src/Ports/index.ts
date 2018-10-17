@@ -1,7 +1,7 @@
-import * as watch from './watch';
 import * as connection from './connection';
+import * as watch from './watch';
 
 export {
-  watch,
-  connection
-}
+  connection,
+  watch
+};

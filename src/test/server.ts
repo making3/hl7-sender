@@ -1,15 +1,12 @@
-'use strict';
 import { createServer } from 'net';
 
 const clients = [];
 const server = createServer();
 
-
 /*
     TODO:
     - Send an ACK with encoding characters
 */
-
 server.on('connection', (socket) => {
   clients.push(socket);
   console.log('client connect, count: ', clients.length);

@@ -1,10 +1,10 @@
 interface SubscriptionWithParameters<T> {
-  subscribe: (callback: (data: T) => void) => void
+  subscribe: (callback: (data: T) => void) => void;
 }
 interface SubscriptionWithoutParameters {
   subscribe: (callback: () => void) => void;
 }
-interface Response<T>{
+interface Response<T> {
   send: (response: T) => void;
 }
 
@@ -30,5 +30,5 @@ export interface App {
     versionGet: SubscriptionWithoutParameters,
     version: Response<string>,
     menuClick: Response<string>
-  }
+  };
 }

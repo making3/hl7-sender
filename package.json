@@ -9,7 +9,8 @@
     "debug": "electron dist/main.js --debug",
     "start": "electron dist/main.js",
     "dev": "npm run watch & npm run debug",
-    "server": "node dist/test/server.js"
+    "server": "node dist/test/server.js",
+    "lint": "tslint -c tslint.json 'src/**/*.ts'"
   },
   "keywords": [
     "hl7",
@@ -27,13 +28,14 @@
     "@types/chokidar": "^1.7.5",
     "bootstrap": "^4.0.0-alpha.6",
     "chokidar-cli": "^1.2.0",
-    "electron": "^2.0.5",
+    "electron": "^2.0.11",
     "electron-context-menu": "^0.9.1",
     "elm": "^0.18.0",
     "prettier": "^1.13.7",
     "ts-loader": "^4.4.2",
+    "tslint": "^5.11.0",
     "typescript": "^2.9.2",
-    "webpack": "^4.16.2",
+    "webpack": "^4.20.2",
     "webpack-cli": "^3.1.0"
   },
   "dependencies": {

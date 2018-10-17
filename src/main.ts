@@ -1,8 +1,8 @@
-'use strict';
-import { join } from 'path';
-import { app, Menu, BrowserWindow } from 'electron';
 import { watch } from 'chokidar';
+import { app, BrowserWindow, Menu } from 'electron';
+// tslint-disable-line
 import * as contextMenu from 'electron-context-menu';
+import { join } from 'path';
 
 const debug = process.argv.indexOf('--debug') > -1 || process.argv.indexOf('-d') > -1;
 
@@ -27,8 +27,8 @@ if (debug) {
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: debug ? 1024 : 768,
-    height: debug ? 768 : 512
+    height: debug ? 768 : 512,
+    width: debug ? 1024 : 768
   });
 
   const indexPath = join(__dirname, '..', 'index.html');
@@ -65,19 +65,19 @@ function getMenu() {
       label: 'HL7 Sender',
       submenu: [
         {
-          label: 'About',
           click: () => {
             mainWindow.webContents.send('menu-click', 'about');
-          }
+          },
+          label: 'About'
         },
         {
           type: 'separator'
         },
         {
-          label: 'Quit',
           click: () => {
             app.quit();
-          }
+          },
+          label: 'Quit'
         }
       ]
     },
@@ -85,10 +85,10 @@ function getMenu() {
       label: 'Settings',
       submenu: [
         {
-          label: 'Control Characters',
           click: () => {
             mainWindow.webContents.send('menu-click', 'edit-control-characters');
-          }
+          },
+          label: 'Control Characters'
         }
       ]
     }

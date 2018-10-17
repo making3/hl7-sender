@@ -1,8 +1,8 @@
 /* global document */
-const Elm = require('../../dist/elm.js');
-import { ipcRenderer}  from 'electron';
-import * as settings from './settings';
+import { ipcRenderer} from 'electron';
+import * as Elm from '../../dist/elm.js';
 import * as connection from './connection';
+import * as settings from './settings';
 import { App } from './types';
 
 const container = document.getElementById('container');

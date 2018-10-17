@@ -1,6 +1,6 @@
 import { Socket } from 'net';
-import { getUserData, getUserDataObject, saveUserDataObject } from './user-data';
 import { App } from './types';
+import { getUserData, getUserDataObject, saveUserDataObject } from './user-data';
 
 let client;
 const userDataFileName = 'connections.json';
@@ -31,16 +31,20 @@ export function watchForEvents(app: App): void {
 
   app.ports.saveConnection.subscribe((newConnectionJson) => {
     const newConnection = JSON.parse(newConnectionJson);
-      saveConnection(newConnection.name, newConnection.destinationIp, newConnection.destinationPort, (error, isNewConnection) => {
+    saveConnection(
+      newConnection.name,
+      newConnection.destinationIp,
+      newConnection.destinationPort,
+      (error, isNewConnection) => {
         const errorMessage = error ? error.toString() : '';
         if (isNewConnection) {
           app.ports.savedNewConnection.send(errorMessage);
         } else {
           app.ports.savedConnection.send(errorMessage);
         }
-      });
+    });
   });
-};
+}
 
 function connect(app: App, ip, port) {
   client = new Socket();
@@ -98,8 +102,8 @@ function saveConnection(connectionName, ip, port, callback) {
       isNewConnection = true;
     }
 
-    saveConnections(connections, (error) =>
-      callback(error, isNewConnection)
+    saveConnections(connections, (saveConnectionsError) =>
+      callback(saveConnectionsError, isNewConnection)
     );
   });
 }

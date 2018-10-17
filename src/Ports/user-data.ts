@@ -1,6 +1,6 @@
+import * as electron from 'electron';
 import { existsSync, readFile, writeFile } from 'fs';
 import * as path from 'path';
-import * as electron from 'electron';
 
 export function getUserData(userDataFile, defaultContent, callback) {
   const fileName = getUserDataFileName(userDataFile);
@@ -17,7 +17,7 @@ export function getUserData(userDataFile, defaultContent, callback) {
     }
     callback(error, fileJson);
   });
-};
+}
 
 export function getUserDataObject(userDataFile, defaultContent, callback) {
   defaultContent = JSON.stringify(defaultContent);
@@ -26,7 +26,7 @@ export function getUserDataObject(userDataFile, defaultContent, callback) {
       return callback(error);
     }
 
-    const userData = JSON.parse(userDataJson)
+    const userData = JSON.parse(userDataJson);
     callback(null, userData);
   });
 }
@@ -60,4 +60,4 @@ export function formatJson(json) {
     json = JSON.parse(json);
   }
   return JSON.stringify(json, null, 2);
-};
+}
