@@ -14,7 +14,7 @@ This a work in progress, but here is a preview of the current state of the appli
 
 # Development
 
-HL7 Sender is an Electron and Elm learning project. Refer to the [TODO](TODO.md) for upcoming tasks / features.
+HL7 Sender is an Electron and Elm learning project.
 
 # Installing
 
@@ -44,6 +44,12 @@ After NodeJS is installed:
 
     // starts + shows dev tools
     npm run debug
+
+## Testing
+
+For a test port, you may run the server. This server starts a TCP listener at IP 127.0.0.1 and port 1337
+
+    npm run server
 
 # Reference
 
