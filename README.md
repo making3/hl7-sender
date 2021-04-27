@@ -1,11 +1,19 @@
 HL7 Sender
 ==========
 
+# Archived
+
+This repository was originally a tool I frequently used for testing HL7 messages with projects at a previous company. While it may still be useful, I have not and do not plan to provide any further development for this project. Please feel very free to fork this tool as you wish. If you'd like to take ownership over a fork in the future, feel free to drop me a note!
+
+# About
+
 Desktop GUI tool for pasting and sending an HL7 message to a port. Mostly useful testing in-house systems or re-running individual messages.
 
 # Project Board & Updates
 
-For tracking future updates, view the [Trello board](https://trello.com/b/b3dkZJiG).
+~~For tracking future updates, view the [Trello board](https://trello.com/b/b3dkZJiG).~~
+
+Feel free to view the Trello board for your own ideas for updates!
 
 # Preview
 
@@ -14,7 +22,7 @@ This a work in progress, but here is a preview of the current state of the appli
 
 # Development
 
-HL7 Sender is an Electron and Elm learning project.
+HL7 Sender is in Electron and Elm.
 
 # Installing
 
